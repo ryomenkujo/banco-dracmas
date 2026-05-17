@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Banco de Dracmas ₯</title>
+  <meta name="theme-color" content="#1a3a2a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Dracmas" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark: #1a3a2a;
+      --green-mid: #2d5c40;
+      --green-light: #8fad96;
+      --gold: #d4a853;
+      --gold-light: #e8c87a;
+      --gold-dark: #a07830;
+      --cream: #fdf6e3;
+      --text: #1c1c1c;
+      --text-muted: #6b7280;
+      --border: rgba(0,0,0,0.1);
+      --card-bg: #ffffff;
+      --page-bg: #f5f0e8;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+      max-width: 420px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    h1, h2, .brand { font-family: 'Cinzel', serif; }
+
+    /* ── SCREENS ── */
+    .screen { display: none; min-height: 100vh; padding-bottom: 2rem; }
+    .screen.active { display: block; }
+
+    /* ── LOADER ── */
+    #screen-loader {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; background: var(--green-dark);
+    }
+    .loader-coin {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--gold); color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif; font-size: 42px; font-weight: 600;
+      border: 4px solid var(--gold-dark);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    .loader-text { color: var(--gold); font-family:'Cinzel',serif; font-size:13px; letter-spacing:.15em; margin-top:1.25rem; }
+
+    /* ── LOGIN ── */
+    #screen-login { background: var(--page-bg); }
+    .login-hero {
+      background: var(--green-dark);
+      padding: 3rem 1.5rem 2.5rem;
+      text-align: center;
+      border-radius: 0 0 28px 28px;
+      margin-bottom: 2rem;
+    }
+    .login-coin {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--gold); color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif; font-size: 42px; font-weight: 600;
+      border: 4px solid var(--gold-dark);
+      margin: 0 auto 1.25rem;
+    }
+    .login-title { color: var(--gold); font-size: 22px; letter-spacing:.05em; }
+    .login-sub { color: var(--green-light); font-size: 13px; margin-top: 5px; letter-spacing:.08em; }
+
+    .form-wrap { padding: 0 1.5rem; }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing:.08em; color: var(--text-muted); display: block; margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 12px 14px; font-size: 15px; font-family: 'Lato', sans-serif;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--card-bg); color: var(--text); outline: none;
+      transition: border-color .2s;
+    }
+    .form-input:focus { border-color: var(--green-dark); }
+
+    .btn-primary {
+      width: 100%; padding: 14px; font-size: 15px; font-weight: 700;
+      font-family: 'Lato', sans-serif; letter-spacing:.04em;
+      background: var(--green-dark); color: var(--gold);
+      border: none; border-radius: var(--radius-sm); cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-primary:active { opacity: .82; }
+    .btn-secondary {
+      width: 100%; padding: 12px; font-size: 14px; font-weight: 700;
+      font-family: 'Lato', sans-serif; letter-spacing:.04em;
+      background: transparent; color: var(--green-dark);
+      border: 1.5px solid var(--green-dark); border-radius: var(--radius-sm);
+      cursor: pointer; margin-top: 10px;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--green-dark);
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 12px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar-logo {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--gold); color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif; font-size: 18px; font-weight: 600;
+      border: 2px solid var(--gold-dark); flex-shrink: 0;
+    }
+    .topbar-title { color: var(--gold); font-family: 'Cinzel', serif; font-size: 15px; letter-spacing:.05em; flex: 1; }
+    .topbar-back, .topbar-icon {
+      background: none; border: none; color: var(--gold);
+      font-size: 22px; cursor: pointer; padding: 4px; line-height: 1;
+    }
+
+    /* ── BALANCE CARD ── */
+    .balance-card {
+      margin: 1.25rem 1.25rem 0;
+      background: var(--green-dark);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .balance-card::before {
+      content: '₯';
+      position: absolute; right: -10px; top: -10px;
+      font-family: 'Cinzel', serif; font-size: 90px;
+      color: rgba(212,168,83,.08); line-height: 1;
+      pointer-events: none;
+    }
+    .balance-label { font-size: 11px; text-transform: uppercase; letter-spacing:.1em; color: var(--green-light); margin-bottom: 4px; }
+    .balance-amount { font-size: 40px; font-weight: 700; color: var(--gold); font-family: 'Cinzel', serif; line-height: 1.1; }
+    .balance-unit { font-size: 18px; color: var(--green-light); margin-left: 6px; }
+    .balance-user { font-size: 12px; color: var(--green-light); margin-top: 8px; }
+
+    /* ── QUICK ACTIONS ── */
+    .quick-actions {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; padding: 1.25rem 1.25rem 0;
+    }
+    .action-btn {
+      padding: 1rem; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--card-bg); cursor: pointer;
+      text-align: center; transition: border-color .15s, background .15s;
+    }
+    .action-btn:active { background: #f0ece4; }
+    .action-icon { font-size: 24px; margin-bottom: 6px; color: var(--green-dark); }
+    .action-label { font-size: 13px; font-weight: 700; color: var(--text); }
+
+    /* ── SECTION ── */
+    .section-header {
+      padding: 1.4rem 1.25rem 0.6rem;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--text-muted);
+    }
+
+    /* ── TRANSACTIONS ── */
+    .tx-list { padding: 0 1.25rem; }
+    .tx-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tx-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .tx-icon.in { background: #e6f4ec; color: #2d6a4f; }
+    .tx-icon.out { background: #fdecea; color: #a33030; }
+    .tx-info { flex: 1; min-width: 0; }
+    .tx-desc { font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-date { font-size: 12px; color: var(--text-muted); }
+    .tx-amount { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+    .tx-amount.in { color: #2d6a4f; }
+    .tx-amount.out { color: #a33030; }
+
+    /* ── CARD WRAPPER ── */
+    .card {
+      margin: 0 1.25rem 1rem;
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+    }
+
+    /* ── MEMBER LIST ── */
+    .member-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .member-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #e1f0e8; color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; flex-shrink: 0;
+    }
+    .member-name { font-size: 14px; font-weight: 700; color: var(--text); }
+    .member-sub { font-size: 12px; color: var(--text-muted); }
+    .member-right { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--gold-dark); }
+
+    /* ── ADMIN TAG ── */
+    .tag-admin {
+      font-size: 10px; background: var(--gold); color: var(--green-dark);
+      padding: 2px 8px; border-radius: 10px; font-weight: 700;
+      letter-spacing: .04em; margin-left: 6px; vertical-align: middle;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--green-dark); color: var(--gold);
+      padding: 10px 22px; border-radius: 22px;
+      font-size: 14px; font-weight: 700; display: none; z-index: 999;
+      white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      animation: fadeup .25s ease;
+    }
+    @keyframes fadeup { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+    /* ── ERROR ── */
+    .error-msg { color: #a33030; font-size: 13px; margin-top: 8px; display: none; }
+
+    /* ── EMPTY STATE ── */
+    .empty { padding: 1.5rem 0; text-align: center; font-size: 14px; color: var(--text-muted); }
+
+    select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--gold); border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="screen-loader" class="screen active">
+  <div class="loader-coin">₯</div>
+  <div class="loader-text">carregando...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen">
+  <div class="login-hero">
+    <div class="login-coin">₯</div>
+    <h1 class="login-title">Banco de Dracmas</h1>
+    <div class="login-sub">Igreja ADC</div>
+  </div>
+  <div class="form-wrap">
+    <div class="form-group">
+      <label class="form-label">nome de usuário</label>
+      <input class="form-input" id="login-user" type="text" placeholder="Ex: joao.silva" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">código de acesso (PIN)</label>
+      <input class="form-input" id="login-pin" type="password" placeholder="••••" maxlength="6" inputmode="numeric" autocomplete="current-password" />
+    </div>
+    <div class="error-msg" id="login-error">usuário ou código incorreto</div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">entrar</button>
+    <button class="btn-secondary" onclick="goTo('screen-register')">criar conta</button>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div id="screen-register" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('screen-login')">←</button>
+    <span class="topbar-title">criar conta</span>
+  </div>
+  <div style="padding: 1.5rem 1.25rem 0;">
+    <div class="form-group">
+      <label class="form-label">nome completo</label>
+      <input class="form-input" id="reg-name" type="text" placeholder="Ex: João Silva" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">nome de usuário</label>
+      <input class="form-input" id="reg-user" type="text" placeholder="Ex: joao.silva (sem espaço)" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">código de acesso (PIN numérico)</label>
+      <input class="form-input" id="reg-pin" type="password" placeholder="crie um PIN com 4–6 dígitos" maxlength="6" inputmode="numeric" />
+    </div>
+    <div class="error-msg" id="reg-error"></div>
+    <button class="btn-primary" id="reg-btn" onclick="doRegister()">criar conta</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">₯</div>
+    <span class="topbar-title" id="home-greeting">olá!</span>
+    <button class="topbar-icon" onclick="doLogout()" title="sair">⎋</button>
+  </div>
+  <div class="balance-card">
+    <div class="balance-label">saldo atual</div>
+    <div>
+      <span class="balance-amount" id="home-balance">0</span>
+      <span class="balance-unit">₯</span>
+    </div>
+    <div class="balance-user" id="home-user"></div>
+  </div>
+  <div class="quick-actions">
+    <div class="action-btn" onclick="goTo('screen-transfer')">
+      <div class="action-icon">↗</div>
+      <div class="action-label">transferir</div>
+    </div>
+    <div class="action-btn" onclick="goTo('screen-history')">
+      <div class="action-icon">📋</div>
+      <div class="action-label">extrato</div>
+    </div>
+  </div>
+  <div id="admin-btns" style="display:none">
+    <div class="quick-actions">
+      <div class="action-btn" onclick="goTo('screen-admin')">
+        <div class="action-icon">👑</div>
+        <div class="action-label">distribuir</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-members')">
+        <div class="action-icon">👥</div>
+        <div class="action-label">membros</div>
+      </div>
+    </div>
+  </div>
+  <div class="section-header">últimas transações</div>
+  <div class="tx-list" id="home-txs"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- EXTRATO -->
+<div id="screen-history" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">extrato completo</span>
+  </div>
+  <div class="tx-list" id="history-txs"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- TRANSFERIR -->
+<div id="screen-transfer" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">transferir dracmas</span>
+  </div>
+  <div style="padding: 1.5rem 1.25rem 0;">
+    <div class="form-group">
+      <label class="form-label">para quem</label>
+      <select class="form-input" id="transfer-to"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">quantidade (₯)</label>
+      <input class="form-input" id="transfer-amount" type="number" min="1" placeholder="0" inputmode="numeric" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">mensagem (opcional)</label>
+      <input class="form-input" id="transfer-msg" type="text" placeholder="ex: obrigado pela ajuda!" />
+    </div>
+    <div class="error-msg" id="transfer-error"></div>
+    <button class="btn-primary" id="transfer-btn" onclick="doTransfer()">confirmar transferência</button>
+  </div>
+</div>
+
+<!-- MEMBROS -->
+<div id="screen-members" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">membros</span>
+  </div>
+  <div style="padding: 0 1.25rem;" id="members-list"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- ADMIN -->
+<div id="screen-admin" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">distribuir dracmas <span class="tag-admin">admin</span></span>
+  </div>
+  <div style="padding: 1.5rem 1.25rem 0;">
+    <div class="form-group">
+      <label class="form-label">membro</label>
+      <select class="form-input" id="admin-member"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">quantidade (₯)</label>
+      <input class="form-input" id="admin-amount" type="number" min="1" placeholder="0" inputmode="numeric" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">motivo</label>
+      <input class="form-input" id="admin-reason" type="text" placeholder="ex: participação no culto" />
+    </div>
+    <div class="error-msg" id="admin-error"></div>
+    <button class="btn-primary" id="admin-btn" onclick="doDistribute()">distribuir dracmas</button>
+  </div>
+  <div class="section-header">todos os membros</div>
+  <div style="padding: 0 1.25rem;" id="admin-members-list"><div class="empty">carregando...</div></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, updateDoc,
+    collection, getDocs, addDoc, query, where, orderBy, limit, serverTimestamp, runTransaction
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA-t2k2EVpfv-xqtQxtq4bt043tOqTtTDw",
+    authDomain: "banco-dracmas.firebaseapp.com",
+    projectId: "banco-dracmas",
+    storageBucket: "banco-dracmas.firebasestorage.app",
+    messagingSenderId: "755685605861",
+    appId: "1:755685605861:web:651fd974ad8a784af7af0c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ── STATE ──
+  let currentUser = null; // { id, name, balance, admin }
+  let prevScreen = "screen-home";
+  let allMembers = [];
+
+  // ── UTILS ──
+  function initials(name) {
+    return name.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function fmtDate(ts) {
+    if (!ts) return '';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(window._toastT);
+    window._toastT = setTimeout(() => t.style.display = 'none', 2500);
+  }
+
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+  }
+
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.innerHTML = loading ? '<span class="spinner"></span>aguarde...' : btn.dataset.label || btn.textContent;
+    if (!loading && !btn.dataset.label) btn.dataset.label = btn.textContent;
+  }
+
+  window.goTo = function(id) {
+    prevScreen = document.querySelector('.screen.active')?.id || 'screen-home';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    if (id === 'screen-transfer') loadTransferMembers();
+    if (id === 'screen-members') loadMembers();
+    if (id === 'screen-history') loadHistory();
+    if (id === 'screen-admin') { loadAdminMembers(); loadAdminMembersList(); }
+  };
+
+  window.goBack = function() { goTo(prevScreen); };
+
+  // ── LOGIN ──
+  window.doLogin = async function() {
+    const username = document.getElementById('login-user').value.trim().toLowerCase();
+    const pin = document.getElementById('login-pin').value.trim();
+    if (!username || !pin) { showErr('login-error', 'preencha todos os campos'); return; }
+    setLoading('login-btn', true);
+    try {
+      const ref = doc(db, 'users', username);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) { showErr('login-error', 'usuário não encontrado'); return; }
+      const data = snap.data();
+      if (data.pin !== pin) { showErr('login-error', 'código de acesso incorreto'); return; }
+      currentUser = { id: username, ...data };
+      renderHome();
+      goTo('screen-home');
+    } catch(e) {
+      showErr('login-error', 'erro de conexão. tente novamente.');
+    } finally {
+      setLoading('login-btn', false);
+    }
+  };
+
+  // ── REGISTER ──
+  window.doRegister = async function() {
+    const name = document.getElementById('reg-name').value.trim();
+    const username = document.getElementById('reg-user').value.trim().toLowerCase().replace(/\s+/g,'');
+    const pin = document.getElementById('reg-pin').value.trim();
+    if (!name || !username || !pin) { showErr('reg-error', 'preencha todos os campos'); return; }
+    if (pin.length < 4) { showErr('reg-error', 'PIN deve ter no mínimo 4 dígitos'); return; }
+    if (!/^\d+$/.test(pin)) { showErr('reg-error', 'PIN deve conter apenas números'); return; }
+    setLoading('reg-btn', true);
+    try {
+      const ref = doc(db, 'users', username);
+      const snap = await getDoc(ref);
+      if (snap.exists()) { showErr('reg-error', 'esse usuário já existe'); return; }
+      await setDoc(ref, { name, pin, balance: 0, admin: false, createdAt: serverTimestamp() });
+      showToast('conta criada! faça login.');
+      goTo('screen-login');
+      document.getElementById('login-user').value = username;
+    } catch(e) {
+      showErr('reg-error', 'erro ao criar conta. tente novamente.');
+    } finally {
+      setLoading('reg-btn', false);
+    }
+  };
+
+  // ── LOGOUT ──
+  window.doLogout = function() {
+    currentUser = null;
+    allMembers = [];
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pin').value = '';
+    goTo('screen-login');
+  };
+
+  // ── HOME ──
+  function renderHome() {
+    const u = currentUser;
+    document.getElementById('home-greeting').textContent = 'olá, ' + u.name.split(' ')[0] + '!';
+    document.getElementById('home-balance').textContent = u.balance;
+    document.getElementById('home-user').textContent = u.name + (u.admin ? ' — administrador' : '');
+    document.getElementById('admin-btns').style.display = u.admin ? 'block' : 'none';
+    loadHomeTransactions();
+  }
+
+  async function loadHomeTransactions() {
+    const el = document.getElementById('home-txs');
+    el.innerHTML = '<div class="empty">carregando...</div>';
+    try {
+      const q = query(
+        collection(db, 'transactions'),
+        where('participants', 'array-contains', currentUser.id),
+        orderBy('createdAt', 'desc'),
+        limit(5)
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) { el.innerHTML = '<div class="empty">nenhuma transação ainda</div>'; return; }
+      el.innerHTML = snap.docs.map(d => txHtml(d.data(), currentUser.id)).join('');
+    } catch(e) {
+      el.innerHTML = '<div class="empty">erro ao carregar transações</div>';
+    }
+  }
+
+  // ── HISTORY ──
+  async function loadHistory() {
+    const el = document.getElementById('history-txs');
+    el.innerHTML = '<div class="empty">carregando...</div>';
+    try {
+      const q = query(
+        collection(db, 'transactions'),
+        where('participants', 'array-contains', currentUser.id),
+        orderBy('createdAt', 'desc'),
+        limit(50)
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) { el.innerHTML = '<div class="empty">nenhuma transação</div>'; return; }
+      el.innerHTML = snap.docs.map(d => txHtml(d.data(), currentUser.id)).join('');
+    } catch(e) {
+      el.innerHTML = '<div class="empty">erro ao carregar</div>';
+    }
+  }
+
+  function txHtml(tx, uid) {
+    const isIn = tx.to === uid;
+    const cls = isIn ? 'in' : 'out';
+    const icon = isIn ? '↙' : '↗';
+    const sign = isIn ? '+' : '-';
+    return `<div class="tx-item">
+      <div class="tx-icon ${cls}">${icon}</div>
+      <div class="tx-info">
+        <div class="tx-desc">${tx.desc || 'transação'}</div>
+        <div class="tx-date">${fmtDate(tx.createdAt)}</div>
+      </div>
+      <div class="tx-amount ${cls}">${sign}${tx.amount} ₯</div>
+    </div>`;
+  }
+
+  // ── TRANSFER ──
+  async function loadTransferMembers() {
+    const sel = document.getElementById('transfer-to');
+    sel.innerHTML = '<option>carregando...</option>';
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      allMembers = [];
+      snap.forEach(d => { if (d.id !== currentUser.id && !d.data().admin) allMembers.push({ id: d.id, ...d.data() }); });
+      sel.innerHTML = allMembers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+    } catch(e) { sel.innerHTML = '<option>erro ao carregar</option>'; }
+  }
+
+  window.doTransfer = async function() {
+    const toId = document.getElementById('transfer-to').value;
+    const amt = parseInt(document.getElementById('transfer-amount').value);
+    const msg = document.getElementById('transfer-msg').value.trim() || 'transferência';
+    if (!toId) { showErr('transfer-error', 'selecione um membro'); return; }
+    if (!amt || amt <= 0) { showErr('transfer-error', 'valor inválido'); return; }
+    if (amt > currentUser.balance) { showErr('transfer-error', 'saldo insuficiente'); return; }
+    setLoading('transfer-btn', true);
+    try {
+      const fromRef = doc(db, 'users', currentUser.id);
+      const toRef = doc(db, 'users', toId);
+      await runTransaction(db, async (t) => {
+        const fromSnap = await t.get(fromRef);
+        const toSnap = await t.get(toRef);
+        if (!fromSnap.exists() || !toSnap.exists()) throw new Error('usuário não encontrado');
+        const fromBal = fromSnap.data().balance;
+        if (fromBal < amt) throw new Error('saldo insuficiente');
+        t.update(fromRef, { balance: fromBal - amt });
+        t.update(toRef, { balance: toSnap.data().balance + amt });
+      });
+      const toName = allMembers.find(m => m.id === toId)?.name || toId;
+      await addDoc(collection(db, 'transactions'), {
+        from: currentUser.id, to: toId,
+        participants: [currentUser.id, toId],
+        amount: amt,
+        desc: `${msg} (de ${currentUser.name} para ${toName})`,
+        createdAt: serverTimestamp()
+      });
+      currentUser.balance -= amt;
+      document.getElementById('home-balance').textContent = currentUser.balance;
+      document.getElementById('transfer-amount').value = '';
+      document.getElementById('transfer-msg').value = '';
+      showToast('transferência realizada! ₯');
+      setTimeout(() => goTo('screen-home'), 1000);
+    } catch(e) {
+      showErr('transfer-error', e.message || 'erro na transferência');
+    } finally {
+      setLoading('transfer-btn', false);
+    }
+  };
+
+  // ── MEMBERS (admin view) ──
+  async function loadMembers() {
+    const el = document.getElementById('members-list');
+    el.innerHTML = '<div class="empty">carregando...</div>';
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const members = [];
+      snap.forEach(d => { if (!d.data().admin) members.push({ id: d.id, ...d.data() }); });
+      members.sort((a,b) => b.balance - a.balance);
+      el.innerHTML = members.map(m => `
+        <div class="member-item">
+          <div class="member-avatar">${initials(m.name)}</div>
+          <div><div class="member-name">${m.name}</div><div class="member-sub">@${m.id}</div></div>
+          <div class="member-right">${m.balance} ₯</div>
+        </div>`).join('') || '<div class="empty">nenhum membro</div>';
+    } catch(e) { el.innerHTML = '<div class="empty">erro ao carregar</div>'; }
+  }
+
+  // ── ADMIN ──
+  async function loadAdminMembers() {
+    const sel = document.getElementById('admin-member');
+    sel.innerHTML = '<option>carregando...</option>';
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const members = [];
+      snap.forEach(d => { if (!d.data().admin) members.push({ id: d.id, ...d.data() }); });
+      sel.innerHTML = members.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+    } catch(e) { sel.innerHTML = '<option>erro</option>'; }
+  }
+
+  async function loadAdminMembersList() {
+    const el = document.getElementById('admin-members-list');
+    el.innerHTML = '<div class="empty">carregando...</div>';
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const members = [];
+      snap.forEach(d => { if (!d.data().admin) members.push({ id: d.id, ...d.data() }); });
+      members.sort((a,b) => b.balance - a.balance);
+      el.innerHTML = members.map(m => `
+        <div class="member-item">
+          <div class="member-avatar">${initials(m.name)}</div>
+          <div><div class="member-name">${m.name}</div><div class="member-sub">saldo: ${m.balance} ₯</div></div>
+        </div>`).join('') || '<div class="empty">nenhum membro</div>';
+    } catch(e) { el.innerHTML = '<div class="empty">erro ao carregar</div>'; }
+  }
+
+  window.doDistribute = async function() {
+    const toId = document.getElementById('admin-member').value;
+    const amt = parseInt(document.getElementById('admin-amount').value);
+    const reason = document.getElementById('admin-reason').value.trim() || 'distribuição admin';
+    if (!toId) { showErr('admin-error', 'selecione um membro'); return; }
+    if (!amt || amt <= 0) { showErr('admin-error', 'valor inválido'); return; }
+    setLoading('admin-btn', true);
+    try {
+      const toRef = doc(db, 'users', toId);
+      const toSnap = await getDoc(toRef);
+      if (!toSnap.exists()) throw new Error('membro não encontrado');
+      await updateDoc(toRef, { balance: toSnap.data().balance + amt });
+      const toName = toSnap.data().name;
+      await addDoc(collection(db, 'transactions'), {
+        from: 'admin', to: toId,
+        participants: ['admin', toId],
+        amount: amt,
+        desc: `${reason} (admin → ${toName})`,
+        createdAt: serverTimestamp()
+      });
+      document.getElementById('admin-amount').value = '';
+      document.getElementById('admin-reason').value = '';
+      showToast(`${amt} ₯ distribuídos para ${toName}!`);
+      loadAdminMembersList();
+    } catch(e) {
+      showErr('admin-error', e.message || 'erro ao distribuir');
+    } finally {
+      setLoading('admin-btn', false);
+    }
+  };
+
+  // ── ENTER KEY ──
+  document.getElementById('login-pin').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.getElementById('reg-pin').addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
+
+  // ── INIT: criar conta admin se não existir ──
+  async function initAdmin() {
+    try {
+      const ref = doc(db, 'users', 'admin');
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, { name: 'Administrador', pin: '0000', balance: 0, admin: true, createdAt: serverTimestamp() });
+      }
+    } catch(e) { console.log('init admin:', e); }
+    goTo('screen-login');
+  }
+
+  initAdmin();
+</script>
+</body>
+</html>
