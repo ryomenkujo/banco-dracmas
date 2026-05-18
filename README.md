@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Dracmas ADC" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -46,6 +47,7 @@
     .form-hint{font-size:11px;color:var(--text-muted);margin-top:4px;}
     .form-input{width:100%;padding:12px 14px;font-size:15px;font-family:'Lato',sans-serif;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--card-bg);color:var(--text);outline:none;transition:border-color .2s;}
     .form-input:focus{border-color:var(--purple);}
+    textarea.form-input{resize:vertical;min-height:80px;}
     .input-wrap{position:relative;}
     .input-wrap .form-input{padding-right:44px;}
     .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-muted);line-height:1;}
@@ -53,6 +55,7 @@
     .btn-primary{width:100%;padding:14px;font-size:15px;font-weight:700;font-family:'Lato',sans-serif;background:var(--purple);color:var(--gold);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity .15s;}
     .btn-primary:active{opacity:.82;}
     .btn-primary.danger{background:#7a1a1a;color:#fff;}
+    .btn-primary.success{background:#2d6a4f;color:#fff;}
     .btn-secondary{width:100%;padding:12px;font-size:14px;font-weight:700;font-family:'Lato',sans-serif;background:transparent;color:var(--purple);border:1.5px solid var(--purple);border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;}
     .topbar{background:var(--purple);padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
     .topbar-logo{width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:18px;font-weight:600;border:2px solid var(--gold-dark);flex-shrink:0;}
@@ -70,17 +73,29 @@
     .action-icon{font-size:24px;margin-bottom:6px;}
     .action-label{font-size:13px;font-weight:700;color:var(--text);}
     .section-header{padding:1.4rem 1.25rem 0.6rem;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);}
+    /* TRANSACTIONS */
     .tx-list{padding:0 1.25rem;}
     .tx-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
-    .tx-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-    .tx-icon.in{background:#e6f4ec;color:#2d6a4f;}
-    .tx-icon.out{background:#fdecea;color:#a33030;}
+    .tx-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
     .tx-info{flex:1;min-width:0;}
-    .tx-desc{font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .tx-date{font-size:12px;color:var(--text-muted);}
-    .tx-amount{font-size:15px;font-weight:700;flex-shrink:0;}
+    .tx-desc{font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;}
+    .tx-sub{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .tx-date{font-size:11px;color:var(--text-muted);}
+    .tx-right{text-align:right;flex-shrink:0;}
+    .tx-amount{font-size:15px;font-weight:700;}
     .tx-amount.in{color:#2d6a4f;}
     .tx-amount.out{color:#a33030;}
+    /* CATEGORIES */
+    .cat-culto{background:#e8f4fd;color:#1565c0;}
+    .cat-missao{background:#fce4ec;color:#880e4f;}
+    .cat-evento{background:#f3e5f5;color:#6a1b9a;}
+    .cat-estudo{background:#e8f5e9;color:#1b5e20;}
+    .cat-presente{background:#fff8e1;color:#e65100;}
+    .cat-conquista{background:#fff9c4;color:#f57f17;}
+    .cat-penalidade{background:#fdecea;color:#a33030;}
+    .cat-transferencia{background:#ede0f5;color:#2e1a47;}
+    .cat-outros{background:#f5f5f5;color:#424242;}
+    /* MEMBERS */
     .member-list{padding:0 1.25rem;}
     .member-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
     .member-avatar{width:40px;height:40px;border-radius:50%;background:#ede0f5;color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
@@ -91,8 +106,12 @@
     .btn-sm.approve{background:#2d6a4f;color:#fff;}
     .btn-sm.reject,.btn-sm.del{background:#7a1a1a;color:#fff;}
     .btn-sm.view{background:var(--purple);color:var(--gold);}
+    .btn-sm.pause{background:#e65100;color:#fff;}
+    .btn-sm.unpause{background:#1565c0;color:#fff;}
+    .btn-sm.reset{background:#4a2d6e;color:#fff;}
     .badge-count{display:inline-block;background:#a33030;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;}
     .tag-admin{font-size:10px;background:var(--gold);color:var(--purple);padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;vertical-align:middle;}
+    .tag-paused{font-size:10px;background:#e65100;color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:4px;}
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--purple);color:var(--gold);padding:10px 22px;border-radius:22px;font-size:14px;font-weight:700;display:none;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2);}
     .error-msg{color:#a33030;font-size:13px;margin-top:8px;display:none;}
     .success-msg{color:#2d6a4f;font-size:13px;margin-top:8px;display:none;}
@@ -112,6 +131,27 @@
     .menu-icon{font-size:20px;width:32px;text-align:center;}
     .menu-label{font-size:15px;color:var(--text);}
     .menu-arrow{margin-left:auto;color:var(--text-muted);font-size:18px;}
+    /* MURAL */
+    .aviso-card{background:var(--card-bg);border-radius:var(--radius-sm);border:1.5px solid var(--border);padding:1rem;margin-bottom:.75rem;}
+    .aviso-titulo{font-size:14px;font-weight:700;color:var(--purple);}
+    .aviso-texto{font-size:13px;color:var(--text);margin-top:4px;line-height:1.5;}
+    .aviso-data{font-size:11px;color:var(--text-muted);margin-top:6px;}
+    /* CONFIRM MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:flex-end;justify-content:center;}
+    .modal-overlay.active{display:flex;}
+    .modal{background:var(--card-bg);border-radius:20px 20px 0 0;padding:1.75rem 1.5rem;width:100%;max-width:420px;}
+    .modal-title{font-family:'Cinzel',serif;font-size:17px;color:var(--purple);margin-bottom:.5rem;}
+    .modal-body{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1.25rem;}
+    .modal-actions{display:flex;gap:10px;}
+    .modal-actions .btn-primary{flex:1;padding:12px;}
+    .modal-actions .btn-secondary{flex:1;padding:12px;margin:0;}
+    /* NOTIF */
+    .notif-dot{width:10px;height:10px;background:#a33030;border-radius:50%;display:inline-block;margin-left:6px;vertical-align:middle;}
+    .notif-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+    .notif-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+    .notif-text{font-size:13px;color:var(--text);flex:1;line-height:1.5;}
+    .notif-date{font-size:11px;color:var(--text-muted);margin-top:3px;}
+    .notif-unread{background:#f8f0ff;}
   </style>
 </head>
 <body>
@@ -160,13 +200,13 @@
     </div>
     <div class="form-group">
       <label class="form-label">nome de usuário</label>
-      <input class="form-input" id="reg-user" type="text" placeholder="Ex: joao.silva (sem espaço)" />
-      <div class="form-hint">só letras, números e ponto. sem espaços.</div>
+      <input class="form-input" id="reg-user" type="text" placeholder="Ex: joao.silva" />
+      <div class="form-hint">só letras minúsculas, números e ponto. sem espaços.</div>
     </div>
     <div class="form-group">
       <label class="form-label">senha</label>
       <div class="input-wrap">
-        <input class="form-input" id="reg-pw" type="password" placeholder="mínimo 6 caracteres" oninput="checkStrength(this.value)" autocomplete="new-password" />
+        <input class="form-input" id="reg-pw" type="password" placeholder="mínimo 6 caracteres" oninput="checkStrength(this.value,'pw-strength-bar','pw-strength-label')" autocomplete="new-password" />
         <button class="toggle-pw" type="button" onclick="togglePw('reg-pw',this)">👁</button>
       </div>
       <div class="pw-strength" id="pw-strength-bar"></div>
@@ -179,9 +219,7 @@
         <button class="toggle-pw" type="button" onclick="togglePw('reg-pw2',this)">👁</button>
       </div>
     </div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">
-      ⏳ Sua conta ficará <strong>pendente</strong> até o administrador aprovar o seu acesso.
-    </p>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">⏳ Sua conta ficará <strong>pendente</strong> até o administrador aprovar.</p>
     <div class="error-msg" id="reg-error"></div>
     <button class="btn-primary" id="reg-btn" onclick="doRegister()">solicitar acesso</button>
   </div>
@@ -192,6 +230,7 @@
   <div class="topbar">
     <div class="topbar-logo">₯</div>
     <span class="topbar-title" id="home-greeting">olá!</span>
+    <button class="topbar-icon" onclick="goTo('screen-notifs')" title="notificações"><span id="notif-bell">🔔</span></button>
     <button class="topbar-icon" onclick="goTo('screen-settings')" title="configurações">⚙</button>
   </div>
   <div class="balance-card">
@@ -217,9 +256,29 @@
         <div class="action-label">aprovar <span id="pending-badge" class="badge-count" style="display:none">0</span></div>
       </div>
     </div>
+    <div class="quick-actions">
+      <div class="action-btn" onclick="goTo('screen-mural-admin')">
+        <div class="action-icon">📢</div><div class="action-label">mural</div>
+      </div>
+      <div class="action-btn" onclick="gerarPDF()">
+        <div class="action-icon">📄</div><div class="action-label">relatório PDF</div>
+      </div>
+    </div>
   </div>
+  <!-- MURAL PREVIEW -->
+  <div class="section-header">📢 mural de avisos</div>
+  <div style="padding:0 1.25rem" id="home-mural"><div class="empty">sem avisos</div></div>
   <div class="section-header">últimas transações</div>
   <div class="tx-list" id="home-txs"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- NOTIFICAÇÕES -->
+<div id="screen-notifs" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">notificações</span>
+  </div>
+  <div style="padding:0 1.25rem" id="notifs-list"><div class="empty">carregando...</div></div>
 </div>
 
 <!-- CONFIGURAÇÕES -->
@@ -232,6 +291,11 @@
     <div class="menu-item" onclick="goTo('screen-change-pw')">
       <div class="menu-icon">🔑</div>
       <div class="menu-label">mudar senha</div>
+      <div class="menu-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="goTo('screen-mural')">
+      <div class="menu-icon">📢</div>
+      <div class="menu-label">mural de avisos</div>
       <div class="menu-arrow">›</div>
     </div>
     <div class="menu-item" onclick="doLogout()">
@@ -259,7 +323,7 @@
     <div class="form-group">
       <label class="form-label">nova senha</label>
       <div class="input-wrap">
-        <input class="form-input" id="cpw-new" type="password" placeholder="mínimo 6 caracteres" oninput="checkStrength2(this.value)" />
+        <input class="form-input" id="cpw-new" type="password" placeholder="mínimo 6 caracteres" oninput="checkStrength(this.value,'pw-strength-bar2','pw-strength-label2')" />
         <button class="toggle-pw" type="button" onclick="togglePw('cpw-new',this)">👁</button>
       </div>
       <div class="pw-strength" id="pw-strength-bar2"></div>
@@ -287,6 +351,37 @@
   <div class="tx-list" id="history-txs"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- MURAL (leitura) -->
+<div id="screen-mural" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">mural de avisos</span>
+  </div>
+  <div style="padding:1rem 1.25rem" id="mural-list"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- MURAL ADMIN -->
+<div id="screen-mural-admin" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">←</button>
+    <span class="topbar-title">gerenciar mural <span class="tag-admin">admin</span></span>
+  </div>
+  <div class="form-section" style="padding-top:1.5rem">
+    <div class="form-group">
+      <label class="form-label">título do aviso</label>
+      <input class="form-input" id="aviso-titulo" type="text" placeholder="Ex: Culto especial sábado!" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">texto</label>
+      <textarea class="form-input" id="aviso-texto" placeholder="Detalhes do aviso..."></textarea>
+    </div>
+    <div class="error-msg" id="aviso-error"></div>
+    <button class="btn-primary" id="aviso-btn" onclick="publicarAviso()">publicar aviso 📢</button>
+  </div>
+  <div class="section-header">avisos publicados</div>
+  <div style="padding:0 1.25rem" id="mural-admin-list"><div class="empty">carregando...</div></div>
+</div>
+
 <!-- TRANSFERIR -->
 <div id="screen-transfer" class="screen">
   <div class="topbar">
@@ -307,7 +402,7 @@
       <input class="form-input" id="transfer-msg" type="text" placeholder="ex: obrigado pela ajuda!" />
     </div>
     <div class="error-msg" id="transfer-error"></div>
-    <button class="btn-primary" id="transfer-btn" onclick="doTransfer()">confirmar transferência</button>
+    <button class="btn-primary" id="transfer-btn" onclick="confirmarTransfer()">transferir</button>
   </div>
 </div>
 
@@ -321,34 +416,55 @@
     <div class="tab active" id="tab-give" onclick="switchAdminTab('give')">➕ dar</div>
     <div class="tab" id="tab-take" onclick="switchAdminTab('take')">➖ retirar</div>
   </div>
+  <!-- DAR -->
   <div class="form-section" id="admin-give-form">
     <div class="form-group">
       <label class="form-label">membro</label>
       <select class="form-input" id="admin-member-give"></select>
     </div>
     <div class="form-group">
+      <label class="form-label">categoria</label>
+      <select class="form-input" id="admin-cat-give">
+        <option value="culto">⛪ Culto</option>
+        <option value="missao">🙏 Missão</option>
+        <option value="evento">🎉 Evento</option>
+        <option value="estudo">📖 Estudo / Célula</option>
+        <option value="conquista">🏆 Conquista</option>
+        <option value="presente">🎁 Presente</option>
+        <option value="outros">📝 Outros</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label class="form-label">quantidade (₯)</label>
       <input class="form-input" id="admin-amount-give" type="number" min="1" placeholder="0" inputmode="numeric" />
     </div>
     <div class="form-group">
-      <label class="form-label">motivo</label>
-      <input class="form-input" id="admin-reason-give" type="text" placeholder="ex: participação no culto" />
+      <label class="form-label">observação (opcional)</label>
+      <input class="form-input" id="admin-reason-give" type="text" placeholder="ex: presença no culto de domingo" />
     </div>
     <div class="error-msg" id="admin-error-give"></div>
     <button class="btn-primary" id="admin-btn-give" onclick="doDistribute()">dar dracmas ✓</button>
   </div>
+  <!-- RETIRAR -->
   <div class="form-section" id="admin-take-form" style="display:none">
     <div class="form-group">
       <label class="form-label">membro</label>
       <select class="form-input" id="admin-member-take"></select>
     </div>
     <div class="form-group">
+      <label class="form-label">categoria</label>
+      <select class="form-input" id="admin-cat-take">
+        <option value="penalidade">⚠️ Penalidade</option>
+        <option value="outros">📝 Outros</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label class="form-label">quantidade (₯)</label>
       <input class="form-input" id="admin-amount-take" type="number" min="1" placeholder="0" inputmode="numeric" />
     </div>
     <div class="form-group">
-      <label class="form-label">motivo</label>
-      <input class="form-input" id="admin-reason-take" type="text" placeholder="ex: penalidade" />
+      <label class="form-label">observação (opcional)</label>
+      <input class="form-input" id="admin-reason-take" type="text" placeholder="ex: motivo da penalidade" />
     </div>
     <div class="error-msg" id="admin-error-take"></div>
     <button class="btn-primary danger" id="admin-btn-take" onclick="doDeduct()">retirar dracmas ✗</button>
@@ -375,6 +491,18 @@
   <div class="tx-list" id="member-history-txs"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- MODAL CONFIRMAÇÃO -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">confirmar</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">cancelar</button>
+      <button class="btn-primary" id="modal-confirm-btn">confirmar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script type="module">
@@ -398,20 +526,36 @@
   const db = getFirestore(app);
   let currentUser = null, prevScreen = "screen-home", allMembers = [];
 
-  const initials = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  const fmtDate = ts => { if(!ts) return ''; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}); };
+  // ── CATEGORIAS ──
+  const CATS = {
+    culto:        { icon:'⛪', cls:'cat-culto',        label:'Culto' },
+    missao:       { icon:'🙏', cls:'cat-missao',       label:'Missão' },
+    evento:       { icon:'🎉', cls:'cat-evento',       label:'Evento' },
+    estudo:       { icon:'📖', cls:'cat-estudo',       label:'Estudo' },
+    conquista:    { icon:'🏆', cls:'cat-conquista',    label:'Conquista' },
+    presente:     { icon:'🎁', cls:'cat-presente',     label:'Presente' },
+    penalidade:   { icon:'⚠️', cls:'cat-penalidade',   label:'Penalidade' },
+    transferencia:{ icon:'↔️', cls:'cat-transferencia',label:'Transferência' },
+    outros:       { icon:'📝', cls:'cat-outros',       label:'Outros' },
+  };
 
   // ── UTILS ──
+  const initials = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  const fmtDate = ts => { if(!ts) return ''; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}); };
+  const fmtDateFull = ts => { if(!ts) return ''; const d=ts.toDate?ts.toDate():new Date(ts); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); };
+
   function showToast(msg) {
     const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block';
     clearTimeout(window._tt); window._tt=setTimeout(()=>t.style.display='none',2500);
   }
   function showErr(id,msg) {
-    const el=document.getElementById(id); el.textContent=msg; el.style.display='block';
+    const el=document.getElementById(id); if(!el) return;
+    el.textContent=msg; el.style.display='block';
     setTimeout(()=>el.style.display='none',4000);
   }
   function showSuccess(id,msg) {
-    const el=document.getElementById(id); el.textContent=msg; el.style.display='block';
+    const el=document.getElementById(id); if(!el) return;
+    el.textContent=msg; el.style.display='block';
     setTimeout(()=>el.style.display='none',4000);
   }
   function setLoading(btnId,loading) {
@@ -421,43 +565,36 @@
     else{btn.innerHTML=btn.dataset.orig||btn.innerHTML;}
   }
 
-  // ── TOGGLE PASSWORD VISIBILITY ──
-  window.togglePw = function(inputId, btn) {
-    const inp=document.getElementById(inputId);
+  // ── MODAL ──
+  window.openModal = function(title, body, onConfirm, danger=false) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').textContent = body;
+    const btn = document.getElementById('modal-confirm-btn');
+    btn.className = danger ? 'btn-primary danger' : 'btn-primary';
+    btn.onclick = () => { closeModal(); onConfirm(); };
+    document.getElementById('modal-confirm').classList.add('active');
+  };
+  window.closeModal = () => document.getElementById('modal-confirm').classList.remove('active');
+
+  // ── TOGGLE PW ──
+  window.togglePw = function(id,btn) {
+    const inp=document.getElementById(id);
     const show=inp.type==='password';
     inp.type=show?'text':'password';
     btn.textContent=show?'🙈':'👁';
   };
 
   // ── PASSWORD STRENGTH ──
-  function calcStrength(pw) {
+  window.checkStrength = function(pw,barId,lblId) {
+    const bar=document.getElementById(barId), lbl=document.getElementById(lblId);
+    if(!pw){bar.className='pw-strength';lbl.textContent='';return;}
     let score=0;
-    if(pw.length>=6) score++;
-    if(pw.length>=10) score++;
-    if(/[A-Z]/.test(pw)) score++;
-    if(/[0-9]/.test(pw)) score++;
-    if(/[^A-Za-z0-9]/.test(pw)) score++;
-    if(score<=1) return{cls:'weak',label:'fraca'};
-    if(score<=3) return{cls:'medium',label:'média'};
-    return{cls:'strong',label:'forte'};
-  }
-  window.checkStrength = function(pw) {
-    const bar=document.getElementById('pw-strength-bar');
-    const lbl=document.getElementById('pw-strength-label');
-    if(!pw){bar.className='pw-strength';lbl.textContent='';return;}
-    const s=calcStrength(pw);
-    bar.className='pw-strength '+s.cls;
-    lbl.textContent='senha '+s.label;
-    lbl.style.color=s.cls==='weak'?'#a33030':s.cls==='medium'?'#a07830':'#2d6a4f';
-  };
-  window.checkStrength2 = function(pw) {
-    const bar=document.getElementById('pw-strength-bar2');
-    const lbl=document.getElementById('pw-strength-label2');
-    if(!pw){bar.className='pw-strength';lbl.textContent='';return;}
-    const s=calcStrength(pw);
-    bar.className='pw-strength '+s.cls;
-    lbl.textContent='senha '+s.label;
-    lbl.style.color=s.cls==='weak'?'#a33030':s.cls==='medium'?'#a07830':'#2d6a4f';
+    if(pw.length>=6)score++;if(pw.length>=10)score++;
+    if(/[A-Z]/.test(pw))score++;if(/[0-9]/.test(pw))score++;if(/[^A-Za-z0-9]/.test(pw))score++;
+    const s=score<=1?{c:'weak',l:'fraca'}:score<=3?{c:'medium',l:'média'}:{c:'strong',l:'forte'};
+    bar.className='pw-strength '+s.c;
+    lbl.textContent='senha '+s.l;
+    lbl.style.color=s.c==='weak'?'#a33030':s.c==='medium'?'#a07830':'#2d6a4f';
   };
 
   // ── NAVIGATION ──
@@ -470,15 +607,36 @@
     if(id==='screen-history') loadHistory(currentUser.id,'history-txs');
     if(id==='screen-admin'){loadAdminSelects();loadAdminMembersList();}
     if(id==='screen-pending') loadPending();
+    if(id==='screen-notifs') loadNotifs();
+    if(id==='screen-mural') loadMural('mural-list',false);
+    if(id==='screen-mural-admin'){loadMural('mural-admin-list',true);}
+    if(id==='screen-member-history'){}
     if(id==='screen-change-pw'){
-      document.getElementById('cpw-current').value='';
-      document.getElementById('cpw-new').value='';
-      document.getElementById('cpw-new2').value='';
-      document.getElementById('pw-strength-bar2').className='pw-strength';
-      document.getElementById('pw-strength-label2').textContent='';
+      ['cpw-current','cpw-new','cpw-new2'].forEach(i=>document.getElementById(i).value='');
+      ['pw-strength-bar2','pw-strength-label2'].forEach(i=>{const el=document.getElementById(i);el.className=el.tagName==='DIV'?'pw-strength':'';el.textContent='';});
     }
   };
   window.goBack = ()=>goTo(prevScreen);
+
+  // ── TX HTML ──
+  function txHtml(tx, uid) {
+    const isIn = tx.to === uid;
+    const cat = CATS[tx.category] || (isIn ? CATS.outros : CATS.transferencia);
+    const sign = isIn ? '+' : '-';
+    const obs = tx.obs ? `<div class="tx-sub">💬 ${tx.obs}</div>` : '';
+    return `<div class="tx-item">
+      <div class="tx-icon ${cat.cls}">${cat.icon}</div>
+      <div class="tx-info">
+        <div class="tx-desc">${cat.label}</div>
+        <div class="tx-sub">${tx.desc||''}</div>
+        ${obs}
+        <div class="tx-date">${fmtDate(tx.createdAt)}</div>
+      </div>
+      <div class="tx-right">
+        <div class="tx-amount ${isIn?'in':'out'}">${sign}${tx.amount} ₯</div>
+      </div>
+    </div>`;
+  }
 
   // ── LOGIN ──
   window.doLogin = async function() {
@@ -491,7 +649,8 @@
       if(!snap.exists()){showErr('login-error','usuário não encontrado');return;}
       const data=snap.data();
       if(data.password!==pw){showErr('login-error','senha incorreta');return;}
-      if(data.status==='pending'){showErr('login-error','conta aguardando aprovação do admin ⏳');return;}
+      if(data.status==='pending'){showErr('login-error','conta aguardando aprovação ⏳');return;}
+      if(data.status==='paused'){showErr('login-error','conta pausada. fale com o admin');return;}
       currentUser={id:username,...data};
       renderHome(); goTo('screen-home');
     } catch(e){showErr('login-error','erro de conexão');}
@@ -505,7 +664,7 @@
     const pw=document.getElementById('reg-pw').value;
     const pw2=document.getElementById('reg-pw2').value;
     if(!name||!username||!pw||!pw2){showErr('reg-error','preencha todos os campos');return;}
-    if(pw.length<6){showErr('reg-error','senha deve ter no mínimo 6 caracteres');return;}
+    if(pw.length<6){showErr('reg-error','senha mínimo 6 caracteres');return;}
     if(pw!==pw2){showErr('reg-error','as senhas não coincidem');return;}
     if(!/^[a-z0-9._]+$/.test(username)){showErr('reg-error','usuário: só letras minúsculas, números, ponto');return;}
     setLoading('reg-btn',true);
@@ -522,25 +681,21 @@
 
   // ── CHANGE PASSWORD ──
   window.doChangePassword = async function() {
-    const current=document.getElementById('cpw-current').value;
-    const newPw=document.getElementById('cpw-new').value;
-    const newPw2=document.getElementById('cpw-new2').value;
-    if(!current||!newPw||!newPw2){showErr('cpw-error','preencha todos os campos');return;}
-    if(current!==currentUser.password){showErr('cpw-error','senha atual incorreta');return;}
-    if(newPw.length<6){showErr('cpw-error','nova senha deve ter no mínimo 6 caracteres');return;}
-    if(newPw!==newPw2){showErr('cpw-error','as senhas não coincidem');return;}
-    if(newPw===current){showErr('cpw-error','a nova senha deve ser diferente da atual');return;}
+    const cur=document.getElementById('cpw-current').value;
+    const nw=document.getElementById('cpw-new').value;
+    const nw2=document.getElementById('cpw-new2').value;
+    if(!cur||!nw||!nw2){showErr('cpw-error','preencha todos os campos');return;}
+    if(cur!==currentUser.password){showErr('cpw-error','senha atual incorreta');return;}
+    if(nw.length<6){showErr('cpw-error','nova senha mínimo 6 caracteres');return;}
+    if(nw!==nw2){showErr('cpw-error','as senhas não coincidem');return;}
+    if(nw===cur){showErr('cpw-error','a nova senha deve ser diferente da atual');return;}
     setLoading('cpw-btn',true);
     try {
-      await updateDoc(doc(db,'users',currentUser.id),{password:newPw});
-      currentUser.password=newPw;
+      await updateDoc(doc(db,'users',currentUser.id),{password:nw});
+      currentUser.password=nw;
       showSuccess('cpw-success','senha alterada com sucesso! ✓');
-      document.getElementById('cpw-current').value='';
-      document.getElementById('cpw-new').value='';
-      document.getElementById('cpw-new2').value='';
-      document.getElementById('pw-strength-bar2').className='pw-strength';
-      document.getElementById('pw-strength-label2').textContent='';
-    } catch(e){showErr('cpw-error','erro ao salvar. tente novamente.');}
+      ['cpw-current','cpw-new','cpw-new2'].forEach(i=>document.getElementById(i).value='');
+    } catch(e){showErr('cpw-error','erro ao salvar');}
     finally{setLoading('cpw-btn',false);}
   };
 
@@ -560,6 +715,8 @@
     document.getElementById('home-user').textContent=u.name+(u.admin?' — administrador':'');
     document.getElementById('admin-btns').style.display=u.admin?'block':'none';
     loadHomeTransactions();
+    loadHomeMural();
+    loadNotifBell();
     if(u.admin) loadPendingBadge();
   }
 
@@ -567,8 +724,14 @@
     try {
       const snap=await getDocs(query(collection(db,'users'),where('status','==','pending')));
       const b=document.getElementById('pending-badge');
-      if(snap.size>0){b.textContent=snap.size;b.style.display='inline-block';}
-      else b.style.display='none';
+      snap.size>0?(b.textContent=snap.size,b.style.display='inline-block'):b.style.display='none';
+    } catch(e){}
+  }
+
+  async function loadNotifBell() {
+    try {
+      const snap=await getDocs(query(collection(db,'notifications'),where('to','==',currentUser.id),where('read','==',false)));
+      document.getElementById('notif-bell').textContent=snap.size>0?'🔔🔴':'🔔';
     } catch(e){}
   }
 
@@ -582,6 +745,24 @@
     } catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
   }
 
+  async function loadHomeMural() {
+    const el=document.getElementById('home-mural');
+    try {
+      const q=query(collection(db,'mural'),orderBy('createdAt','desc'),limit(2));
+      const snap=await getDocs(q);
+      if(snap.empty){el.innerHTML='<div class="empty">sem avisos</div>';return;}
+      el.innerHTML=snap.docs.map(d=>{
+        const data=d.data();
+        return `<div class="aviso-card">
+          <div class="aviso-titulo">📢 ${data.titulo}</div>
+          <div class="aviso-texto">${data.texto}</div>
+          <div class="aviso-data">${fmtDate(data.createdAt)}</div>
+        </div>`;
+      }).join('');
+    } catch(e){el.innerHTML='';}
+  }
+
+  // ── HISTORY ──
   async function loadHistory(uid,elId) {
     const el=document.getElementById(elId);
     el.innerHTML='<div class="empty">carregando...</div>';
@@ -592,13 +773,39 @@
     } catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
   }
 
-  function txHtml(tx,uid) {
-    const isIn=tx.to===uid,cls=isIn?'in':'out';
-    return `<div class="tx-item">
-      <div class="tx-icon ${cls}">${isIn?'↙':'↗'}</div>
-      <div class="tx-info"><div class="tx-desc">${tx.desc||'transação'}</div><div class="tx-date">${fmtDate(tx.createdAt)}</div></div>
-      <div class="tx-amount ${cls}">${isIn?'+':'-'}${tx.amount} ₯</div>
-    </div>`;
+  // ── NOTIFICAÇÕES ──
+  async function loadNotifs() {
+    const el=document.getElementById('notifs-list');
+    el.innerHTML='<div class="empty">carregando...</div>';
+    try {
+      const q=query(collection(db,'notifications'),where('to','==',currentUser.id),orderBy('createdAt','desc'),limit(30));
+      const snap=await getDocs(q);
+      if(snap.empty){el.innerHTML='<div class="empty">nenhuma notificação</div>';return;}
+      el.innerHTML=snap.docs.map(d=>{
+        const n=d.data();
+        return `<div class="notif-item ${n.read?'':'notif-unread'}" onclick="marcarLida('${d.id}',this)">
+          <div class="notif-icon">${n.icon||'🔔'}</div>
+          <div>
+            <div class="notif-text">${n.text}</div>
+            <div class="notif-date">${fmtDateFull(n.createdAt)}</div>
+          </div>
+        </div>`;
+      }).join('');
+      // marcar todas como lidas
+      snap.docs.forEach(d=>{ if(!d.data().read) updateDoc(doc(db,'notifications',d.id),{read:true}); });
+      document.getElementById('notif-bell').textContent='🔔';
+    } catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
+  }
+
+  window.marcarLida = async function(id,el) {
+    el.classList.remove('notif-unread');
+    try { await updateDoc(doc(db,'notifications',id),{read:true}); } catch(e){}
+  };
+
+  async function criarNotif(toId, text, icon='🔔') {
+    try {
+      await addDoc(collection(db,'notifications'),{to:toId,text,icon,read:false,createdAt:serverTimestamp()});
+    } catch(e){}
   }
 
   // ── TRANSFER ──
@@ -609,28 +816,44 @@
       const snap=await getDocs(collection(db,'users'));
       allMembers=[];
       snap.forEach(d=>{const data=d.data();if(d.id!==currentUser.id&&!data.admin&&data.status==='approved')allMembers.push({id:d.id,...data});});
-      sel.innerHTML=allMembers.length?allMembers.map(m=>`<option value="${m.id}">${m.name}</option>`).join(''):'<option disabled>nenhum membro disponível</option>';
+      sel.innerHTML=allMembers.length?allMembers.map(m=>`<option value="${m.id}">${m.name}</option>`).join(''):'<option disabled>nenhum membro</option>';
     } catch(e){sel.innerHTML='<option>erro</option>';}
   }
 
-  window.doTransfer = async function() {
+  window.confirmarTransfer = function() {
     const toId=document.getElementById('transfer-to').value;
     const amt=parseInt(document.getElementById('transfer-amount').value);
     const msg=document.getElementById('transfer-msg').value.trim()||'transferência';
     if(!toId){showErr('transfer-error','selecione um membro');return;}
     if(!amt||amt<=0){showErr('transfer-error','valor inválido');return;}
     if(amt>currentUser.balance){showErr('transfer-error','saldo insuficiente');return;}
+    const toName=allMembers.find(m=>m.id===toId)?.name||toId;
+    openModal(
+      'confirmar transferência',
+      `Enviar ${amt} ₯ para ${toName}?\n\n"${msg}"`,
+      ()=>doTransfer(toId,amt,msg,toName)
+    );
+  };
+
+  async function doTransfer(toId,amt,msg,toName) {
     setLoading('transfer-btn',true);
     try {
       const fromRef=doc(db,'users',currentUser.id),toRef=doc(db,'users',toId);
       await runTransaction(db,async t=>{
         const fSnap=await t.get(fromRef),tSnap=await t.get(toRef);
         if(fSnap.data().balance<amt) throw new Error('saldo insuficiente');
+        if(fSnap.data().balance-amt<0) throw new Error('saldo não pode ficar negativo');
         t.update(fromRef,{balance:fSnap.data().balance-amt});
         t.update(toRef,{balance:tSnap.data().balance+amt});
       });
-      const toName=allMembers.find(m=>m.id===toId)?.name||toId;
-      await addDoc(collection(db,'transactions'),{from:currentUser.id,to:toId,participants:[currentUser.id,toId],amount:amt,desc:`${msg} (${currentUser.name} → ${toName})`,createdAt:serverTimestamp()});
+      await addDoc(collection(db,'transactions'),{
+        from:currentUser.id,to:toId,participants:[currentUser.id,toId],
+        amount:amt,category:'transferencia',
+        desc:`${currentUser.name} → ${toName}`,
+        obs:msg!=='transferência'?msg:'',
+        createdAt:serverTimestamp()
+      });
+      await criarNotif(toId,`${currentUser.name} te enviou ${amt} ₯${msg!=='transferência'?' — "'+msg+'"':''}!`,'💸');
       currentUser.balance-=amt;
       document.getElementById('home-balance').textContent=currentUser.balance;
       document.getElementById('transfer-amount').value='';
@@ -639,7 +862,7 @@
       setTimeout(()=>goTo('screen-home'),1000);
     } catch(e){showErr('transfer-error',e.message||'erro');}
     finally{setLoading('transfer-btn',false);}
-  };
+  }
 
   // ── ADMIN TABS ──
   window.switchAdminTab = function(tab) {
@@ -653,8 +876,9 @@
     const snap=await getDocs(collection(db,'users'));
     const opts=[];
     snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')opts.push(`<option value="${d.id}">${data.name}</option>`);});
-    document.getElementById('admin-member-give').innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
-    document.getElementById('admin-member-take').innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
+    const html=opts.join('')||'<option disabled>nenhum membro</option>';
+    document.getElementById('admin-member-give').innerHTML=html;
+    document.getElementById('admin-member-take').innerHTML=html;
   }
 
   async function loadAdminMembersList() {
@@ -663,14 +887,19 @@
     try {
       const snap=await getDocs(collection(db,'users'));
       const members=[];
-      snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')members.push({id:d.id,...data});});
+      snap.forEach(d=>{const data=d.data();if(!data.admin&&(data.status==='approved'||data.status==='paused'))members.push({id:d.id,...data});});
       members.sort((a,b)=>b.balance-a.balance);
       el.innerHTML=members.map(m=>`
         <div class="member-item">
           <div class="member-avatar">${initials(m.name)}</div>
-          <div style="flex:1;min-width:0"><div class="member-name">${m.name}</div><div class="member-sub">${m.balance} ₯</div></div>
+          <div style="flex:1;min-width:0">
+            <div class="member-name">${m.name}${m.status==='paused'?'<span class="tag-paused">pausado</span>':''}</div>
+            <div class="member-sub">${m.balance} ₯ · @${m.id}</div>
+          </div>
           <div class="member-actions">
             <button class="btn-sm view" onclick="viewMemberHistory('${m.id}','${m.name}')">extrato</button>
+            <button class="btn-sm reset" onclick="resetSenha('${m.id}','${m.name}')">🔑</button>
+            <button class="btn-sm ${m.status==='paused'?'unpause':'pause'}" onclick="${m.status==='paused'?'unpauseMember':'pauseMember'}('${m.id}','${m.name}')">${m.status==='paused'?'▶':'⏸'}</button>
             <button class="btn-sm del" onclick="deleteMember('${m.id}','${m.name}')">✕</button>
           </div>
         </div>`).join('')||'<div class="empty">nenhum membro</div>';
@@ -679,8 +908,9 @@
 
   window.doDistribute = async function() {
     const toId=document.getElementById('admin-member-give').value;
+    const cat=document.getElementById('admin-cat-give').value;
     const amt=parseInt(document.getElementById('admin-amount-give').value);
-    const reason=document.getElementById('admin-reason-give').value.trim()||'distribuição admin';
+    const obs=document.getElementById('admin-reason-give').value.trim();
     if(!toId){showErr('admin-error-give','selecione membro');return;}
     if(!amt||amt<=0){showErr('admin-error-give','valor inválido');return;}
     setLoading('admin-btn-give',true);
@@ -689,19 +919,27 @@
       const snap=await getDoc(ref);
       await updateDoc(ref,{balance:snap.data().balance+amt});
       const name=snap.data().name;
-      await addDoc(collection(db,'transactions'),{from:'admin',to:toId,participants:['admin',toId],amount:amt,desc:`${reason} (admin → ${name})`,createdAt:serverTimestamp()});
+      const catInfo=CATS[cat]||CATS.outros;
+      await addDoc(collection(db,'transactions'),{
+        from:'admin',to:toId,participants:['admin',toId],
+        amount:amt,category:cat,
+        desc:`${catInfo.icon} ${catInfo.label} — admin → ${name}`,
+        obs,createdAt:serverTimestamp()
+      });
+      await criarNotif(toId,`Você recebeu ${amt} ₯ — ${catInfo.icon} ${catInfo.label}${obs?' ('+obs+')':''}!`,'💰');
       document.getElementById('admin-amount-give').value='';
       document.getElementById('admin-reason-give').value='';
       showToast(`+${amt} ₯ para ${name}!`);
-      loadAdminMembersList(); loadAdminSelects();
+      loadAdminMembersList();loadAdminSelects();
     } catch(e){showErr('admin-error-give','erro ao distribuir');}
     finally{setLoading('admin-btn-give',false);}
   };
 
   window.doDeduct = async function() {
     const toId=document.getElementById('admin-member-take').value;
+    const cat=document.getElementById('admin-cat-take').value;
     const amt=parseInt(document.getElementById('admin-amount-take').value);
-    const reason=document.getElementById('admin-reason-take').value.trim()||'retirada admin';
+    const obs=document.getElementById('admin-reason-take').value.trim();
     if(!toId){showErr('admin-error-take','selecione membro');return;}
     if(!amt||amt<=0){showErr('admin-error-take','valor inválido');return;}
     setLoading('admin-btn-take',true);
@@ -709,14 +947,21 @@
       const ref=doc(db,'users',toId);
       const snap=await getDoc(ref);
       const cur=snap.data().balance;
-      if(cur<amt){showErr('admin-error-take',`saldo insuficiente (${cur} ₯)`);return;}
-      await updateDoc(ref,{balance:cur-amt});
+      const newBal=Math.max(0,cur-amt);
+      await updateDoc(ref,{balance:newBal});
       const name=snap.data().name;
-      await addDoc(collection(db,'transactions'),{from:toId,to:'admin',participants:['admin',toId],amount:amt,desc:`${reason} (admin retirou de ${name})`,createdAt:serverTimestamp()});
+      const catInfo=CATS[cat]||CATS.penalidade;
+      await addDoc(collection(db,'transactions'),{
+        from:toId,to:'admin',participants:['admin',toId],
+        amount:cur-newBal,category:cat,
+        desc:`${catInfo.icon} ${catInfo.label} — admin retirou de ${name}`,
+        obs,createdAt:serverTimestamp()
+      });
+      await criarNotif(toId,`${cur-newBal} ₯ foram retirados da sua conta — ${catInfo.icon} ${catInfo.label}${obs?' ('+obs+')':''}!`,'⚠️');
       document.getElementById('admin-amount-take').value='';
       document.getElementById('admin-reason-take').value='';
-      showToast(`-${amt} ₯ retirados de ${name}`);
-      loadAdminMembersList(); loadAdminSelects();
+      showToast(`-${cur-newBal} ₯ retirados de ${name}`);
+      loadAdminMembersList();loadAdminSelects();
     } catch(e){showErr('admin-error-take','erro ao retirar');}
     finally{setLoading('admin-btn-take',false);}
   };
@@ -727,16 +972,50 @@
     loadHistory(uid,'member-history-txs');
   };
 
-  window.deleteMember = async function(uid,name) {
-    if(!confirm(`Deletar a conta de ${name}? Isso não pode ser desfeito.`)) return;
-    try {
-      await deleteDoc(doc(db,'users',uid));
-      showToast(`Conta de ${name} deletada`);
-      loadAdminMembersList(); loadAdminSelects();
-    } catch(e){showToast('erro ao deletar');}
+  // ── RESET SENHA (admin) ──
+  window.resetSenha = function(uid,name) {
+    openModal('resetar senha',`Resetar a senha de ${name} para "dracmas123"? Avise a pessoa para trocar depois.`,async()=>{
+      try {
+        await updateDoc(doc(db,'users',uid),{password:'dracmas123'});
+        showToast(`Senha de ${name} resetada para: dracmas123`);
+      } catch(e){showToast('erro ao resetar');}
+    });
   };
 
-  // ── PENDING ──
+  // ── PAUSAR / RETOMAR ──
+  window.pauseMember = function(uid,name) {
+    openModal('pausar conta',`Pausar a conta de ${name}? Ela não conseguirá entrar até você reativar.`,async()=>{
+      try {
+        await updateDoc(doc(db,'users',uid),{status:'paused'});
+        await criarNotif(uid,'Sua conta foi pausada temporariamente. Fale com o administrador.','⏸');
+        showToast(`Conta de ${name} pausada`);
+        loadAdminMembersList();
+      } catch(e){showToast('erro');}
+    },true);
+  };
+
+  window.unpauseMember = function(uid,name) {
+    openModal('reativar conta',`Reativar a conta de ${name}?`,async()=>{
+      try {
+        await updateDoc(doc(db,'users',uid),{status:'approved'});
+        await criarNotif(uid,'Sua conta foi reativada! Você já pode entrar normalmente.','✅');
+        showToast(`Conta de ${name} reativada`);
+        loadAdminMembersList();
+      } catch(e){showToast('erro');}
+    });
+  };
+
+  window.deleteMember = function(uid,name) {
+    openModal('deletar conta',`Deletar permanentemente a conta de ${name}? Isso não pode ser desfeito.`,async()=>{
+      try {
+        await deleteDoc(doc(db,'users',uid));
+        showToast(`Conta de ${name} deletada`);
+        loadAdminMembersList();loadAdminSelects();
+      } catch(e){showToast('erro ao deletar');}
+    },true);
+  };
+
+  // ── PENDENTES ──
   async function loadPending() {
     const el=document.getElementById('pending-list');
     el.innerHTML='<div class="empty">carregando...</div>';
@@ -749,7 +1028,7 @@
           <div class="member-avatar">${initials(data.name)}</div>
           <div style="flex:1;min-width:0"><div class="member-name">${data.name}</div><div class="member-sub">@${d.id}</div></div>
           <div class="member-actions">
-            <button class="btn-sm approve" onclick="approveUser('${d.id}')">✓</button>
+            <button class="btn-sm approve" onclick="approveUser('${d.id}','${data.name}')">✓</button>
             <button class="btn-sm reject" onclick="rejectUser('${d.id}','${data.name}')">✕</button>
           </div>
         </div>`;
@@ -757,19 +1036,147 @@
     } catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
   }
 
-  window.approveUser = async function(uid) {
+  window.approveUser = async function(uid,name) {
     try {
       await updateDoc(doc(db,'users',uid),{status:'approved'});
-      showToast('conta aprovada! ✓'); loadPending(); loadPendingBadge();
+      await criarNotif(uid,'Sua conta foi aprovada! Bem-vindo ao Banco de Dracmas ADC 🎉','✅');
+      showToast('conta aprovada! ✓');loadPending();loadPendingBadge();
     } catch(e){showToast('erro ao aprovar');}
   };
 
-  window.rejectUser = async function(uid,name) {
-    if(!confirm(`Recusar e deletar a solicitação de ${name}?`)) return;
+  window.rejectUser = function(uid,name) {
+    openModal('recusar conta',`Recusar e deletar a solicitação de ${name}?`,async()=>{
+      try {
+        await deleteDoc(doc(db,'users',uid));
+        showToast(`solicitação de ${name} recusada`);loadPending();loadPendingBadge();
+      } catch(e){showToast('erro');}
+    },true);
+  };
+
+  // ── MURAL ──
+  async function loadMural(elId, isAdmin) {
+    const el=document.getElementById(elId);
+    el.innerHTML='<div class="empty">carregando...</div>';
     try {
-      await deleteDoc(doc(db,'users',uid));
-      showToast(`solicitação de ${name} recusada`); loadPending(); loadPendingBadge();
-    } catch(e){showToast('erro');}
+      const q=query(collection(db,'mural'),orderBy('createdAt','desc'),limit(20));
+      const snap=await getDocs(q);
+      if(snap.empty){el.innerHTML='<div class="empty">nenhum aviso publicado</div>';return;}
+      el.innerHTML=snap.docs.map(d=>{
+        const data=d.data();
+        const delBtn=isAdmin?`<button class="btn-sm del" style="margin-top:8px" onclick="deletarAviso('${d.id}')">remover</button>`:'';
+        return `<div class="aviso-card">
+          <div class="aviso-titulo">📢 ${data.titulo}</div>
+          <div class="aviso-texto">${data.texto}</div>
+          <div class="aviso-data">${fmtDateFull(data.createdAt)}</div>
+          ${delBtn}
+        </div>`;
+      }).join('');
+    } catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
+  }
+
+  window.publicarAviso = async function() {
+    const titulo=document.getElementById('aviso-titulo').value.trim();
+    const texto=document.getElementById('aviso-texto').value.trim();
+    if(!titulo||!texto){showErr('aviso-error','preencha título e texto');return;}
+    setLoading('aviso-btn',true);
+    try {
+      await addDoc(collection(db,'mural'),{titulo,texto,autor:currentUser.name,createdAt:serverTimestamp()});
+      document.getElementById('aviso-titulo').value='';
+      document.getElementById('aviso-texto').value='';
+      showToast('aviso publicado! 📢');
+      loadMural('mural-admin-list',true);
+    } catch(e){showErr('aviso-error','erro ao publicar');}
+    finally{setLoading('aviso-btn',false);}
+  };
+
+  window.deletarAviso = function(id) {
+    openModal('remover aviso','Remover este aviso do mural?',async()=>{
+      try{await deleteDoc(doc(db,'mural',id));showToast('aviso removido');loadMural('mural-admin-list',true);}
+      catch(e){showToast('erro');}
+    },true);
+  };
+
+  // ── RELATÓRIO PDF ──
+  window.gerarPDF = async function() {
+    showToast('gerando relatório...');
+    try {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const agora = new Date();
+      const mes = agora.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+
+      pdf.setFont('helvetica','bold');
+      pdf.setFontSize(18);
+      pdf.text('Banco de Dracmas ADC',105,20,{align:'center'});
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica','normal');
+      pdf.text(`Relatório — ${mes}`,105,28,{align:'center'});
+      pdf.line(15,32,195,32);
+
+      // membros
+      const usersSnap=await getDocs(collection(db,'users'));
+      const members=[];
+      let totalDracmas=0;
+      usersSnap.forEach(d=>{
+        const data=d.data();
+        if(!data.admin&&data.status==='approved'){
+          members.push({name:data.name,balance:data.balance});
+          totalDracmas+=data.balance;
+        }
+      });
+      members.sort((a,b)=>b.balance-a.balance);
+
+      pdf.setFont('helvetica','bold');
+      pdf.setFontSize(13);
+      pdf.text('Membros e Saldos',15,42);
+      pdf.setFont('helvetica','normal');
+      pdf.setFontSize(11);
+
+      let y=50;
+      members.forEach((m,i)=>{
+        pdf.text(`${i+1}. ${m.name}`,20,y);
+        pdf.text(`${m.balance} dracmas`,160,y,{align:'right'});
+        y+=8;
+        if(y>270){pdf.addPage();y=20;}
+      });
+
+      pdf.line(15,y,195,y); y+=8;
+      pdf.setFont('helvetica','bold');
+      pdf.text('Total em circulação:',20,y);
+      pdf.text(`${totalDracmas} dracmas`,160,y,{align:'right'});
+      y+=14;
+
+      // transações do mês
+      const inicioMes=new Date(agora.getFullYear(),agora.getMonth(),1);
+      const txSnap=await getDocs(query(collection(db,'transactions'),orderBy('createdAt','desc'),limit(200)));
+      const txMes=txSnap.docs.filter(d=>{
+        const ts=d.data().createdAt;
+        if(!ts) return false;
+        return ts.toDate()>=inicioMes;
+      });
+
+      pdf.setFont('helvetica','bold');
+      pdf.setFontSize(13);
+      pdf.text(`Transações do mês (${txMes.length})`,15,y); y+=10;
+      pdf.setFont('helvetica','normal');
+      pdf.setFontSize(10);
+
+      txMes.forEach(d=>{
+        const tx=d.data();
+        const cat=CATS[tx.category]||CATS.outros;
+        const linha=`${fmtDate(tx.createdAt)} | ${cat.label} | ${tx.desc||''} | ${tx.amount} ₯`;
+        pdf.text(linha,20,y,{maxWidth:170});
+        y+=7;
+        if(y>270){pdf.addPage();y=20;}
+      });
+
+      pdf.setFontSize(9);
+      pdf.setTextColor(150);
+      pdf.text(`Gerado em ${agora.toLocaleString('pt-BR')} por ${currentUser.name}`,105,285,{align:'center'});
+
+      pdf.save(`dracmas-adc-${agora.getMonth()+1}-${agora.getFullYear()}.pdf`);
+      showToast('PDF gerado com sucesso!');
+    } catch(e){showToast('erro ao gerar PDF: '+e.message);}
   };
 
   // ── ENTER KEYS ──
