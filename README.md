@@ -524,7 +524,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  let currentUser = null, prevScreen = "screen-home", allMembers = [];
+  let currentUser = null, allMembers = [];
 
   // ── CATEGORIAS ──
   const CATS = {
@@ -597,9 +597,19 @@
     lbl.style.color=s.c==='weak'?'#a33030':s.c==='medium'?'#a07830':'#2d6a4f';
   };
 
-  // ── NAVIGATION ──
-  window.goTo = function(id) {
-    prevScreen=document.querySelector('.screen.active')?.id||'screen-home';
+  // ── NAVIGATION (pilha) ──
+  // navStack funciona como o histórico do celular:
+  // cada vez que você vai pra uma tela, empilha a atual
+  // goBack() desempilha e volta pra tela correta
+  const navStack = [];
+  const ROOT_SCREENS = ['screen-home','screen-login','screen-register'];
+
+  window.goTo = function(id, isBack=false) {
+    const current = document.querySelector('.screen.active')?.id;
+    // só empilha se não for voltar e a tela atual existir e não for a mesma
+    if(!isBack && current && current !== id) {
+      navStack.push(current);
+    }
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0,0);
@@ -609,14 +619,23 @@
     if(id==='screen-pending') loadPending();
     if(id==='screen-notifs') loadNotifs();
     if(id==='screen-mural') loadMural('mural-list',false);
-    if(id==='screen-mural-admin'){loadMural('mural-admin-list',true);}
-    if(id==='screen-member-history'){}
+    if(id==='screen-mural-admin') loadMural('mural-admin-list',true);
     if(id==='screen-change-pw'){
       ['cpw-current','cpw-new','cpw-new2'].forEach(i=>document.getElementById(i).value='');
       ['pw-strength-bar2','pw-strength-label2'].forEach(i=>{const el=document.getElementById(i);el.className=el.tagName==='DIV'?'pw-strength':'';el.textContent='';});
     }
   };
-  window.goBack = ()=>goTo(prevScreen);
+
+  window.goBack = function() {
+    // remove telas repetidas do topo da pilha
+    const current = document.querySelector('.screen.active')?.id;
+    while(navStack.length > 0 && navStack[navStack.length-1] === current) {
+      navStack.pop();
+    }
+    // pega a tela anterior, ou vai pra home se pilha vazia
+    const dest = navStack.length > 0 ? navStack.pop() : 'screen-home';
+    goTo(dest, true);
+  };
 
   // ── TX HTML ──
   function txHtml(tx, uid) {
@@ -702,6 +721,7 @@
   // ── LOGOUT ──
   window.doLogout = function() {
     currentUser=null; allMembers=[];
+    navStack.length=0;
     document.getElementById('login-user').value='';
     document.getElementById('login-pw').value='';
     goTo('screen-login');
