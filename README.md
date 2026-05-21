@@ -154,6 +154,31 @@
     .notif-text{font-size:13px;color:var(--text);flex:1;line-height:1.5}
     .notif-date{font-size:11px;color:var(--muted);margin-top:3px}
     .notif-unread{background:#f8f0ff}
+
+    /* LOJA */
+    .loja-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 1.25rem}
+    .loja-item{background:var(--bg);border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+    .loja-img{width:100%;height:130px;object-fit:cover;background:#ede0f5;display:flex;align-items:center;justify-content:center;font-size:36px}
+    .loja-img img{width:100%;height:130px;object-fit:cover}
+    .loja-info{padding:.65rem .75rem}
+    .loja-nome{font-size:13px;font-weight:700;color:var(--text)}
+    .loja-preco{font-size:13px;font-weight:700;color:var(--gd);margin-top:2px}
+    .loja-del{width:100%;padding:6px;font-size:11px;font-weight:700;font-family:'Lato',sans-serif;background:#fdecea;color:#a33030;border:none;cursor:pointer;border-top:1px solid var(--border)}
+    .foto-preview{width:100%;height:160px;border-radius:var(--rs);object-fit:cover;margin-bottom:.75rem;display:none;border:1.5px solid var(--border)}
+    .foto-placeholder{width:100%;height:120px;border-radius:var(--rs);border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;cursor:pointer;margin-bottom:.75rem;background:var(--bg)}
+    .foto-placeholder span{font-size:28px}
+    .foto-placeholder p{font-size:12px;color:var(--muted)}
+    /* PERFIL */
+    .perfil-hero{background:linear-gradient(135deg,#2e1a47,#4a2d6e);padding:2rem 1.5rem;text-align:center}
+    .perfil-avatar{width:90px;height:90px;border-radius:50%;margin:0 auto 1rem;border:3px solid var(--gold);overflow:hidden;background:#ede0f5;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--purple);font-family:'Cinzel',serif;cursor:pointer;position:relative}
+    .perfil-avatar img{width:100%;height:100%;object-fit:cover}
+    .perfil-avatar-edit{position:absolute;bottom:0;right:0;background:var(--gold);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px}
+    .perfil-name{color:var(--gold);font-family:'Cinzel',serif;font-size:18px}
+    .perfil-user{color:var(--pl);font-size:13px;margin-top:4px}
+    .perfil-info{padding:1.25rem}
+    .info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+    .info-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    .info-value{font-size:14px;color:var(--text);font-weight:600}
   </style>
 </head>
 <body>
@@ -246,6 +271,14 @@
         <div class="action-icon">&#128203;</div><div class="action-label">extrato</div>
       </div>
     </div>
+    <div class="quick-actions">
+      <div class="action-btn" onclick="goTo('screen-loja')">
+        <div class="action-icon">&#127978;</div><div class="action-label">lojinha</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-perfil')">
+        <div class="action-icon">&#128100;</div><div class="action-label">perfil</div>
+      </div>
+    </div>
     <div id="admin-btns" style="display:none">
       <div class="quick-actions">
         <div class="action-btn" onclick="goTo('screen-admin')">
@@ -264,7 +297,11 @@
           <div class="action-icon">&#128202;</div><div class="action-label">relatorio</div>
         </div>
       </div>
-
+      <div class="quick-actions">
+        <div class="action-btn" onclick="goTo('screen-loja-admin')">
+          <div class="action-icon">&#127978;</div><div class="action-label">lojinha</div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="sec-header">&#128226; mural de avisos</div>
@@ -328,6 +365,9 @@
     <span class="topbar-title">configuracoes</span>
   </div>
   <div style="padding-top:.5rem">
+    <div class="menu-item" onclick="goTo('screen-perfil')">
+      <div class="menu-icon">&#128100;</div><div class="menu-label">meu perfil</div><div class="menu-arrow">&#8250;</div>
+    </div>
     <div class="menu-item" onclick="goTo('screen-change-pw')">
       <div class="menu-icon">&#128273;</div><div class="menu-label">mudar senha</div><div class="menu-arrow">&#8250;</div>
     </div>
@@ -524,6 +564,85 @@
   <div class="member-list" id="pending-list"><div class="empty">carregando...</div></div>
 </div>
 
+
+<div id="screen-loja" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">&#127978; Lojinha de Dracmas</span>
+  </div>
+  <p style="font-size:12px;color:var(--muted);padding:.75rem 1.25rem;line-height:1.6">Veja os itens disponíveis e seus preços. Para comprar, apresente o item na feirinha e pague com seus dracmas!</p>
+  <div class="loja-grid" id="loja-grid"><div class="empty" style="grid-column:1/-1">carregando...</div></div>
+</div>
+
+<div id="screen-loja-admin" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">gerenciar lojinha <span class="tag-a">admin</span></span>
+  </div>
+  <div class="form-section" style="padding-top:1.5rem">
+    <div class="form-group">
+      <label class="form-label">foto do item</label>
+      <div class="foto-placeholder" id="loja-placeholder" onclick="document.getElementById('loja-foto-input').click()">
+        <span>&#128247;</span>
+        <p>toque para escolher foto</p>
+      </div>
+      <img class="foto-preview" id="loja-foto-preview" src="" alt="preview"/>
+      <input type="file" id="loja-foto-input" accept="image/*" style="display:none" onchange="previewFoto(this,'loja-foto-preview','loja-placeholder')"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">nome do item</label>
+      <input class="form-input" id="loja-nome" type="text" placeholder="Ex: Brigadeiro"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">preco em dracmas</label>
+      <input class="form-input" id="loja-preco" type="number" min="1" placeholder="Ex: 10" inputmode="numeric"/>
+    </div>
+    <div class="err" id="loja-error"></div>
+    <button class="btn-p" id="loja-btn" onclick="adicionarItem()">adicionar item</button>
+  </div>
+  <div class="sec-header">itens na loja</div>
+  <div class="loja-grid" id="loja-admin-grid"><div class="empty" style="grid-column:1/-1">carregando...</div></div>
+</div>
+
+<div id="screen-perfil" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">meu perfil</span>
+  </div>
+  <div class="perfil-hero">
+    <div class="perfil-avatar" id="perfil-avatar-el" onclick="document.getElementById('perfil-foto-input').click()">
+      <span id="perfil-avatar-initials"></span>
+      <img id="perfil-avatar-img" src="" alt="" style="display:none"/>
+      <div class="perfil-avatar-edit">&#9998;</div>
+    </div>
+    <input type="file" id="perfil-foto-input" accept="image/*" style="display:none" onchange="salvarFotoPerfil(this)"/>
+    <div class="perfil-name" id="perfil-name"></div>
+    <div class="perfil-user" id="perfil-user"></div>
+  </div>
+  <div class="perfil-info">
+    <div class="info-row">
+      <span class="info-label">saldo</span>
+      <span class="info-value" id="perfil-saldo"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">usuario</span>
+      <span class="info-value" id="perfil-username"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">membro desde</span>
+      <span class="info-value" id="perfil-data"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">status</span>
+      <span class="info-value" id="perfil-status"></span>
+    </div>
+  </div>
+  <div style="padding:0 1.25rem">
+    <button class="btn-p" onclick="goTo('screen-change-pw')" style="margin-bottom:.75rem">mudar senha</button>
+    <button class="btn-s" onclick="doLogout()">sair da conta</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal">
     <div class="modal-title" id="modal-title">confirmar</div>
@@ -556,7 +675,10 @@ window.togglePw=function(id,btn){const i=document.getElementById(id);i.type=i.ty
 window.checkStr=function(pw,barId,lblId){const bar=document.getElementById(barId),lbl=document.getElementById(lblId);if(!pw){bar.className='pw-bar';lbl.textContent='';return;}let s=0;if(pw.length>=6)s++;if(pw.length>=10)s++;if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;const r=s<=1?{c:'weak',l:'fraca'}:s<=3?{c:'medium',l:'media'}:{c:'strong',l:'forte'};bar.className='pw-bar '+r.c;lbl.textContent='senha '+r.l;lbl.style.color=r.c==='weak'?'#a33030':r.c==='medium'?'#a07830':'#2d6a4f';};
 // NAV
 const navStack=[];
-window.goTo=function(id,isBack=false){const cur=document.querySelector('.screen.active')?.id;if(!isBack&&cur&&cur!==id)navStack.push(cur);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-transfer')loadTransferMembers();if(id==='screen-history')loadHistoryScreen();if(id==='screen-admin'){loadAdminSelects();loadAdminList();}if(id==='screen-pending')loadPending();if(id==='screen-notifs')loadNotifs();if(id==='screen-mural')loadMural('mural-list',false);if(id==='screen-mural-admin')loadMural('mural-admin-list',true);if(id==='screen-changelog')loadCL('changelog-list',false);if(id==='screen-changelog-admin')loadCL('changelog-admin-list',true);if(id==='screen-relatorio'){relMode='atual';document.getElementById('tab-mes-atual').classList.add('active');document.getElementById('tab-mes-ant').classList.remove('active');loadRelatorio();}if(id==='screen-change-pw'){['cpw-current','cpw-new','cpw-new2'].forEach(i=>document.getElementById(i).value='');document.getElementById('pw-bar2').className='pw-bar';document.getElementById('pw-lbl2').textContent='';}};
+window.goTo=function(id,isBack=false){const cur=document.querySelector('.screen.active')?.id;if(!isBack&&cur&&cur!==id)navStack.push(cur);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-transfer')loadTransferMembers();if(id==='screen-history')loadHistoryScreen();if(id==='screen-admin'){loadAdminSelects();loadAdminList();}if(id==='screen-pending')loadPending();if(id==='screen-notifs')loadNotifs();if(id==='screen-mural')loadMural('mural-list',false);if(id==='screen-mural-admin')loadMural('mural-admin-list',true);if(id==='screen-changelog')loadCL('changelog-list',false);if(id==='screen-changelog-admin')loadCL('changelog-admin-list',true);if(id==='screen-relatorio'){relMode='atual';document.getElementById('tab-mes-atual').classList.add('active');document.getElementById('tab-mes-ant').classList.remove('active');loadRelatorio();}if(id==='screen-loja')loadLoja('loja-grid',false);
+  if(id==='screen-loja-admin')loadLoja('loja-admin-grid',true);
+  if(id==='screen-perfil')renderPerfil();
+  if(id==='screen-change-pw'){['cpw-current','cpw-new','cpw-new2'].forEach(i=>document.getElementById(i).value='');document.getElementById('pw-bar2').className='pw-bar';document.getElementById('pw-lbl2').textContent='';}};
 window.goBack=function(){const cur=document.querySelector('.screen.active')?.id;while(navStack.length>0&&navStack[navStack.length-1]===cur)navStack.pop();goTo(navStack.length>0?navStack.pop():'screen-home',true);};
 // TX HTML
 function txHtml(tx,uid){const isIn=tx.to===uid;const cat=CATS[tx.category]||(isIn?CATS.outros:CATS.transferencia);return`<div class="tx-item"><div class="tx-icon ${cat.cls}">${cat.icon}</div><div class="tx-info"><div class="tx-cat">${cat.label}</div>${tx.desc?`<div class="tx-desc">${tx.desc}</div>`:''} ${tx.obs?`<div class="tx-obs">msg: ${tx.obs}</div>`:''}<div class="tx-date">${fmtDt(tx.createdAt)}</div></div><div class="tx-right"><div class="tx-amt ${isIn?'in':'out'}">${isIn?'+':'-'}${tx.amount}</div></div></div>`;}
@@ -620,6 +742,129 @@ window.gerarPDF=async function(){toast('gerando PDF...');try{const{jsPDF}=window
 document.getElementById('login-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('reg-pw2').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 document.getElementById('cpw-new2').addEventListener('keydown',e=>{if(e.key==='Enter')doChangePw();});
+
+// ── COMPRESSOR DE IMAGEM ──
+function comprimirImagem(file, maxW, maxH, quality) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = h * maxW / w; w = maxW; }
+        if (h > maxH) { w = w * maxH / h; h = maxH; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── PREVIEW FOTO ──
+window.previewFoto = async function(input, previewId, placeholderId) {
+  const file = input.files[0];
+  if (!file) return;
+  const b64 = await comprimirImagem(file, 600, 600, 0.75);
+  const prev = document.getElementById(previewId);
+  prev.src = b64; prev.style.display = 'block';
+  document.getElementById(placeholderId).style.display = 'none';
+};
+
+// ── LOJA ──
+async function loadLoja(elId, isAdmin) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '<div class="empty" style="grid-column:1/-1">carregando...</div>';
+  try {
+    const snap = await getDocs(query(collection(db,'loja'), orderBy('createdAt','desc')));
+    if (snap.empty) { el.innerHTML = '<div class="empty" style="grid-column:1/-1">nenhum item na loja ainda</div>'; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const item = d.data();
+      const imgHtml = item.foto
+        ? `<img src="${item.foto}" style="width:100%;height:130px;object-fit:cover"/>`
+        : `<div style="width:100%;height:130px;background:#ede0f5;display:flex;align-items:center;justify-content:center;font-size:36px">&#127978;</div>`;
+      const delBtn = isAdmin ? `<button class="loja-del" onclick="removerItem('${d.id}')">remover</button>` : '';
+      return `<div class="loja-item">
+        ${imgHtml}
+        <div class="loja-info">
+          <div class="loja-nome">${item.nome}</div>
+          <div class="loja-preco">${item.preco} dracmas</div>
+        </div>
+        ${delBtn}
+      </div>`;
+    }).join('');
+  } catch(e) { el.innerHTML = `<div class="empty" style="grid-column:1/-1">erro: ${e.message}</div>`; }
+}
+
+window.adicionarItem = async function() {
+  const nome = document.getElementById('loja-nome').value.trim();
+  const preco = parseInt(document.getElementById('loja-preco').value);
+  const prev = document.getElementById('loja-foto-preview');
+  const foto = prev.style.display !== 'none' ? prev.src : '';
+  if (!nome) { err('loja-error', 'informe o nome do item'); return; }
+  if (!preco || preco <= 0) { err('loja-error', 'informe um preco valido'); return; }
+  setLoad('loja-btn', true);
+  try {
+    await addDoc(collection(db,'loja'), { nome, preco, foto, createdAt: serverTimestamp() });
+    document.getElementById('loja-nome').value = '';
+    document.getElementById('loja-preco').value = '';
+    prev.style.display = 'none'; prev.src = '';
+    document.getElementById('loja-placeholder').style.display = 'flex';
+    document.getElementById('loja-foto-input').value = '';
+    toast('item adicionado!');
+    loadLoja('loja-admin-grid', true);
+  } catch(e) { err('loja-error', 'erro ao adicionar: ' + e.message); }
+  finally { setLoad('loja-btn', false); }
+};
+
+window.removerItem = function(id) {
+  openModal('remover item', 'Remover este item da lojinha?', async () => {
+    try { await deleteDoc(doc(db,'loja',id)); toast('item removido'); loadLoja('loja-admin-grid', true); }
+    catch(e) { toast('erro'); }
+  }, true);
+};
+
+// ── PERFIL ──
+function renderPerfil() {
+  document.getElementById('perfil-name').textContent = CU.name;
+  document.getElementById('perfil-user').textContent = '@' + CU.id;
+  document.getElementById('perfil-saldo').textContent = CU.balance + ' dracmas';
+  document.getElementById('perfil-username').textContent = '@' + CU.id;
+  document.getElementById('perfil-status').textContent = CU.admin ? 'Administrador' : 'Membro';
+  const initials = CU.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('perfil-avatar-initials').textContent = initials;
+  const dataEntrada = CU.createdAt ? (CU.createdAt.toDate ? CU.createdAt.toDate() : new Date(CU.createdAt)) : null;
+  document.getElementById('perfil-data').textContent = dataEntrada
+    ? dataEntrada.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})
+    : 'desconhecida';
+  // carregar foto se tiver
+  if (CU.foto) {
+    const img = document.getElementById('perfil-avatar-img');
+    img.src = CU.foto; img.style.display = 'block';
+    document.getElementById('perfil-avatar-initials').style.display = 'none';
+  } else {
+    document.getElementById('perfil-avatar-img').style.display = 'none';
+    document.getElementById('perfil-avatar-initials').style.display = 'block';
+  }
+}
+
+window.salvarFotoPerfil = async function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  toast('comprimindo foto...');
+  try {
+    const b64 = await comprimirImagem(file, 300, 300, 0.8);
+    await updateDoc(doc(db,'users',CU.id), { foto: b64 });
+    CU.foto = b64;
+    const img = document.getElementById('perfil-avatar-img');
+    img.src = b64; img.style.display = 'block';
+    document.getElementById('perfil-avatar-initials').style.display = 'none';
+    toast('foto atualizada!');
+  } catch(e) { toast('erro ao salvar foto: ' + e.message); }
+};
 // INIT
 async function init(){try{const ref=doc(db,'users','admin');if(!(await getDoc(ref)).exists()){await setDoc(ref,{name:'Administrador',password:'admin123',balance:0,admin:true,status:'approved',createdAt:serverTimestamp()});}}catch(e){}goTo('screen-login');}
 init();
