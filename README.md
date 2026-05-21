@@ -179,6 +179,25 @@
     .info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
     .info-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
     .info-value{font-size:14px;color:var(--text);font-weight:600}
+
+    /* COMUNIDADE */
+    .search-bar{padding:.75rem 1.25rem .25rem;position:relative}
+    .search-input{width:100%;padding:10px 14px 10px 38px;font-size:14px;font-family:'Lato',sans-serif;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);outline:none}
+    .search-input:focus{border-color:var(--purple)}
+    .search-icon{position:absolute;left:26px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+    .comunidade-list{padding:0 1.25rem}
+    .comunidade-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
+    .comunidade-item:active{background:#f8f0ff;margin:0 -1.25rem;padding:10px 1.25rem}
+    .com-avatar{width:46px;height:46px;border-radius:50%;background:#ede0f5;color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;overflow:hidden;border:2px solid var(--border)}
+    .com-avatar img{width:100%;height:100%;object-fit:cover}
+    .com-name{font-size:14px;font-weight:700;color:var(--text)}
+    .com-sub{font-size:12px;color:var(--muted)}
+    .com-saldo{margin-left:auto;font-size:13px;font-weight:700;color:var(--gd);flex-shrink:0}
+    /* PERFIL PUBLICO */
+    .perfil-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:1rem 1.25rem 0}
+    .stat-card{background:var(--bg);border-radius:var(--rs);border:1.5px solid var(--border);padding:.75rem;text-align:center}
+    .stat-num{font-size:18px;font-weight:700;color:var(--purple);font-family:'Cinzel',serif}
+    .stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
   </style>
 </head>
 <body>
@@ -279,6 +298,11 @@
         <div class="action-icon">&#128100;</div><div class="action-label">perfil</div>
       </div>
     </div>
+    <div class="quick-actions">
+      <div class="action-btn" onclick="goTo('screen-comunidade')">
+        <div class="action-icon">&#128101;</div><div class="action-label">comunidade</div>
+      </div>
+    </div>
     <div id="admin-btns" style="display:none">
       <div class="quick-actions">
         <div class="action-btn" onclick="goTo('screen-admin')">
@@ -299,7 +323,7 @@
       </div>
       <div class="quick-actions">
         <div class="action-btn" onclick="goTo('screen-loja-admin')">
-          <div class="action-icon">&#127978;</div><div class="action-label">lojinha</div>
+          <div class="action-icon">&#127978;</div><div class="action-label">gerir loja</div>
         </div>
       </div>
     </div>
@@ -619,11 +643,21 @@
     <div class="perfil-name" id="perfil-name"></div>
     <div class="perfil-user" id="perfil-user"></div>
   </div>
-  <div class="perfil-info">
-    <div class="info-row">
-      <span class="info-label">saldo</span>
-      <span class="info-value" id="perfil-saldo"></span>
+  <div class="perfil-stats">
+    <div class="stat-card">
+      <div class="stat-num" id="perfil-saldo">0</div>
+      <div class="stat-label">saldo</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-num" id="perfil-recebidos">0</div>
+      <div class="stat-label">recebidos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="perfil-enviados">0</div>
+      <div class="stat-label">enviados</div>
+    </div>
+  </div>
+  <div class="perfil-info" style="margin-top:.5rem">
     <div class="info-row">
       <span class="info-label">usuario</span>
       <span class="info-value" id="perfil-username"></span>
@@ -640,6 +674,58 @@
   <div style="padding:0 1.25rem">
     <button class="btn-p" onclick="goTo('screen-change-pw')" style="margin-bottom:.75rem">mudar senha</button>
     <button class="btn-s" onclick="doLogout()">sair da conta</button>
+  </div>
+</div>
+
+
+<div id="screen-comunidade" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">&#128101; comunidade</span>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">&#128269;</span>
+    <input class="search-input" id="com-search" type="text" placeholder="buscar membro..." oninput="filtrarComunidade(this.value)"/>
+  </div>
+  <div class="comunidade-list" id="comunidade-list"><div class="empty">carregando...</div></div>
+</div>
+
+<div id="screen-perfil-publico" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title" id="pp-topbar-title">perfil</span>
+  </div>
+  <div class="perfil-hero">
+    <div class="perfil-avatar" style="cursor:default">
+      <span id="pp-initials"></span>
+      <img id="pp-avatar-img" src="" alt="" style="display:none"/>
+    </div>
+    <div class="perfil-name" id="pp-name"></div>
+    <div class="perfil-user" id="pp-user"></div>
+  </div>
+  <div class="perfil-stats">
+    <div class="stat-card">
+      <div class="stat-num" id="pp-saldo">0</div>
+      <div class="stat-label">saldo</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="pp-recebidos">0</div>
+      <div class="stat-label">recebidos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="pp-enviados">0</div>
+      <div class="stat-label">enviados</div>
+    </div>
+  </div>
+  <div class="perfil-info" style="margin-top:.5rem">
+    <div class="info-row">
+      <span class="info-label">membro desde</span>
+      <span class="info-value" id="pp-data"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">status</span>
+      <span class="info-value" id="pp-status"></span>
+    </div>
   </div>
 </div>
 
@@ -676,6 +762,7 @@ window.checkStr=function(pw,barId,lblId){const bar=document.getElementById(barId
 // NAV
 const navStack=[];
 window.goTo=function(id,isBack=false){const cur=document.querySelector('.screen.active')?.id;if(!isBack&&cur&&cur!==id)navStack.push(cur);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-transfer')loadTransferMembers();if(id==='screen-history')loadHistoryScreen();if(id==='screen-admin'){loadAdminSelects();loadAdminList();}if(id==='screen-pending')loadPending();if(id==='screen-notifs')loadNotifs();if(id==='screen-mural')loadMural('mural-list',false);if(id==='screen-mural-admin')loadMural('mural-admin-list',true);if(id==='screen-changelog')loadCL('changelog-list',false);if(id==='screen-changelog-admin')loadCL('changelog-admin-list',true);if(id==='screen-relatorio'){relMode='atual';document.getElementById('tab-mes-atual').classList.add('active');document.getElementById('tab-mes-ant').classList.remove('active');loadRelatorio();}if(id==='screen-loja')loadLoja('loja-grid',false);
+  if(id==='screen-comunidade')loadComunidade();
   if(id==='screen-loja-admin')loadLoja('loja-admin-grid',true);
   if(id==='screen-perfil')renderPerfil();
   if(id==='screen-change-pw'){['cpw-current','cpw-new','cpw-new2'].forEach(i=>document.getElementById(i).value='');document.getElementById('pw-bar2').className='pw-bar';document.getElementById('pw-lbl2').textContent='';}};
@@ -774,6 +861,91 @@ window.previewFoto = async function(input, previewId, placeholderId) {
   document.getElementById(placeholderId).style.display = 'none';
 };
 
+
+// ── COMUNIDADE ──
+let todosMembrosCom = [];
+
+async function loadComunidade() {
+  const el = document.getElementById('comunidade-list');
+  el.innerHTML = '<div class="empty">carregando...</div>';
+  document.getElementById('com-search').value = '';
+  try {
+    const snap = await getDocs(collection(db,'users'));
+    todosMembrosCom = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (!data.admin && data.status === 'approved') {
+        todosMembrosCom.push({ id: d.id, ...data });
+      }
+    });
+    todosMembrosCom.sort((a,b) => b.balance - a.balance);
+    renderComunidade(todosMembrosCom);
+  } catch(e) { el.innerHTML = '<div class="empty">erro ao carregar</div>'; }
+}
+
+function renderComunidade(members) {
+  const el = document.getElementById('comunidade-list');
+  if (!members.length) { el.innerHTML = '<div class="empty">nenhum membro encontrado</div>'; return; }
+  el.innerHTML = members.map((m, i) => {
+    const ini = m.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const avatarInner = m.foto
+      ? `<img src="${m.foto}" alt=""/>`
+      : `<span>${ini}</span>`;
+    const isMe = m.id === CU.id ? ' (voce)' : '';
+    return `<div class="comunidade-item" onclick="verPerfilPublico('${m.id}')">
+      <div class="com-avatar">${avatarInner}</div>
+      <div>
+        <div class="com-name">${m.name}${isMe}</div>
+        <div class="com-sub">@${m.id}</div>
+      </div>
+      <div class="com-saldo">${m.balance} ₯</div>
+    </div>`;
+  }).join('');
+}
+
+window.filtrarComunidade = function(q) {
+  const filtrado = q.trim()
+    ? todosMembrosCom.filter(m =>
+        m.name.toLowerCase().includes(q.toLowerCase()) ||
+        m.id.toLowerCase().includes(q.toLowerCase()))
+    : todosMembrosCom;
+  renderComunidade(filtrado);
+};
+
+// ── PERFIL PÚBLICO ──
+window.verPerfilPublico = async function(uid) {
+  goTo('screen-perfil-publico');
+  try {
+    const snap = await getDoc(doc(db,'users',uid));
+    if (!snap.exists()) { toast('membro nao encontrado'); return; }
+    const data = snap.data();
+    document.getElementById('pp-topbar-title').textContent = data.name.split(' ')[0];
+    document.getElementById('pp-name').textContent = data.name;
+    document.getElementById('pp-user').textContent = '@' + uid;
+    document.getElementById('pp-saldo').textContent = data.balance;
+    const ini = data.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    document.getElementById('pp-initials').textContent = ini;
+    const ppImg = document.getElementById('pp-avatar-img');
+    if (data.foto) { ppImg.src = data.foto; ppImg.style.display = 'block'; document.getElementById('pp-initials').style.display = 'none'; }
+    else { ppImg.style.display = 'none'; document.getElementById('pp-initials').style.display = 'block'; }
+    const dataEntrada = data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt)) : null;
+    document.getElementById('pp-data').textContent = dataEntrada
+      ? dataEntrada.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})
+      : 'desconhecida';
+    document.getElementById('pp-status').textContent = data.admin ? 'Administrador' : 'Membro';
+    // calcular recebidos e enviados
+    const txSnap = await getDocs(query(collection(db,'transactions'), where('participants','array-contains',uid), limit(200)));
+    let recebidos = 0, enviados = 0;
+    txSnap.forEach(d => {
+      const tx = d.data();
+      if (tx.to === uid) recebidos += tx.amount;
+      else enviados += tx.amount;
+    });
+    document.getElementById('pp-recebidos').textContent = recebidos;
+    document.getElementById('pp-enviados').textContent = enviados;
+  } catch(e) { toast('erro ao carregar perfil'); }
+};
+
 // ── LOJA ──
 async function loadLoja(elId, isAdmin) {
   const el = document.getElementById(elId);
@@ -828,19 +1000,18 @@ window.removerItem = function(id) {
 };
 
 // ── PERFIL ──
-function renderPerfil() {
+async function renderPerfil() {
   document.getElementById('perfil-name').textContent = CU.name;
   document.getElementById('perfil-user').textContent = '@' + CU.id;
-  document.getElementById('perfil-saldo').textContent = CU.balance + ' dracmas';
+  document.getElementById('perfil-saldo').textContent = CU.balance;
   document.getElementById('perfil-username').textContent = '@' + CU.id;
   document.getElementById('perfil-status').textContent = CU.admin ? 'Administrador' : 'Membro';
-  const initials = CU.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-  document.getElementById('perfil-avatar-initials').textContent = initials;
+  const ini = CU.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('perfil-avatar-initials').textContent = ini;
   const dataEntrada = CU.createdAt ? (CU.createdAt.toDate ? CU.createdAt.toDate() : new Date(CU.createdAt)) : null;
   document.getElementById('perfil-data').textContent = dataEntrada
     ? dataEntrada.toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})
     : 'desconhecida';
-  // carregar foto se tiver
   if (CU.foto) {
     const img = document.getElementById('perfil-avatar-img');
     img.src = CU.foto; img.style.display = 'block';
@@ -849,6 +1020,18 @@ function renderPerfil() {
     document.getElementById('perfil-avatar-img').style.display = 'none';
     document.getElementById('perfil-avatar-initials').style.display = 'block';
   }
+  // calcular recebidos e enviados
+  try {
+    const txSnap = await getDocs(query(collection(db,'transactions'), where('participants','array-contains',CU.id), limit(200)));
+    let recebidos = 0, enviados = 0;
+    txSnap.forEach(d => {
+      const tx = d.data();
+      if (tx.to === CU.id) recebidos += tx.amount;
+      else enviados += tx.amount;
+    });
+    document.getElementById('perfil-recebidos').textContent = recebidos;
+    document.getElementById('perfil-enviados').textContent = enviados;
+  } catch(e) {}
 }
 
 window.salvarFotoPerfil = async function(input) {
