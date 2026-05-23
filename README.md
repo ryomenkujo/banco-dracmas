@@ -557,26 +557,35 @@
       </div>
     </div>
     <div id="admin-btns" style="display:none">
-      <div class="quick-actions">
-        <div class="action-btn" onclick="goTo('screen-admin')">
-          <div class="action-icon">&#128081;</div><div class="action-label">gerenciar</div>
-        </div>
-        <div class="action-btn" onclick="goTo('screen-pending')">
-          <div class="action-icon">&#9203;</div>
-          <div class="action-label">aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div>
-        </div>
-      </div>
-      <div class="quick-actions">
-        <div class="action-btn" onclick="goTo('screen-mural-admin')">
-          <div class="action-icon">&#128226;</div><div class="action-label">mural</div>
-        </div>
-        <div class="action-btn" onclick="goTo('screen-relatorio')">
-          <div class="action-icon">&#128202;</div><div class="action-label">relatorio</div>
-        </div>
-      </div>
-      <div class="quick-actions">
-        <div class="action-btn" onclick="goTo('screen-loja-admin')">
-          <div class="action-icon">&#127978;</div><div class="action-label">gerir loja</div>
+      <div style="padding:.75rem 1.25rem .25rem">
+        <div style="background:linear-gradient(135deg,#1a0e2e,#2e1a47);border-radius:18px;padding:1.25rem;box-shadow:0 6px 24px rgba(26,14,46,.35);border:1px solid rgba(212,168,83,.15)">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(212,168,83,.6);margin-bottom:1rem">painel administrativo</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div onclick="goTo('screen-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12);transition:background .15s" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
+              <div style="font-size:24px;margin-bottom:6px">&#128081;</div>
+              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerenciar</div>
+            </div>
+            <div onclick="goTo('screen-pending')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
+              <div style="font-size:24px;margin-bottom:6px">&#9203;</div>
+              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div>
+            </div>
+            <div onclick="goTo('screen-relatorio')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
+              <div style="font-size:24px;margin-bottom:6px">&#128202;</div>
+              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">relatório</div>
+            </div>
+            <div onclick="goTo('screen-mural-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
+              <div style="font-size:24px;margin-bottom:6px">&#128226;</div>
+              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerir mural</div>
+            </div>
+            <div onclick="goTo('screen-loja-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
+              <div style="font-size:24px;margin-bottom:6px">&#127978;</div>
+              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerir loja</div>
+            </div>
+            <div onclick="goTo('screen-changelog-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
+              <div style="font-size:24px;margin-bottom:6px">&#127381;</div>
+              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">novidades</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -774,7 +783,7 @@
     <div class="tab active" id="tab-give" onclick="switchAdminTab('give')">+ dar</div>
     <div class="tab" id="tab-take" onclick="switchAdminTab('take')">- retirar</div>
   </div>
-  <div class="form-section" id="admin-give-form">
+  <div class="form-section" id="admin-give-form" style="padding-top:.75rem">
     <div class="form-group">
       <label class="form-label">membro</label>
       <select class="form-input" id="admin-member-give"></select>
@@ -802,7 +811,7 @@
     <div class="err" id="admin-error-give"></div>
     <button class="btn-p" id="admin-btn-give" onclick="doDistribute()">dar dracmas</button>
   </div>
-  <div class="form-section" id="admin-take-form" style="display:none">
+  <div class="form-section" id="admin-take-form" style="display:none;padding-top:.75rem">
     <div class="form-group">
       <label class="form-label">membro</label>
       <select class="form-input" id="admin-member-take"></select>
