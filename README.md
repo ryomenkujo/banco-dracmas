@@ -446,9 +446,41 @@
     .stat-card{background:var(--bg);border-radius:var(--rs);border:1.5px solid var(--border);padding:.75rem;text-align:center}
     .stat-num{font-size:18px;font-weight:700;color:var(--purple);font-family:'Cinzel',serif}
     .stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+    /* BOAS VINDAS */
+    .bv-overlay{position:fixed;inset:0;background:linear-gradient(160deg,#2e1a47,#4a2d6e);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+    .bv-coin{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:40px;font-weight:600;border:4px solid var(--gd);margin:0 auto 1.5rem;box-shadow:0 0 40px rgba(212,168,83,.4);animation:pulse 2s ease-in-out infinite}
+    .bv-titulo{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);margin-bottom:.5rem}
+    .bv-sub{font-size:14px;color:var(--pl);line-height:1.7;margin-bottom:2rem}
+    .bv-btn{background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--purple);border:none;border-radius:var(--rs);padding:14px 40px;font-size:15px;font-weight:700;font-family:'Lato',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(212,168,83,.3)}
+
+    /* BUSCA EXTRATO */
+    .extrato-search{padding:.5rem 1.25rem .25rem;display:flex;gap:8px}
+    .extrato-search input{flex:1;padding:9px 12px;font-size:13px;font-family:'Lato',sans-serif;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);outline:none}
+    .extrato-search input:focus{border-color:var(--purple)}
+
+    /* MURAL LIDO */
+    .lido-chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle}
+    .lido-chip.sim{background:#d1fae5;color:#065f46}
+    .lido-chip.nao{background:#fee2e2;color:#991b1b}
+
+    /* EDITAR LOJA */
+    .loja-edit-btn{width:100%;padding:7px;font-size:11px;font-weight:700;font-family:'Lato',sans-serif;background:#ede0f5;color:#2e1a47;border:none;cursor:pointer;border-top:1px solid var(--border)}
+
+    /* EXPORTAR */
+    .export-btns{display:flex;gap:10px;padding:0 1.25rem 1rem}
+    .export-btns .btn-p{flex:1;padding:11px;font-size:13px}
   </style>
 </head>
 <body>
+
+
+<div id="bv-overlay" class="bv-overlay" style="display:none">
+  <div class="bv-coin">&#8367;</div>
+  <div class="bv-titulo" id="bv-nome">Bem-vindo!</div>
+  <div class="bv-sub">Você acaba de entrar no<br><strong style="color:var(--gold)">Banco de Dracmas ADC</strong>.<br><br>Aqui você gerencia suas dracmas,<br>transfere para outros membros<br>e acompanha seu saldo.</div>
+  <button class="bv-btn" onclick="fecharBoasVindas()">Entrar &#8594;</button>
+</div>
 
 <div id="screen-loader" class="screen active">
   <div class="loader-coin">₯</div>
@@ -581,10 +613,7 @@
               <div style="font-size:24px;margin-bottom:6px">&#127978;</div>
               <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerir loja</div>
             </div>
-            <div onclick="goTo('screen-changelog-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
-              <div style="font-size:24px;margin-bottom:6px">&#127381;</div>
-              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">novidades</div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -599,6 +628,9 @@
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title">extrato completo</span>
   </div>
+  <div class="extrato-search">
+    <input type="text" id="history-search" placeholder="buscar por descricao..." oninput="buscarExtrato('history',this.value)"/>
+  </div>
   <div class="filter-bar" id="history-filters"></div>
   <div class="tx-list" id="history-txs"><div class="empty">carregando...</div></div>
 </div>
@@ -607,6 +639,9 @@
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title" id="member-history-title">extrato</span>
+  </div>
+  <div class="extrato-search">
+    <input type="text" id="member-history-search" placeholder="buscar por descricao..." oninput="buscarExtrato('member-history',this.value)"/>
   </div>
   <div class="filter-bar" id="member-history-filters"></div>
   <div class="tx-list" id="member-history-txs"><div class="empty">carregando...</div></div>
@@ -702,7 +737,7 @@
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title">mural de avisos</span>
   </div>
-  <div style="padding:1rem 1.25rem" id="mural-list"><div class="empty">carregando...</div></div>
+  <div style="padding:1rem 1.25rem" id="mural-list" data-track="true"><div class="empty">carregando...</div></div>
 </div>
 
 <div id="screen-mural-admin" class="screen">
@@ -835,6 +870,10 @@
     <button class="btn-p danger" id="admin-btn-take" onclick="doDeduct()">retirar dracmas</button>
   </div>
   <div class="sec-header">membros ativos</div>
+  <div class="export-btns">
+    <button class="btn-p" onclick="exportarCSV()" style="font-size:13px;padding:11px">&#128196; exportar CSV</button>
+    <button class="btn-p" onclick="exportarPDFMembros()" style="font-size:13px;padding:11px">&#128209; exportar PDF</button>
+  </div>
   <div class="member-list" id="admin-members-list"><div class="empty">carregando...</div></div>
 </div>
 
@@ -987,6 +1026,27 @@
   </div>
 </div>
 
+
+<div class="modal-overlay" id="modal-edit-loja">
+  <div class="modal">
+    <div class="modal-title">editar item</div>
+    <input type="hidden" id="edit-loja-id"/>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label class="form-label">nome do item</label>
+      <input class="form-input" id="edit-loja-nome" type="text" placeholder="Ex: Brigadeiro"/>
+    </div>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label class="form-label">preco em dracmas</label>
+      <input class="form-input" id="edit-loja-preco" type="number" min="1" placeholder="Ex: 10" inputmode="numeric"/>
+    </div>
+    <div class="err" id="edit-loja-error"></div>
+    <div class="modal-acts">
+      <button class="btn-s" onclick="closeEditLoja()">cancelar</button>
+      <button class="btn-p" id="edit-loja-btn" onclick="salvarEdicaoLoja()">salvar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal">
     <div class="modal-title" id="modal-title">confirmar</div>
@@ -1019,7 +1079,7 @@ window.togglePw=function(id,btn){const i=document.getElementById(id);i.type=i.ty
 window.checkStr=function(pw,barId,lblId){const bar=document.getElementById(barId),lbl=document.getElementById(lblId);if(!pw){bar.className='pw-bar';lbl.textContent='';return;}let s=0;if(pw.length>=6)s++;if(pw.length>=10)s++;if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;const r=s<=1?{c:'weak',l:'fraca'}:s<=3?{c:'medium',l:'media'}:{c:'strong',l:'forte'};bar.className='pw-bar '+r.c;lbl.textContent='senha '+r.l;lbl.style.color=r.c==='weak'?'#a33030':r.c==='medium'?'#a07830':'#2d6a4f';};
 // NAV
 const navStack=[];
-window.goTo=function(id,isBack=false){const cur=document.querySelector('.screen.active')?.id;if(!isBack&&cur&&cur!==id)navStack.push(cur);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-transfer')loadTransferMembers();if(id==='screen-history')loadHistoryScreen();if(id==='screen-admin'){loadAdminSelects();loadAdminList();}if(id==='screen-pending')loadPending();if(id==='screen-notifs')loadNotifs();if(id==='screen-mural')loadMural('mural-list',false);if(id==='screen-mural-admin')loadMural('mural-admin-list',true);if(id==='screen-changelog')loadCL('changelog-list',false);if(id==='screen-changelog-admin')loadCL('changelog-admin-list',true);if(id==='screen-relatorio'){relMode='atual';document.getElementById('tab-mes-atual').classList.add('active');document.getElementById('tab-mes-ant').classList.remove('active');loadRelatorio();}if(id==='screen-loja')loadLoja('loja-grid',false);
+window.goTo=function(id,isBack=false){const cur=document.querySelector('.screen.active')?.id;if(!isBack&&cur&&cur!==id)navStack.push(cur);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);if(id==='screen-transfer')loadTransferMembers();if(id==='screen-history')loadHistoryScreen();if(id==='screen-admin'){loadAdminSelects();loadAdminList();}if(id==='screen-pending')loadPending();if(id==='screen-notifs')loadNotifs();if(id==='screen-mural')loadMuralComLeitura('mural-list',false);if(id==='screen-mural-admin')loadMuralComLeitura('mural-admin-list',true);if(id==='screen-changelog')loadCL('changelog-list',false);if(id==='screen-changelog-admin')loadCL('changelog-admin-list',true);if(id==='screen-relatorio'){relMode='atual';document.getElementById('tab-mes-atual').classList.add('active');document.getElementById('tab-mes-ant').classList.remove('active');loadRelatorio();}if(id==='screen-loja')loadLoja('loja-grid',false);
   if(id==='screen-comunidade')loadComunidade();
   if(id==='screen-loja-admin')loadLoja('loja-admin-grid',true);
   if(id==='screen-perfil')renderPerfil();
@@ -1039,7 +1099,7 @@ window.doChangePw=async function(){const c=document.getElementById('cpw-current'
 // LOGOUT
 window.doLogout=function(){CU=null;allMembers=[];navStack.length=0;document.getElementById('login-user').value='';document.getElementById('login-pw').value='';goTo('screen-login');};
 // HOME
-function renderHome(){document.getElementById('home-greeting').textContent='ola, '+CU.name.split(' ')[0]+'!';document.getElementById('home-balance').textContent=CU.balance;document.getElementById('home-user').textContent=CU.name+(CU.admin?' - administrador':'');document.getElementById('admin-btns').style.display=CU.admin?'block':'none';loadHomeTxs();loadHomeMural();loadNotifBell();if(CU.admin)loadPendingBadge();}
+function renderHome(){document.getElementById('home-greeting').textContent='ola, '+CU.name.split(' ')[0]+'!';document.getElementById('home-balance').textContent=CU.balance;document.getElementById('home-user').textContent=CU.name+(CU.admin?' - administrador':'');document.getElementById('admin-btns').style.display=CU.admin?'block':'none';loadHomeTxs();loadNotifBell();if(CU.admin)loadPendingBadge();if(!CU.admin)checkBoasVindas();}
 async function loadPendingBadge(){try{const s=await getDocs(query(collection(db,'users'),where('status','==','pending')));const b=document.getElementById('pending-badge');s.size>0?(b.textContent=s.size,b.style.display='inline-block'):b.style.display='none';}catch(e){}}
 async function loadNotifBell(){try{const s=await getDocs(query(collection(db,'notifications'),where('to','==',CU.id),where('read','==',false)));document.getElementById('notif-bell').textContent=s.size>0?'🔔🔴':'🔔';}catch(e){}}
 async function loadHomeTxs(){const el=document.getElementById('home-txs');el.innerHTML='<div class="empty">carregando...</div>';try{const q=query(collection(db,'transactions'),where('participants','array-contains',CU.id),orderBy('createdAt','desc'),limit(5));const s=await getDocs(q);el.innerHTML=s.empty?'<div class="empty">nenhuma transacao ainda</div>':s.docs.map(d=>txHtml(d.data(),CU.id)).join('');}catch(e){el.innerHTML=`<div class="empty">erro: ${e.message}</div>`;}}
@@ -1071,7 +1131,7 @@ window.approveUser=async function(uid,name){try{await updateDoc(doc(db,'users',u
 window.rejectUser=function(uid,name){openModal('recusar conta',`Recusar a solicitacao de ${name}?`,async()=>{try{await deleteDoc(doc(db,'users',uid));toast(`solicitacao de ${name} recusada`);loadPending();loadPendingBadge();}catch(e){toast('erro');}},true);};
 // MURAL
 async function loadMural(elId,isAdmin){const el=document.getElementById(elId);el.innerHTML='<div class="empty">carregando...</div>';try{const q=query(collection(db,'mural'),orderBy('createdAt','desc'),limit(20));const s=await getDocs(q);if(s.empty){el.innerHTML='<div class="empty">nenhum aviso</div>';return;}el.innerHTML=s.docs.map(d=>{const data=d.data();const del=isAdmin?`<button class="bsm del" style="margin-top:8px" onclick="deletarAviso('${d.id}')">remover</button>`:'';return`<div class="card"><div class="card-title">${data.titulo}</div><div class="card-text">${data.texto}</div><div class="card-date">${fmtDt(data.createdAt)}</div>${del}</div>`;}).join('');}catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}}
-window.publicarAviso=async function(){const t=document.getElementById('aviso-titulo').value.trim();const tx=document.getElementById('aviso-texto').value.trim();if(!t||!tx){err('aviso-error','preencha titulo e texto');return;}setLoad('aviso-btn',true);try{await addDoc(collection(db,'mural'),{titulo:t,texto:tx,autor:CU.name,createdAt:serverTimestamp()});document.getElementById('aviso-titulo').value='';document.getElementById('aviso-texto').value='';toast('aviso publicado!');loadMural('mural-admin-list',true);}catch(e){err('aviso-error','erro ao publicar');}finally{setLoad('aviso-btn',false);}};
+window.publicarAviso=async function(){const t=document.getElementById('aviso-titulo').value.trim();const tx=document.getElementById('aviso-texto').value.trim();if(!t||!tx){err('aviso-error','preencha titulo e texto');return;}setLoad('aviso-btn',true);try{await addDoc(collection(db,'mural'),{titulo:t,texto:tx,autor:CU.name,createdAt:serverTimestamp()});document.getElementById('aviso-titulo').value='';document.getElementById('aviso-texto').value='';toast('aviso publicado!');loadMuralComLeitura('mural-admin-list',true);}catch(e){err('aviso-error','erro ao publicar');}finally{setLoad('aviso-btn',false);}};
 window.deletarAviso=function(id){openModal('remover aviso','Remover este aviso?',async()=>{try{await deleteDoc(doc(db,'mural',id));toast('aviso removido');loadMural('mural-admin-list',true);}catch(e){toast('erro');}},true);};
 // CHANGELOG
 async function loadCL(elId,isAdmin){const el=document.getElementById(elId);el.innerHTML='<div class="empty">carregando...</div>';try{const q=query(collection(db,'changelog'),orderBy('createdAt','desc'),limit(30));const s=await getDocs(q);if(s.empty){el.innerHTML='<div class="empty">nenhuma atualizacao publicada ainda</div>';return;}el.innerHTML=s.docs.map(d=>{const data=d.data();const del=isAdmin?`<button class="bsm del" style="margin-top:8px" onclick="deletarCL('${d.id}')">remover</button>`:'';return`<div class="card"><div class="card-version">versao ${data.version||'?'}</div><div class="card-title">${data.titulo}</div><div class="card-text">${data.texto}</div><div class="card-date">${fmtDt(data.createdAt)}</div>${del}</div>`;}).join('');}catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}}
@@ -1306,6 +1366,201 @@ window.salvarFotoPerfil = async function(input) {
     toast('foto atualizada!');
   } catch(e) { toast('erro ao salvar foto: ' + e.message); }
 };
+
+// ── BOAS VINDAS ──
+async function checkBoasVindas() {
+  try {
+    const ref = doc(db,'users',CU.id);
+    const snap = await getDoc(ref);
+    if (!snap.data().primeiroAcesso) {
+      document.getElementById('bv-nome').textContent = 'Olá, ' + CU.name.split(' ')[0] + '!';
+      document.getElementById('bv-overlay').style.display = 'flex';
+      await updateDoc(ref, { primeiroAcesso: true });
+    }
+  } catch(e) {}
+}
+
+window.fecharBoasVindas = function() {
+  document.getElementById('bv-overlay').style.display = 'none';
+};
+
+// ── BUSCA EXTRATO ──
+window.buscarExtrato = function(prefix, q) {
+  const txs = prefix === 'history' ? histAll : mHistAll;
+  const uid = prefix === 'history' ? CU.id : window._mhUid;
+  const txt = q.trim().toLowerCase();
+  const filtrado = txt ? txs.filter(t =>
+    (t.desc||'').toLowerCase().includes(txt) ||
+    (t.obs||'').toLowerCase().includes(txt) ||
+    (CATS[t.category]?.label||'').toLowerCase().includes(txt)
+  ) : txs;
+  // reset chip filter
+  document.querySelectorAll(`#${prefix}-filters .chip`).forEach(c => c.classList.toggle('active', c.dataset.key==='all'));
+  document.getElementById(`${prefix}-txs`).innerHTML = filtrado.length
+    ? filtrado.map(t => txHtml(t, uid)).join('')
+    : '<div class="empty">nenhuma transacao encontrada</div>';
+};
+
+// ── MURAL LEITURA ──
+async function marcarMuralLido(avisoId) {
+  try {
+    const leituraRef = doc(db, 'mural_leituras', `${avisoId}_${CU.id}`);
+    const snap = await getDoc(leituraRef);
+    if (!snap.exists()) {
+      await setDoc(leituraRef, { avisoId, userId: CU.id, userName: CU.name, lido: true, at: serverTimestamp() });
+    }
+  } catch(e) {}
+}
+
+// Override loadMural to track reads
+const _origLoadMural = loadMural;
+async function loadMuralComLeitura(elId, isAdmin) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '<div class="empty">carregando...</div>';
+  try {
+    const q = query(collection(db,'mural'), orderBy('createdAt','desc'), limit(20));
+    const snap = await getDocs(q);
+    if (snap.empty) { el.innerHTML = '<div class="empty">nenhum aviso</div>'; return; }
+
+    if (isAdmin) {
+      // admin: mostrar quantos leram
+      const items = await Promise.all(snap.docs.map(async d => {
+        const data = d.data();
+        const lSnap = await getDocs(query(collection(db,'mural_leituras'), where('avisoId','==',d.id)));
+        const lidos = lSnap.size;
+        const del = `<button class="loja-del" onclick="deletarAviso('${d.id}')">remover</button>`;
+        return `<div class="card">
+          <div class="card-title">${data.titulo} <span class="lido-chip sim">${lidos} leram</span></div>
+          <div class="card-text">${data.texto}</div>
+          <div class="card-date">${fmtDt(data.createdAt)}</div>
+          ${del}
+        </div>`;
+      }));
+      el.innerHTML = items.join('');
+    } else {
+      el.innerHTML = snap.docs.map(d => {
+        const data = d.data();
+        marcarMuralLido(d.id);
+        return `<div class="card"><div class="card-title">${data.titulo}</div><div class="card-text">${data.texto}</div><div class="card-date">${fmtDt(data.createdAt)}</div></div>`;
+      }).join('');
+    }
+  } catch(e) { el.innerHTML = '<div class="empty">erro ao carregar</div>'; }
+}
+
+// ── EDITAR LOJA ──
+window.editarItem = function(id, nome, preco) {
+  document.getElementById('edit-loja-id').value = id;
+  document.getElementById('edit-loja-nome').value = nome;
+  document.getElementById('edit-loja-preco').value = preco;
+  document.getElementById('modal-edit-loja').classList.add('active');
+};
+window.closeEditLoja = () => document.getElementById('modal-edit-loja').classList.remove('active');
+
+window.salvarEdicaoLoja = async function() {
+  const id = document.getElementById('edit-loja-id').value;
+  const nome = document.getElementById('edit-loja-nome').value.trim();
+  const preco = parseInt(document.getElementById('edit-loja-preco').value);
+  if (!nome) { err('edit-loja-error','informe o nome'); return; }
+  if (!preco || preco <= 0) { err('edit-loja-error','preco invalido'); return; }
+  const btn = document.getElementById('edit-loja-btn');
+  btn.disabled = true;
+  try {
+    await updateDoc(doc(db,'loja',id), { nome, preco });
+    closeEditLoja();
+    toast('item atualizado!');
+    loadLoja('loja-admin-grid', true);
+  } catch(e) { err('edit-loja-error','erro ao salvar'); }
+  finally { btn.disabled = false; }
+};
+
+// ── EXPORTAR CSV ──
+window.exportarCSV = async function() {
+  toast('gerando CSV...');
+  try {
+    const snap = await getDocs(collection(db,'users'));
+    const members = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (!data.admin && data.status === 'approved') {
+        const dt = data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt)) : null;
+        members.push({
+          nome: data.name,
+          usuario: d.id,
+          saldo: data.balance,
+          entrada: dt ? dt.toLocaleDateString('pt-BR') : 'desconhecida'
+        });
+      }
+    });
+    members.sort((a,b) => b.saldo - a.saldo);
+    const header = 'Nome,Usuario,Saldo,Membro desde';
+    const rows = members.map(m => `"${m.nome}","${m.usuario}","${m.saldo}","${m.entrada}"`);
+    const csv = [header, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'membros-dracmas.csv'; a.click();
+    URL.revokeObjectURL(url);
+    toast('CSV baixado!');
+  } catch(e) { toast('erro: ' + e.message); }
+};
+
+// ── EXPORTAR PDF MEMBROS ──
+window.exportarPDFMembros = async function() {
+  toast('gerando PDF...');
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit:'mm', format:'a4' });
+    const W = 210, M = 15, CW = W - M*2;
+    const agora = new Date();
+    let y = 20;
+
+    pdf.setFontSize(16); pdf.setFont('helvetica','bold'); pdf.setTextColor(46,26,71);
+    pdf.text('Dracmas ADC - Lista de Membros', M, y); y += 8;
+    pdf.setFontSize(10); pdf.setFont('helvetica','normal'); pdf.setTextColor(107,114,128);
+    pdf.text(`Gerado em ${agora.toLocaleString('pt-BR')}`, M, y); y += 8;
+    pdf.setDrawColor(220,220,220); pdf.line(M, y, W-M, y); y += 8;
+
+    const snap = await getDocs(collection(db,'users'));
+    const members = [];
+    snap.forEach(d => {
+      const data = d.data();
+      if (!data.admin && data.status === 'approved') {
+        const dt = data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt)) : null;
+        members.push({ nome: data.name, usuario: d.id, saldo: data.balance, entrada: dt ? dt.toLocaleDateString('pt-BR') : 'desconhecida' });
+      }
+    });
+    members.sort((a,b) => b.saldo - a.saldo);
+
+    // header row
+    pdf.setFontSize(9); pdf.setFont('helvetica','bold'); pdf.setTextColor(46,26,71);
+    pdf.text('Nome', M, y);
+    pdf.text('Usuario', M+70, y);
+    pdf.text('Saldo', M+120, y);
+    pdf.text('Desde', M+150, y);
+    y += 5; pdf.line(M, y, W-M, y); y += 5;
+
+    pdf.setFont('helvetica','normal'); pdf.setTextColor(0,0,0);
+    members.forEach((m, i) => {
+      if (y > 270) { pdf.addPage(); y = 20; }
+      if (i % 2 === 0) { pdf.setFillColor(248,244,255); pdf.rect(M-2, y-4, CW+4, 8, 'F'); }
+      pdf.setFontSize(9);
+      const nomeLines = pdf.splitTextToSize(m.nome, 65);
+      pdf.text(nomeLines, M, y);
+      pdf.text(m.usuario, M+70, y);
+      pdf.text(String(m.saldo), M+120, y);
+      pdf.text(m.entrada, M+150, y);
+      y += Math.max(nomeLines.length * 5, 8);
+    });
+
+    y += 4; pdf.line(M, y, W-M, y); y += 6;
+    pdf.setFont('helvetica','bold');
+    pdf.text(`Total: ${members.length} membros`, M, y);
+
+    pdf.save('membros-dracmas.pdf');
+    toast('PDF baixado!');
+  } catch(e) { toast('erro: ' + e.message); }
+};
+
 // INIT
 async function init(){try{const ref=doc(db,'users','admin');if(!(await getDoc(ref)).exists()){await setDoc(ref,{name:'Administrador',password:'admin123',balance:0,admin:true,status:'approved',createdAt:serverTimestamp()});}}catch(e){}goTo('screen-login');}
 init();
