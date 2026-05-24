@@ -36,6 +36,7 @@
 
     /* SCREEN */
     .screen{display:none;min-height:100vh;padding-bottom:90px}
+    #screen-login{padding-bottom:0}
     .screen.active{display:block}
     #screen-loader{flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--p)}
     #screen-loader.active{display:flex}
@@ -584,12 +585,12 @@
 </div>
 
 <div id="screen-login" class="screen">
-  <div class="login-hero">
-    <div class="login-coin">₯</div>
+  <div class="login-top">
+    <div class="login-coin">&#8367;</div>
     <h1 class="login-title">Dracmas ADC</h1>
     <div class="login-sub">Igreja ADC</div>
   </div>
-  <div class="form-wrap">
+  <div class="login-card">
     <div class="form-group">
       <label class="form-label">nome de usuario</label>
       <input class="form-input" id="login-user" type="text" placeholder="Ex: joao.silva" autocomplete="username"/>
@@ -603,7 +604,7 @@
     </div>
     <div class="err" id="login-error"></div>
     <button class="btn-p" id="login-btn" onclick="doLogin()">entrar</button>
-    <button class="btn-s" onclick="goTo('screen-register')">criar conta</button>
+    <button class="btn-criar" onclick="goTo('screen-register')">criar conta</button>
   </div>
 </div>
 
@@ -714,7 +715,6 @@
         </div>
       </div>
     </div>
-  </div>
   <div class="sec-header">ultimas transacoes</div>
   <div class="tx-list" id="home-txs"><div class="empty">carregando...</div></div>
 </div>
