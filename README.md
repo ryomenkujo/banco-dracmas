@@ -286,7 +286,7 @@
     .com-saldo{margin-left:auto;font-size:13px;font-weight:800;color:var(--gold);flex-shrink:0}
 
     /* BOAS VINDAS */
-    .bv-overlay{position:fixed;inset:0;background:linear-gradient(160deg,var(--p),var(--p4));z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+    .bv-overlay{position:fixed;inset:0;background:linear-gradient(160deg,#2e1a47,#4a2d6e);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
     .bv-coin{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:40px;font-weight:600;border:4px solid var(--gd);margin:0 auto 1.5rem;box-shadow:0 0 40px rgba(212,168,83,.4);animation:pulse 2s ease-in-out infinite}
     .bv-titulo{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);margin-bottom:.5rem}
     .bv-sub{font-size:14px;color:var(--pl);line-height:1.7;margin-bottom:2rem}
@@ -568,6 +568,54 @@
     /* EXPORTAR */
     .export-btns{display:flex;gap:10px;padding:0 1.25rem 1rem}
     .export-btns .btn-p{flex:1;padding:11px;font-size:13px}
+
+    /* LOGIN LIGHT MODE FIX */
+    [data-theme="light"] .login-card .form-input{background:rgba(255,255,255,.15);color:#fff}
+    [data-theme="light"] .login-card .form-input::placeholder{color:rgba(255,255,255,.5)}
+    [data-theme="light"] #screen-login{background:linear-gradient(160deg,#2e1a47,#4a2d6e)}
+
+    /* LIGHT MODE FIXES */
+    [data-theme="light"] .tx-item{background:#fff;border-color:rgba(46,26,71,.08)}
+    [data-theme="light"] .card{background:#fff;border-color:rgba(46,26,71,.08)}
+    [data-theme="light"] .action-btn{background:#fff}
+    [data-theme="light"] .member-item{border-color:rgba(46,26,71,.08)}
+    [data-theme="light"] .info-row{border-color:rgba(46,26,71,.08)}
+    [data-theme="light"] .rel-row{border-color:rgba(46,26,71,.08);color:#1a0e2e}
+    [data-theme="light"] .stat-card{background:#fff}
+    [data-theme="light"] .notif-item{background:#fff;border-color:rgba(46,26,71,.08)}
+    [data-theme="light"] .notif-unread{background:#f0ebff}
+    [data-theme="light"] .loja-item{background:#fff}
+    [data-theme="light"] .modal{background:#fff}
+    [data-theme="light"] .form-input{background:#fff;color:#1a0e2e}
+    [data-theme="light"] select.form-input option{background:#fff;color:#1a0e2e}
+    [data-theme="light"] .menu-item:active{background:#ede8f5}
+    [data-theme="light"] .bottom-nav{background:rgba(255,255,255,.95);border-color:rgba(46,26,71,.1)}
+    [data-theme="light"] .topbar{background:rgba(244,241,249,.95);border-color:rgba(46,26,71,.1)}
+    [data-theme="light"] .topbar-title{color:#2e1a47}
+    [data-theme="light"] .topbar-back,[data-theme="light"] .topbar-icon{background:rgba(46,26,71,.06);color:#2e1a47}
+    [data-theme="light"] .chip{background:#fff}
+    [data-theme="light"] .search-input{background:#fff}
+    [data-theme="light"] .extrato-search input{background:#fff;color:#1a0e2e}
+    [data-theme="light"] .qr-tab{background:#fff}
+    [data-theme="light"] .scan-area{background:#f4f1f9}
+    [data-theme="light"] .admin-panel{background:linear-gradient(135deg,#2e1a47,#4a2d6e)}
+    [data-theme="light"] .mes-tab{background:#fff}
+    [data-theme="light"] .rel-card{background:#fff}
+    [data-theme="light"] .foto-placeholder{background:#fff}
+    [data-theme="light"] .numpad-btn{background:#fff;color:#1a0e2e}
+    [data-theme="light"] .amount-card{background:#fff}
+    [data-theme="light"] .amount-display{color:#1a0e2e}
+    [data-theme="light"] .t-chip{background:#fff}
+    [data-theme="light"] .msg-input{background:#fff;color:#1a0e2e}
+
+    /* DARK MODE EXPLICIT FIXES */
+    [data-theme="dark"] .topbar{background:rgba(15,10,26,.92)}
+    [data-theme="dark"] .topbar-title{color:#f0eaf8}
+    [data-theme="dark"] .topbar-back,[data-theme="dark"] .topbar-icon{background:rgba(180,150,255,.08);color:#f0eaf8}
+    [data-theme="dark"] .bottom-nav{background:rgba(10,6,18,.95)}
+    [data-theme="dark"] .action-btn{background:#1a1028}
+    [data-theme="dark"] .form-input{background:#1a1028;color:#f0eaf8}
+    [data-theme="dark"] select.form-input option{background:#1a1028;color:#f0eaf8}
   </style>
 </head>
 <body>
@@ -1287,7 +1335,7 @@ window.checkStr=function(pw,barId,lblId){const bar=document.getElementById(barId
 // NAV
 const navStack=[];
 window.goTo=function(id,isBack=false){const cur=document.querySelector('.screen.active')?.id;if(!isBack&&cur&&cur!==id)navStack.push(cur);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);updateBottomNav(id);if(id==='screen-transfer')loadTransferMembers();if(id==='screen-history')loadHistoryScreen();if(id==='screen-admin'){loadAdminSelects();loadAdminList();}if(id==='screen-pending')loadPending();if(id==='screen-notifs')loadNotifs();if(id==='screen-mural')loadMuralComLeitura('mural-list',false);if(id==='screen-mural-admin')loadMuralComLeitura('mural-admin-list',true);if(id==='screen-changelog')loadCL('changelog-list',false);if(id==='screen-changelog-admin')loadCL('changelog-admin-list',true);if(id==='screen-relatorio'){relMode='atual';document.getElementById('tab-mes-atual').classList.add('active');document.getElementById('tab-mes-ant').classList.remove('active');loadRelatorio();}if(id==='screen-loja')loadLoja('loja-grid',false);
-  if(id==='screen-qr'){switchQRTab('meu');gerarQR();}
+  if(id==='screen-qr'){switchQRTab('meu');if(CU)gerarQR();}
   if(id==='screen-comunidade')loadComunidade();
   if(id==='screen-loja-admin')loadLoja('loja-admin-grid',true);
   if(id==='screen-perfil')renderPerfil();
@@ -1308,7 +1356,11 @@ window.doChangePw=async function(){const c=document.getElementById('cpw-current'
 window.doLogout=function(){CU=null;allMembers=[];navStack.length=0;document.getElementById('bottom-nav').classList.remove('show');document.getElementById('login-user').value='';document.getElementById('login-pw').value='';goTo('screen-login');};
 // HOME
 function renderHome(){applyAdminStyle();
+  const memberActs = document.getElementById('member-actions');
+  const adminBtns = document.getElementById('admin-btns');
   const adminMemberActs = document.getElementById('admin-member-actions');
+  if(memberActs) memberActs.style.display = CU.admin ? 'none' : 'block';
+  if(adminBtns) adminBtns.style.display = CU.admin ? 'block' : 'none';
   if(adminMemberActs) adminMemberActs.style.display = CU.admin ? 'block' : 'none';document.getElementById('home-greeting').textContent='ola, '+CU.name.split(' ')[0]+'!';document.getElementById('home-balance').textContent=CU.balance;document.getElementById('home-user').textContent=CU.name+(CU.admin?' - administrador':'');document.getElementById('admin-btns').style.display=CU.admin?'block':'none';loadHomeTxs();loadNotifBell();if(CU.admin)loadPendingBadge();if(!CU.admin)checkBoasVindas();}
 async function loadPendingBadge(){try{const s=await getDocs(query(collection(db,'users'),where('status','==','pending')));const b=document.getElementById('pending-badge');s.size>0?(b.textContent=s.size,b.style.display='inline-block'):b.style.display='none';}catch(e){}}
 async function loadNotifBell(){try{const s=await getDocs(query(collection(db,'notifications'),where('to','==',CU.id),where('read','==',false)));document.getElementById('notif-bell').textContent=s.size>0?'🔔🔴':'🔔';}catch(e){}}
@@ -1822,11 +1874,6 @@ function applyAdminStyle() {
     if(balCard) balCard.classList.remove('admin-card');
     if(topbar) topbar.classList.remove('admin-bar');
   }
-  // show/hide member actions vs admin panel
-  const memberActs = document.getElementById('member-actions');
-  const adminBtns = document.getElementById('admin-btns');
-  if(memberActs) memberActs.style.display = CU.admin ? 'none' : 'block';
-  if(adminBtns) adminBtns.style.display = CU.admin ? 'block' : 'none';
 }
 
 // ── QR CODE ──
