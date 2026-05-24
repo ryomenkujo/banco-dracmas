@@ -45,7 +45,8 @@
     .loader-text{color:var(--gold);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.15em;margin-top:1.25rem}
 
     /* LOGIN */
-    #screen-login{background:linear-gradient(160deg,var(--p),var(--p3));min-height:100vh;display:flex;flex-direction:column;padding-bottom:0}
+    #screen-login{background:linear-gradient(160deg,var(--p),var(--p3));min-height:100vh;flex-direction:column;padding-bottom:0}
+    #screen-login.active{display:flex}
     .login-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem 2rem;text-align:center}
     .login-coin{width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:44px;font-weight:600;margin:0 auto 1.5rem;box-shadow:0 8px 32px rgba(212,168,83,.4);animation:pulse 2.5s ease-in-out infinite}
     .login-title{color:var(--gold);font-size:26px;letter-spacing:.05em;font-family:'Cinzel',serif}
@@ -728,6 +729,41 @@
       </div>
     </div>
   </div>
+  <!-- ADMIN MEMBER ACTIONS (abaixo do painel) -->
+  <div id="admin-member-actions" style="display:none;padding:.25rem 0 0">
+    <div class="quick-actions" style="padding-bottom:.75rem">
+      <div class="action-btn" onclick="goTo('screen-transfer')">
+        <div class="action-icon">&#8599;</div>
+        <div class="action-label">enviar</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-qr')">
+        <div class="action-icon">&#128247;</div>
+        <div class="action-label">QR code</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-history')">
+        <div class="action-icon">&#128203;</div>
+        <div class="action-label">extrato</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-loja')">
+        <div class="action-icon">&#127978;</div>
+        <div class="action-label">lojinha</div>
+      </div>
+    </div>
+    <div class="quick-actions" style="padding-bottom:.75rem">
+      <div class="action-btn" onclick="goTo('screen-comunidade')">
+        <div class="action-icon">&#128101;</div>
+        <div class="action-label">comunidade</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-mural')">
+        <div class="action-icon">&#128226;</div>
+        <div class="action-label">mural</div>
+      </div>
+      <div class="action-btn" onclick="goTo('screen-perfil')">
+        <div class="action-icon">&#128100;</div>
+        <div class="action-label">perfil</div>
+      </div>
+    </div>
+  </div>
   <div class="sec-header">ultimas transacoes</div>
   <div class="tx-list" id="home-txs"><div class="empty">carregando...</div></div>
 </div>
@@ -1263,7 +1299,7 @@ function txHtml(tx,uid){const isIn=tx.to===uid;const cat=CATS[tx.category]||(isI
 function buildFilters(containerId,txs){const el=document.getElementById(containerId);const cats=new Set(txs.map(t=>t.category).filter(Boolean));const chips=[{key:'all',label:'Todos'},...[...cats].map(k=>({key:k,label:(CATS[k]?.label||k)}))];el.innerHTML=chips.map(c=>`<div class="chip${c.key==='all'?' active':''}" data-key="${c.key}" onclick="applyFilter('${containerId}','${c.key}')">${c.label}</div>`).join('');}
 window.applyFilter=function(cid,key){document.querySelectorAll(`#${cid} .chip`).forEach(c=>c.classList.toggle('active',c.dataset.key===key));const listId=cid==='history-filters'?'history-txs':'member-history-txs';const txs=cid==='history-filters'?histAll:mHistAll;const uid=cid==='history-filters'?CU.id:window._mhUid;const f=key==='all'?txs:txs.filter(t=>t.category===key);document.getElementById(listId).innerHTML=f.length?f.map(t=>txHtml(t,uid)).join(''):'<div class="empty">nenhuma transacao</div>';};
 // LOGIN
-window.doLogin=async function(){const u=document.getElementById('login-user').value.trim().toLowerCase();const p=document.getElementById('login-pw').value;if(!u||!p){err('login-error','preencha todos os campos');return;}setLoad('login-btn',true);try{const snap=await getDoc(doc(db,'users',u));if(!snap.exists()){err('login-error','usuario nao encontrado');return;}const data=snap.data();if(data.password!==p){err('login-error','senha incorreta');return;}if(data.status==='pending'){err('login-error','conta aguardando aprovacao');return;}if(data.status==='paused'){err('login-error','conta pausada. fale com o admin');return;}CU={id:u,...data};renderHome();goTo('screen-home');if(!CU.admin)document.getElementById('bottom-nav').classList.add('show');}catch(e){err('login-error','erro de conexao');}finally{setLoad('login-btn',false);}};
+window.doLogin=async function(){const u=document.getElementById('login-user').value.trim().toLowerCase();const p=document.getElementById('login-pw').value;if(!u||!p){err('login-error','preencha todos os campos');return;}setLoad('login-btn',true);try{const snap=await getDoc(doc(db,'users',u));if(!snap.exists()){err('login-error','usuario nao encontrado');return;}const data=snap.data();if(data.password!==p){err('login-error','senha incorreta');return;}if(data.status==='pending'){err('login-error','conta aguardando aprovacao');return;}if(data.status==='paused'){err('login-error','conta pausada. fale com o admin');return;}CU={id:u,...data};renderHome();goTo('screen-home');document.getElementById('bottom-nav').classList.add('show');}catch(e){err('login-error','erro de conexao');}finally{setLoad('login-btn',false);}};
 // REGISTER
 window.doRegister=async function(){const name=document.getElementById('reg-name').value.trim();const u=document.getElementById('reg-user').value.trim().toLowerCase().replace(/\s+/g,'');const p=document.getElementById('reg-pw').value;const p2=document.getElementById('reg-pw2').value;if(!name||!u||!p||!p2){err('reg-error','preencha todos os campos');return;}if(p.length<6){err('reg-error','senha minimo 6 caracteres');return;}if(p!==p2){err('reg-error','as senhas nao coincidem');return;}if(!/^[a-z0-9._]+$/.test(u)){err('reg-error','usuario: so letras minusculas, numeros e ponto');return;}setLoad('reg-btn',true);try{const ref=doc(db,'users',u);if((await getDoc(ref)).exists()){err('reg-error','usuario ja existe');return;}await setDoc(ref,{name,password:p,balance:0,admin:false,status:'pending',createdAt:serverTimestamp()});toast('solicitacao enviada! aguarde aprovacao.');goTo('screen-login');document.getElementById('login-user').value=u;}catch(e){err('reg-error','erro ao criar conta');}finally{setLoad('reg-btn',false);}};
 // CHANGE PW
@@ -1271,7 +1307,9 @@ window.doChangePw=async function(){const c=document.getElementById('cpw-current'
 // LOGOUT
 window.doLogout=function(){CU=null;allMembers=[];navStack.length=0;document.getElementById('bottom-nav').classList.remove('show');document.getElementById('login-user').value='';document.getElementById('login-pw').value='';goTo('screen-login');};
 // HOME
-function renderHome(){applyAdminStyle();document.getElementById('home-greeting').textContent='ola, '+CU.name.split(' ')[0]+'!';document.getElementById('home-balance').textContent=CU.balance;document.getElementById('home-user').textContent=CU.name+(CU.admin?' - administrador':'');document.getElementById('admin-btns').style.display=CU.admin?'block':'none';loadHomeTxs();loadNotifBell();if(CU.admin)loadPendingBadge();if(!CU.admin)checkBoasVindas();}
+function renderHome(){applyAdminStyle();
+  const adminMemberActs = document.getElementById('admin-member-actions');
+  if(adminMemberActs) adminMemberActs.style.display = CU.admin ? 'block' : 'none';document.getElementById('home-greeting').textContent='ola, '+CU.name.split(' ')[0]+'!';document.getElementById('home-balance').textContent=CU.balance;document.getElementById('home-user').textContent=CU.name+(CU.admin?' - administrador':'');document.getElementById('admin-btns').style.display=CU.admin?'block':'none';loadHomeTxs();loadNotifBell();if(CU.admin)loadPendingBadge();if(!CU.admin)checkBoasVindas();}
 async function loadPendingBadge(){try{const s=await getDocs(query(collection(db,'users'),where('status','==','pending')));const b=document.getElementById('pending-badge');s.size>0?(b.textContent=s.size,b.style.display='inline-block'):b.style.display='none';}catch(e){}}
 async function loadNotifBell(){try{const s=await getDocs(query(collection(db,'notifications'),where('to','==',CU.id),where('read','==',false)));document.getElementById('notif-bell').textContent=s.size>0?'🔔🔴':'🔔';}catch(e){}}
 async function loadHomeTxs(){const el=document.getElementById('home-txs');el.innerHTML='<div class="empty">carregando...</div>';try{const q=query(collection(db,'transactions'),where('participants','array-contains',CU.id),orderBy('createdAt','desc'),limit(5));const s=await getDocs(q);el.innerHTML=s.empty?'<div class="empty">nenhuma transacao ainda</div>':s.docs.map(d=>txHtml(d.data(),CU.id)).join('');}catch(e){el.innerHTML=`<div class="empty">erro: ${e.message}</div>`;}}
@@ -1759,7 +1797,7 @@ function initTheme() {
 }
 
 // ── BOTTOM NAV ──
-const MEMBER_SCREENS = ['screen-home','screen-transfer','screen-qr','screen-comunidade','screen-perfil','screen-history','screen-loja','screen-mural','screen-notifs','screen-settings','screen-change-pw'];
+const MEMBER_SCREENS = ['screen-home','screen-transfer','screen-qr','screen-comunidade','screen-perfil','screen-history','screen-loja','screen-mural','screen-notifs','screen-settings','screen-change-pw','screen-admin','screen-pending','screen-relatorio','screen-mural-admin','screen-loja-admin','screen-member-history'];
 window.setNav = function(id) {
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
   const el=document.getElementById(id);
