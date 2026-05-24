@@ -43,12 +43,22 @@
     @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
     .loader-text{color:var(--gold);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.15em;margin-top:1.25rem}
 
-    /* LOGIN (mantido igual) */
-    #screen-login{background:var(--p)}
-    .login-hero{background:linear-gradient(160deg,var(--p2),var(--p4));padding:3rem 1.5rem 2.5rem;text-align:center;border-radius:0 0 32px 32px;margin-bottom:2rem;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-    .login-coin{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:38px;font-weight:600;border:4px solid var(--gd);margin:0 auto 1.25rem;box-shadow:0 4px 24px rgba(212,168,83,.4)}
-    .login-title{color:var(--gold);font-size:22px;letter-spacing:.05em}
-    .login-sub{color:var(--pl);font-size:13px;margin-top:5px}
+    /* LOGIN */
+    #screen-login{background:linear-gradient(160deg,var(--p),var(--p3));min-height:100vh;display:flex;flex-direction:column;padding-bottom:0}
+    .login-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem 2rem;text-align:center}
+    .login-coin{width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:44px;font-weight:600;margin:0 auto 1.5rem;box-shadow:0 8px 32px rgba(212,168,83,.4);animation:pulse 2.5s ease-in-out infinite}
+    .login-title{color:var(--gold);font-size:26px;letter-spacing:.05em;font-family:'Cinzel',serif}
+    .login-sub{color:rgba(180,150,255,.7);font-size:13px;margin-top:6px;letter-spacing:.04em}
+    .login-card{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border-radius:28px 28px 0 0;padding:2rem 1.5rem 2.5rem;border-top:1px solid rgba(255,255,255,.1)}
+    .login-card .form-label{color:rgba(180,150,255,.75)}
+    .login-card .form-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.1);color:#fff;border-radius:var(--rs)}
+    .login-card .form-input::placeholder{color:rgba(255,255,255,.25)}
+    .login-card .form-input:focus{border-color:rgba(212,168,83,.6);background:rgba(255,255,255,.12)}
+    .login-card .toggle-pw{color:rgba(255,255,255,.35)}
+    .login-card .btn-p{background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);font-weight:800;box-shadow:0 4px 20px rgba(212,168,83,.35);border:none}
+    .login-card .btn-criar{width:100%;padding:13px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;background:transparent;color:rgba(212,168,83,.85);border:1.5px solid rgba(212,168,83,.25);border-radius:var(--rs);cursor:pointer;margin-top:10px;transition:background .15s,border-color .15s;letter-spacing:.02em}
+    .login-card .btn-criar:active{background:rgba(212,168,83,.1);border-color:rgba(212,168,83,.5)}
+    .login-card .err{color:#fca5a5}
 
     /* FORMS */
     .form-wrap{padding:0 1.5rem}
