@@ -571,19 +571,21 @@
 </head>
 <body>
 
-
+<!-- BOAS VINDAS -->
 <div id="bv-overlay" class="bv-overlay" style="display:none">
   <div class="bv-coin">&#8367;</div>
   <div class="bv-titulo" id="bv-nome">Bem-vindo!</div>
-  <div class="bv-sub">Você acaba de entrar no<br><strong style="color:var(--gold)">Banco de Dracmas ADC</strong>.<br><br>Aqui você gerencia suas dracmas,<br>transfere para outros membros<br>e acompanha seu saldo.</div>
+  <div class="bv-sub">Voce acaba de entrar no<br><strong style="color:var(--gold)">Banco de Dracmas ADC</strong>.<br><br>Aqui voce gerencia suas dracmas,<br>transfere para outros membros<br>e acompanha seu saldo.</div>
   <button class="bv-btn" onclick="fecharBoasVindas()">Entrar &#8594;</button>
 </div>
 
+<!-- LOADER -->
 <div id="screen-loader" class="screen active">
-  <div class="loader-coin">₯</div>
+  <div class="loader-coin">&#8367;</div>
   <div class="loader-text">carregando...</div>
 </div>
 
+<!-- LOGIN -->
 <div id="screen-login" class="screen">
   <div class="login-top">
     <div class="login-coin">&#8367;</div>
@@ -608,6 +610,7 @@
   </div>
 </div>
 
+<!-- REGISTER -->
 <div id="screen-register" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -645,104 +648,117 @@
   </div>
 </div>
 
+<!-- HOME -->
 <div id="screen-home" class="screen">
-  <div class="topbar">
-    <div class="topbar-logo">₯</div>
+  <div class="topbar" id="home-topbar">
+    <div class="topbar-logo">&#8367;</div>
     <span class="topbar-title" id="home-greeting">ola!</span>
-    
-    <button class="topbar-icon" onclick="goTo('screen-notifs')"><span id="notif-bell">🔔</span></button>
+    <button class="topbar-icon" onclick="goTo('screen-notifs')"><span id="notif-bell">&#128276;</span></button>
     <button class="topbar-icon" onclick="goTo('screen-settings')">&#9881;</button>
   </div>
-  <div class="balance-card">
+  <div class="balance-card" id="home-balance-card">
     <div class="bal-label">saldo atual</div>
     <div><span class="bal-amount" id="home-balance">0</span><span class="bal-unit">dracmas</span></div>
     <div class="bal-user" id="home-user"></div>
   </div>
-  <div id="member-actions" style="padding:.75rem 0 0">
+  <!-- MEMBER ACTIONS -->
+  <div id="member-actions" style="padding:.75rem 0 0;display:none">
     <div class="quick-actions" style="padding-bottom:.75rem">
       <div class="action-btn" onclick="goTo('screen-transfer')">
-        <div class="action-icon">&#8599;</div><div class="action-label">enviar</div>
+        <div class="action-icon">&#8599;</div>
+        <div class="action-label">enviar</div>
       </div>
       <div class="action-btn" onclick="goTo('screen-qr')">
-        <div class="action-icon">&#128247;</div><div class="action-label">QR code</div>
+        <div class="action-icon">&#128247;</div>
+        <div class="action-label">QR code</div>
       </div>
       <div class="action-btn" onclick="goTo('screen-history')">
-        <div class="action-icon">&#128203;</div><div class="action-label">extrato</div>
+        <div class="action-icon">&#128203;</div>
+        <div class="action-label">extrato</div>
       </div>
       <div class="action-btn" onclick="goTo('screen-loja')">
-        <div class="action-icon">&#127978;</div><div class="action-label">lojinha</div>
+        <div class="action-icon">&#127978;</div>
+        <div class="action-label">lojinha</div>
       </div>
     </div>
     <div class="quick-actions" style="padding-bottom:.75rem">
       <div class="action-btn" onclick="goTo('screen-comunidade')">
-        <div class="action-icon">&#128101;</div><div class="action-label">comunidade</div>
+        <div class="action-icon">&#128101;</div>
+        <div class="action-label">comunidade</div>
       </div>
       <div class="action-btn" onclick="goTo('screen-mural')">
-        <div class="action-icon">&#128226;</div><div class="action-label">mural</div>
+        <div class="action-icon">&#128226;</div>
+        <div class="action-label">mural</div>
       </div>
       <div class="action-btn" onclick="goTo('screen-perfil')">
-        <div class="action-icon">&#128100;</div><div class="action-label">perfil</div>
+        <div class="action-icon">&#128100;</div>
+        <div class="action-label">perfil</div>
       </div>
     </div>
   </div>
-  <div id="admin-btns" style="display:none">
-      <div style="padding:.75rem 1.25rem .25rem">
-        <div style="background:linear-gradient(135deg,#1a0e2e,#2e1a47);border-radius:18px;padding:1.25rem;box-shadow:0 6px 24px rgba(26,14,46,.35);border:1px solid rgba(212,168,83,.15)">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(212,168,83,.6);margin-bottom:1rem">painel administrativo</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div onclick="goTo('screen-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12);transition:background .15s" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
-              <div style="font-size:24px;margin-bottom:6px">&#128081;</div>
-              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerenciar</div>
-            </div>
-            <div onclick="goTo('screen-pending')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
-              <div style="font-size:24px;margin-bottom:6px">&#9203;</div>
-              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div>
-            </div>
-            <div onclick="goTo('screen-relatorio')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
-              <div style="font-size:24px;margin-bottom:6px">&#128202;</div>
-              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">relatório</div>
-            </div>
-            <div onclick="goTo('screen-mural-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
-              <div style="font-size:24px;margin-bottom:6px">&#128226;</div>
-              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerir mural</div>
-            </div>
-            <div onclick="goTo('screen-loja-admin')" style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;border:1px solid rgba(212,168,83,.12)" onmousedown="this.style.background='rgba(255,255,255,.12)'" onmouseup="this.style.background='rgba(255,255,255,.06)'" ontouchstart="this.style.background='rgba(255,255,255,.12)'" ontouchend="this.style.background='rgba(255,255,255,.06)'">
-              <div style="font-size:24px;margin-bottom:6px">&#127978;</div>
-              <div style="font-size:11px;font-weight:700;color:#d4a853;letter-spacing:.03em">gerir loja</div>
-            </div>
-
-          </div>
+  <!-- ADMIN PANEL -->
+  <div id="admin-btns" style="display:none;padding:.75rem 1rem 0">
+    <div class="admin-panel">
+      <div class="admin-panel-label">painel administrativo</div>
+      <div class="admin-grid">
+        <div class="admin-grid-btn" onclick="goTo('screen-admin')">
+          <div class="admin-grid-icon">&#128081;</div>
+          <div class="admin-grid-label">gerenciar</div>
+        </div>
+        <div class="admin-grid-btn" onclick="goTo('screen-pending')">
+          <div class="admin-grid-icon">&#9203;</div>
+          <div class="admin-grid-label">aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div>
+        </div>
+        <div class="admin-grid-btn" onclick="goTo('screen-relatorio')">
+          <div class="admin-grid-icon">&#128202;</div>
+          <div class="admin-grid-label">relatorio</div>
+        </div>
+        <div class="admin-grid-btn" onclick="goTo('screen-mural-admin')">
+          <div class="admin-grid-icon">&#128226;</div>
+          <div class="admin-grid-label">gerir mural</div>
+        </div>
+        <div class="admin-grid-btn" onclick="goTo('screen-loja-admin')">
+          <div class="admin-grid-icon">&#127978;</div>
+          <div class="admin-grid-label">gerir loja</div>
+        </div>
+        <div class="admin-grid-btn" onclick="goTo('screen-history')">
+          <div class="admin-grid-icon">&#128203;</div>
+          <div class="admin-grid-label">extrato</div>
         </div>
       </div>
     </div>
+  </div>
   <div class="sec-header">ultimas transacoes</div>
   <div class="tx-list" id="home-txs"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- EXTRATO -->
 <div id="screen-history" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title">extrato completo</span>
   </div>
   <div class="extrato-search">
-    <input type="text" id="history-search" placeholder="buscar por descricao..." oninput="buscarExtrato('history',this.value)"/>
+    <input type="text" id="history-search" placeholder="buscar..." oninput="buscarExtrato('history',this.value)"/>
   </div>
   <div class="filter-bar" id="history-filters"></div>
   <div class="tx-list" id="history-txs"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- EXTRATO MEMBRO (admin) -->
 <div id="screen-member-history" class="screen">
-  <div class="topbar">
+  <div class="topbar admin-bar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title" id="member-history-title">extrato</span>
   </div>
   <div class="extrato-search">
-    <input type="text" id="member-history-search" placeholder="buscar por descricao..." oninput="buscarExtrato('member-history',this.value)"/>
+    <input type="text" id="member-history-search" placeholder="buscar..." oninput="buscarExtrato('member-history',this.value)"/>
   </div>
   <div class="filter-bar" id="member-history-filters"></div>
   <div class="tx-list" id="member-history-txs"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- TRANSFERIR -->
 <div id="screen-transfer" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -766,14 +782,59 @@
   </div>
 </div>
 
+<!-- QR CODE -->
+<div id="screen-qr" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">QR Code</span>
+  </div>
+  <div style="text-align:center;padding:1.5rem 1rem 1rem">
+    <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:.25rem">Pagamentos por QR</p>
+    <p style="font-size:13px;color:var(--muted)">mostre ou escaneie para transferir dracmas</p>
+  </div>
+  <div class="qr-tabs">
+    <div class="qr-tab active" id="qr-tab-meu" onclick="switchQRTab('meu')">Meu QR</div>
+    <div class="qr-tab" id="qr-tab-scan" onclick="switchQRTab('scan')">Escanear</div>
+  </div>
+  <div id="qr-panel-meu" style="text-align:center;padding:0 1rem 1rem">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Mostre este QR para receber dracmas</p>
+    <div class="qr-box" id="qr-canvas"></div>
+    <p style="font-size:13px;color:var(--muted);margin-top:1rem" id="qr-user-label"></p>
+    <div style="margin-top:1rem;display:flex;gap:8px">
+      <div id="qr-livre-btn" onclick="setQRMode('livre')" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;cursor:pointer">
+        <div style="font-size:11px;font-weight:700;color:var(--muted)">valor livre</div>
+      </div>
+      <div id="qr-valor-btn" onclick="setQRMode('valor')" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;cursor:pointer">
+        <div style="font-size:11px;font-weight:700;color:var(--muted)">definir valor</div>
+      </div>
+    </div>
+    <div id="qr-valor-input" style="display:none;margin-top:.75rem">
+      <input class="form-input" id="qr-amount-input" type="number" min="1" placeholder="valor em dracmas" inputmode="numeric" oninput="gerarQR()"/>
+    </div>
+  </div>
+  <div id="qr-panel-scan" style="display:none">
+    <div class="scan-area">
+      <div style="font-size:56px">&#128247;</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.5">Aponte a camera para o QR code de outro membro</p>
+      <button class="scan-btn" onclick="iniciarScan()">Abrir camera</button>
+    </div>
+    <div id="qr-reader-wrap" style="padding:1rem;display:none">
+      <div id="qr-reader" style="width:100%;border-radius:16px;overflow:hidden"></div>
+      <button class="btn-p danger" style="margin-top:.75rem" onclick="pararScan()">cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICACOES -->
 <div id="screen-notifs" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title">notificacoes</span>
   </div>
-  <div style="padding:0 1.25rem" id="notifs-list"><div class="empty">carregando...</div></div>
+  <div style="padding:0 1rem" id="notifs-list"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- CONFIGURACOES -->
 <div id="screen-settings" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -781,7 +842,9 @@
   </div>
   <div style="padding-top:.5rem">
     <div class="menu-item" onclick="goTo('screen-perfil')">
-      <div class="menu-icon">&#128100;</div><div class="menu-label">meu perfil</div><div class="menu-arrow">&#8250;</div>
+      <div class="menu-icon">&#128100;</div>
+      <div class="menu-label">meu perfil</div>
+      <div class="menu-arrow">&#8250;</div>
     </div>
     <div class="menu-item" onclick="toggleTheme()">
       <div class="menu-icon" id="theme-menu-icon">&#127774;</div>
@@ -791,15 +854,19 @@
       </div>
     </div>
     <div class="menu-item" onclick="goTo('screen-change-pw')">
-      <div class="menu-icon">&#128273;</div><div class="menu-label">mudar senha</div><div class="menu-arrow">&#8250;</div>
+      <div class="menu-icon">&#128273;</div>
+      <div class="menu-label">mudar senha</div>
+      <div class="menu-arrow">&#8250;</div>
     </div>
-
     <div class="menu-item" onclick="doLogout()">
-      <div class="menu-icon">&#8619;</div><div class="menu-label" style="color:#a33030">sair da conta</div><div class="menu-arrow">&#8250;</div>
+      <div class="menu-icon">&#8619;</div>
+      <div class="menu-label" style="color:var(--red)">sair da conta</div>
+      <div class="menu-arrow">&#8250;</div>
     </div>
   </div>
 </div>
 
+<!-- MUDAR SENHA -->
 <div id="screen-change-pw" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -835,14 +902,16 @@
   </div>
 </div>
 
+<!-- MURAL LEITURA -->
 <div id="screen-mural" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title">mural de avisos</span>
   </div>
-  <div style="padding:1rem 1.25rem" id="mural-list" data-track="true"><div class="empty">carregando...</div></div>
+  <div style="padding:1rem" id="mural-list"><div class="empty">carregando...</div></div>
 </div>
 
+<!-- MURAL ADMIN -->
 <div id="screen-mural-admin" class="screen">
   <div class="topbar admin-bar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -861,147 +930,24 @@
     <button class="btn-p" id="aviso-btn" onclick="publicarAviso()">publicar aviso</button>
   </div>
   <div class="sec-header">avisos publicados</div>
-  <div style="padding:0 1.25rem" id="mural-admin-list"><div class="empty">carregando...</div></div>
+  <div style="padding:0 1rem" id="mural-admin-list"><div class="empty">carregando...</div></div>
 </div>
 
-<div id="screen-changelog" class="screen">
-  <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">novidades &#127381;</span>
-  </div>
-  <div style="padding:1rem 1.25rem" id="changelog-list"><div class="empty">carregando...</div></div>
-</div>
-
-<div id="screen-changelog-admin" class="screen">
-  <div class="topbar admin-bar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">publicar novidade <span class="tag-a">admin</span></span>
-  </div>
-  <div class="form-section" style="padding-top:1.5rem">
-    <div class="form-group">
-      <label class="form-label">versao (ex: 1.3)</label>
-      <input class="form-input" id="cl-version" type="text" placeholder="Ex: 1.3"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">titulo</label>
-      <input class="form-input" id="cl-titulo" type="text" placeholder="Ex: Extrato com filtros"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">o que mudou</label>
-      <textarea class="form-input" id="cl-texto" placeholder="- Extrato com filtros&#10;- Relatorio por mes&#10;- Correcao de bugs..."></textarea>
-    </div>
-    <div class="err" id="cl-error"></div>
-    <button class="btn-p" id="cl-btn" onclick="publicarChangelog()">publicar</button>
-  </div>
-  <div class="sec-header">publicacoes anteriores</div>
-  <div style="padding:0 1.25rem" id="changelog-admin-list"><div class="empty">carregando...</div></div>
-</div>
-
-<div id="screen-relatorio" class="screen">
-  <div class="topbar admin-bar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">relatorio <span class="tag-a">admin</span></span>
-  </div>
-  <div class="mes-tabs">
-    <div class="mes-tab active" id="tab-mes-atual" onclick="switchMes('atual')">mes atual</div>
-    <div class="mes-tab" id="tab-mes-ant" onclick="switchMes('anterior')">mes anterior</div>
-  </div>
-  <div id="relatorio-content"><div class="empty" style="padding:2rem">carregando...</div></div>
-  <div style="padding:0 1.25rem 1rem">
-    <button class="btn-p" id="pdf-btn" onclick="gerarPDF()">baixar PDF</button>
-  </div>
-</div>
-
-<div id="screen-admin" class="screen">
-  <div class="topbar admin-bar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">gerenciar <span class="tag-a">admin</span></span>
-  </div>
-  <div class="tabs">
-    <div class="tab active" id="tab-give" onclick="switchAdminTab('give')">+ dar</div>
-    <div class="tab" id="tab-take" onclick="switchAdminTab('take')">- retirar</div>
-  </div>
-  <div class="form-section" id="admin-give-form" style="padding-top:.75rem">
-    <div class="form-group">
-      <label class="form-label">membro</label>
-      <select class="form-input" id="admin-member-give"></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">categoria</label>
-      <select class="form-input" id="admin-cat-give">
-        <option value="culto">Culto</option>
-        <option value="missao">Missao</option>
-        <option value="evento">Evento</option>
-        <option value="estudo">Estudo / Celula</option>
-        <option value="conquista">Conquista</option>
-        <option value="presente">Presente</option>
-        <option value="outros">Outros</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">quantidade</label>
-      <input class="form-input" id="admin-amount-give" type="number" min="1" placeholder="0" inputmode="numeric"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">observacao (opcional)</label>
-      <input class="form-input" id="admin-reason-give" type="text" placeholder="ex: presenca no culto de domingo"/>
-    </div>
-    <div class="err" id="admin-error-give"></div>
-    <button class="btn-p" id="admin-btn-give" onclick="doDistribute()">dar dracmas</button>
-  </div>
-  <div class="form-section" id="admin-take-form" style="display:none;padding-top:.75rem">
-    <div class="form-group">
-      <label class="form-label">membro</label>
-      <select class="form-input" id="admin-member-take"></select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">categoria</label>
-      <select class="form-input" id="admin-cat-take">
-        <option value="penalidade">Penalidade</option>
-        <option value="outros">Outros</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">quantidade</label>
-      <input class="form-input" id="admin-amount-take" type="number" min="1" placeholder="0" inputmode="numeric"/>
-    </div>
-    <div class="form-group">
-      <label class="form-label">observacao (opcional)</label>
-      <input class="form-input" id="admin-reason-take" type="text" placeholder="ex: motivo da penalidade"/>
-    </div>
-    <div class="err" id="admin-error-take"></div>
-    <button class="btn-p danger" id="admin-btn-take" onclick="doDeduct()">retirar dracmas</button>
-  </div>
-  <div class="sec-header">membros ativos</div>
-  <div class="export-btns">
-    <button class="btn-p" onclick="exportarCSV()" style="font-size:13px;padding:11px">&#128196; exportar CSV</button>
-    <button class="btn-p" onclick="exportarPDFMembros()" style="font-size:13px;padding:11px">&#128209; exportar PDF</button>
-  </div>
-  <div class="member-list" id="admin-members-list"><div class="empty">carregando...</div></div>
-</div>
-
-<div id="screen-pending" class="screen">
-  <div class="topbar admin-bar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">aprovacao de contas</span>
-  </div>
-  <div class="member-list" id="pending-list"><div class="empty">carregando...</div></div>
-</div>
-
-
+<!-- LOJINHA MEMBROS -->
 <div id="screen-loja" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
     <span class="topbar-title">&#127978; Lojinha de Dracmas</span>
   </div>
-  <p style="font-size:12px;color:var(--muted);padding:.75rem 1.25rem;line-height:1.6">Veja os itens disponíveis e seus preços. Para comprar, apresente o item na feirinha e pague com seus dracmas!</p>
+  <p style="font-size:12px;color:var(--muted);padding:.75rem 1rem;line-height:1.6">Veja os itens e seus precos. Compre presencialmente na feirinha!</p>
   <div class="loja-grid" id="loja-grid"><div class="empty" style="grid-column:1/-1">carregando...</div></div>
 </div>
 
+<!-- LOJINHA ADMIN -->
 <div id="screen-loja-admin" class="screen">
   <div class="topbar admin-bar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">gerenciar lojinha <span class="tag-a">admin</span></span>
+    <span class="topbar-title">gerir loja <span class="tag-a">admin</span></span>
   </div>
   <div class="form-section" style="padding-top:1.5rem">
     <div class="form-group">
@@ -1028,6 +974,7 @@
   <div class="loja-grid" id="loja-admin-grid"><div class="empty" style="grid-column:1/-1">carregando...</div></div>
 </div>
 
+<!-- PERFIL PROPRIO -->
 <div id="screen-perfil" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -1071,25 +1018,13 @@
       <span class="info-value" id="perfil-status"></span>
     </div>
   </div>
-  <div style="padding:0 1.25rem">
-    <button class="btn-p" onclick="goTo('screen-change-pw')" style="margin-bottom:.75rem">mudar senha</button>
+  <div style="padding:0 1rem">
+    <button class="btn-p" onclick="goTo('screen-change-pw')" style="margin-bottom:.75rem">mudar senha &#128273;</button>
     <button class="btn-s" onclick="doLogout()">sair da conta</button>
   </div>
 </div>
 
-
-<div id="screen-comunidade" class="screen">
-  <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">&#128101; comunidade</span>
-  </div>
-  <div class="search-bar">
-    <span class="search-icon">&#128269;</span>
-    <input class="search-input" id="com-search" type="text" placeholder="buscar membro..." oninput="filtrarComunidade(this.value)"/>
-  </div>
-  <div class="comunidade-list" id="comunidade-list"><div class="empty">carregando...</div></div>
-</div>
-
+<!-- PERFIL PUBLICO -->
 <div id="screen-perfil-publico" class="screen">
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()">&#8592;</button>
@@ -1129,7 +1064,114 @@
   </div>
 </div>
 
+<!-- COMUNIDADE -->
+<div id="screen-comunidade" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">&#128101; comunidade</span>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">&#128269;</span>
+    <input class="search-input" id="com-search" type="text" placeholder="buscar membro..." oninput="filtrarComunidade(this.value)"/>
+  </div>
+  <div class="comunidade-list" id="comunidade-list"><div class="empty">carregando...</div></div>
+</div>
 
+<!-- RELATORIO -->
+<div id="screen-relatorio" class="screen">
+  <div class="topbar admin-bar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">relatorio <span class="tag-a">admin</span></span>
+  </div>
+  <div class="mes-tabs">
+    <div class="mes-tab active" id="tab-mes-atual" onclick="switchMes('atual')">mes atual</div>
+    <div class="mes-tab" id="tab-mes-ant" onclick="switchMes('anterior')">mes anterior</div>
+  </div>
+  <div id="relatorio-content"><div class="empty" style="padding:2rem">carregando...</div></div>
+  <div style="padding:0 1rem 1rem">
+    <button class="btn-p" id="pdf-btn" onclick="gerarPDF()">baixar PDF</button>
+  </div>
+</div>
+
+<!-- ADMIN GERENCIAR -->
+<div id="screen-admin" class="screen">
+  <div class="topbar admin-bar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">gerenciar <span class="tag-a">admin</span></span>
+  </div>
+  <div class="tabs">
+    <div class="tab active" id="tab-give" onclick="switchAdminTab('give')">+ dar</div>
+    <div class="tab" id="tab-take" onclick="switchAdminTab('take')">- retirar</div>
+  </div>
+  <div class="form-section" id="admin-give-form" style="padding-top:.75rem">
+    <div class="form-group">
+      <label class="form-label">membro</label>
+      <select class="form-input" id="admin-member-give"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">categoria</label>
+      <select class="form-input" id="admin-cat-give">
+        <option value="culto">Culto</option>
+        <option value="missao">Missao</option>
+        <option value="evento">Evento</option>
+        <option value="estudo">Estudo / Celula</option>
+        <option value="conquista">Conquista</option>
+        <option value="presente">Presente</option>
+        <option value="outros">Outros</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">quantidade</label>
+      <input class="form-input" id="admin-amount-give" type="number" min="1" placeholder="0" inputmode="numeric"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">observacao (opcional)</label>
+      <input class="form-input" id="admin-reason-give" type="text" placeholder="ex: presenca no culto"/>
+    </div>
+    <div class="err" id="admin-error-give"></div>
+    <button class="btn-p" id="admin-btn-give" onclick="doDistribute()">dar dracmas</button>
+  </div>
+  <div class="form-section" id="admin-take-form" style="display:none;padding-top:.75rem">
+    <div class="form-group">
+      <label class="form-label">membro</label>
+      <select class="form-input" id="admin-member-take"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">categoria</label>
+      <select class="form-input" id="admin-cat-take">
+        <option value="penalidade">Penalidade</option>
+        <option value="outros">Outros</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">quantidade</label>
+      <input class="form-input" id="admin-amount-take" type="number" min="1" placeholder="0" inputmode="numeric"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">observacao (opcional)</label>
+      <input class="form-input" id="admin-reason-take" type="text" placeholder="ex: motivo da penalidade"/>
+    </div>
+    <div class="err" id="admin-error-take"></div>
+    <button class="btn-p danger" id="admin-btn-take" onclick="doDeduct()">retirar dracmas</button>
+  </div>
+  <div class="sec-header">membros ativos</div>
+  <div class="export-btns">
+    <button class="btn-p" onclick="exportarCSV()" style="font-size:13px;padding:11px">&#128196; CSV</button>
+    <button class="btn-p" onclick="exportarPDFMembros()" style="font-size:13px;padding:11px">&#128209; PDF</button>
+  </div>
+  <div class="member-list" id="admin-members-list"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- PENDENTES -->
+<div id="screen-pending" class="screen">
+  <div class="topbar admin-bar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">aprovacao de contas</span>
+  </div>
+  <div class="member-list" id="pending-list"><div class="empty">carregando...</div></div>
+</div>
+
+<!-- EDIT LOJA MODAL -->
 <div class="modal-overlay" id="modal-edit-loja">
   <div class="modal">
     <div class="modal-title">editar item</div>
@@ -1150,6 +1192,7 @@
   </div>
 </div>
 
+<!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal">
     <div class="modal-title" id="modal-title">confirmar</div>
@@ -1161,9 +1204,34 @@
   </div>
 </div>
 
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav">
+  <div class="bn-item active" id="bn-home" onclick="goTo('screen-home');setNav('bn-home')">
+    <div class="bn-icon">&#127968;</div>
+    <div class="bn-label">inicio</div>
+  </div>
+  <div class="bn-item" id="bn-transfer" onclick="goTo('screen-transfer');setNav('bn-transfer')">
+    <div class="bn-icon">&#8599;</div>
+    <div class="bn-label">enviar</div>
+  </div>
+  <div class="bn-item" id="bn-qr" onclick="goTo('screen-qr');setNav('bn-qr')">
+    <div class="bn-icon">&#128247;</div>
+    <div class="bn-label">QR</div>
+  </div>
+  <div class="bn-item" id="bn-comunidade" onclick="goTo('screen-comunidade');setNav('bn-comunidade')">
+    <div class="bn-icon">&#128101;</div>
+    <div class="bn-label">turma</div>
+  </div>
+  <div class="bn-item" id="bn-perfil" onclick="goTo('screen-perfil');setNav('bn-perfil')">
+    <div class="bn-icon">&#128100;</div>
+    <div class="bn-label">perfil</div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script type="module">
+
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,collection,getDocs,addDoc,query,where,orderBy,limit,serverTimestamp,runTransaction}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const FC={apiKey:"AIzaSyA-t2k2EVpfv-xqtQxtq4bt043tOqTtTDw",authDomain:"banco-dracmas.firebaseapp.com",projectId:"banco-dracmas",storageBucket:"banco-dracmas.firebasestorage.app",messagingSenderId:"755685605861",appId:"1:755685605861:web:651fd974ad8a784af7af0c"};
@@ -1798,73 +1866,7 @@ window.pararScan = async function() {
 // INIT
 async function init(){try{const ref=doc(db,'users','admin');if(!(await getDoc(ref)).exists()){await setDoc(ref,{name:'Administrador',password:'admin123',balance:0,admin:true,status:'approved',createdAt:serverTimestamp()});}}catch(e){}goTo('screen-login');}
 init();
+
 </script>
-
-<div id="screen-qr" class="screen">
-  <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title">QR Code</span>
-  </div>
-  <div style="text-align:center;padding:1.5rem 1rem 1rem">
-    <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:.25rem">Pagamentos por QR</p>
-    <p style="font-size:13px;color:var(--muted)">mostre ou escaneie para transferir dracmas</p>
-  </div>
-  <div class="qr-tabs">
-    <div class="qr-tab active" id="qr-tab-meu" onclick="switchQRTab('meu')">Meu QR</div>
-    <div class="qr-tab" id="qr-tab-scan" onclick="switchQRTab('scan')">Escanear</div>
-  </div>
-  <div id="qr-panel-meu" style="text-align:center;padding:0 1rem 1rem">
-    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Mostre este QR para receber dracmas</p>
-    <div class="qr-box" id="qr-canvas"></div>
-    <p style="font-size:13px;color:var(--muted);margin-top:1rem" id="qr-user-label"></p>
-    <div style="margin-top:1rem;display:flex;gap:8px">
-      <div id="qr-livre-btn" onclick="setQRMode('livre')" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;cursor:pointer">
-        <div style="font-size:11px;font-weight:700;color:var(--muted)">valor livre</div>
-      </div>
-      <div id="qr-valor-btn" onclick="setQRMode('valor')" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;cursor:pointer">
-        <div style="font-size:11px;font-weight:700;color:var(--muted)">definir valor</div>
-      </div>
-    </div>
-    <div id="qr-valor-input" style="display:none;margin-top:.75rem">
-      <input class="form-input" id="qr-amount-input" type="number" min="1" placeholder="valor em dracmas" inputmode="numeric" oninput="gerarQR()"/>
-    </div>
-  </div>
-  <div id="qr-panel-scan" style="display:none">
-    <div class="scan-area">
-      <div style="font-size:56px">&#128247;</div>
-      <p style="font-size:14px;color:var(--muted);line-height:1.5">Aponte a câmera para o QR code de outro membro para transferir dracmas</p>
-      <button class="scan-btn" onclick="iniciarScan()">Abrir câmera</button>
-    </div>
-    <div id="qr-reader-wrap" style="padding:1rem;display:none">
-      <div id="qr-reader" style="width:100%;border-radius:16px;overflow:hidden"></div>
-      <button class="btn-p danger" style="margin-top:.75rem" onclick="pararScan()">cancelar</button>
-    </div>
-  </div>
-</div>
-
-
-<div class="bottom-nav" id="bottom-nav">
-  <div class="bn-item active" id="bn-home" onclick="goTo('screen-home');setNav('bn-home')">
-    <div class="bn-icon">&#127968;</div>
-    <div class="bn-label">início</div>
-  </div>
-  <div class="bn-item" id="bn-transfer" onclick="goTo('screen-transfer');setNav('bn-transfer')">
-    <div class="bn-icon">&#8599;</div>
-    <div class="bn-label">enviar</div>
-  </div>
-  <div class="bn-item" id="bn-qr" onclick="goTo('screen-qr');setNav('bn-qr')">
-    <div class="bn-icon">&#128247;</div>
-    <div class="bn-label">QR</div>
-  </div>
-  <div class="bn-item" id="bn-comunidade" onclick="goTo('screen-comunidade');setNav('bn-comunidade')">
-    <div class="bn-icon">&#128101;</div>
-    <div class="bn-label">turma</div>
-  </div>
-  <div class="bn-item" id="bn-perfil" onclick="goTo('screen-perfil');setNav('bn-perfil')">
-    <div class="bn-icon">&#128100;</div>
-    <div class="bn-label">perfil</div>
-  </div>
-</div>
-
 </body>
 </html>
