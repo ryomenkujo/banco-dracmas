@@ -924,6 +924,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div><span class="prata-amount" id="ev-prata-bal">0</span><span class="prata-unit">&#11042;</span></div>
       <div class="prata-actions">
         <button class="prata-act" onclick="goTo('s-ev-transfer')">&#8599; enviar</button>
+        <button class="prata-act" onclick="goTo('s-ev-qr')">&#128247; QR</button>
         <button class="prata-act" onclick="goTo('s-ev-history')">&#128203; extrato</button>
       </div>
     </div>
@@ -967,6 +968,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div><span class="prata-amount" id="ev-prata-bal2">0</span><span class="prata-unit">&#11042;</span></div>
       <div class="prata-actions">
         <button class="prata-act" onclick="goTo('s-ev-transfer')">&#8599; enviar</button>
+        <button class="prata-act" onclick="goTo('s-ev-qr')">&#128247; QR</button>
         <button class="prata-act" onclick="goTo('s-ev-history')">&#128203; extrato</button>
       </div>
     </div>
@@ -1073,6 +1075,41 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </div>
 
 <!-- EDIT LOJA MODAL -->
+
+<!-- EV QR CODE -->
+<div id="s-ev-qr" class="screen">
+  <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title" id="ev-qr-title">QR · Evento</span></div>
+  <div style="text-align:center;padding:1.5rem 1rem 1rem">
+    <p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:.25rem">QR do Evento</p>
+    <p style="font-size:13px;color:var(--muted)" id="ev-qr-sub">mostre para receber prata</p>
+  </div>
+  <div class="qr-tabs">
+    <div class="qr-tab active" id="ev-qr-tab-meu" onclick="switchEvQRTab('meu')">Meu QR</div>
+    <div class="qr-tab" id="ev-qr-tab-scan" onclick="switchEvQRTab('scan')">Escanear</div>
+  </div>
+  <div id="ev-qr-panel-meu" style="text-align:center;padding:0 1rem 1rem">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Mostre este QR para receber a moeda do evento</p>
+    <div class="qr-box" id="ev-qr-canvas"></div>
+    <p style="font-size:13px;color:var(--muted);margin-top:1rem" id="ev-qr-label"></p>
+    <div style="margin-top:1rem;display:flex;gap:8px">
+      <div id="ev-qr-livre-btn" onclick="setEvQRMode('livre')" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;cursor:pointer"><div style="font-size:11px;font-weight:700;color:var(--muted)">valor livre</div></div>
+      <div id="ev-qr-valor-btn" onclick="setEvQRMode('valor')" style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center;cursor:pointer"><div style="font-size:11px;font-weight:700;color:var(--muted)">definir valor</div></div>
+    </div>
+    <div id="ev-qr-valor-input" style="display:none;margin-top:.75rem"><input class="form-input" id="ev-qr-amt" type="number" min="1" placeholder="valor da moeda" inputmode="numeric" oninput="gerarEvQR()"/></div>
+  </div>
+  <div id="ev-qr-panel-scan" style="display:none">
+    <div class="scan-area">
+      <div style="font-size:52px">&#128247;</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.5" id="ev-qr-scan-txt">Aponte a camera para o QR de outro membro para enviar a moeda do evento</p>
+      <button class="scan-btn" style="background:linear-gradient(135deg,var(--ev2),var(--ev3));color:#e9d5ff" onclick="iniciarEvScan()">Abrir camera</button>
+    </div>
+    <div id="ev-qr-reader-wrap" style="padding:1rem;display:none">
+      <div id="ev-qr-reader" style="width:100%;border-radius:16px;overflow:hidden"></div>
+      <button class="btn-p danger" style="margin-top:.75rem" onclick="pararEvScan()">cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-loja-edit">
   <div class="modal">
     <div class="modal-title">editar item</div>
@@ -1230,6 +1267,7 @@ function onScreenLoad(id){
   if(id==='s-ev-times')loadEvTimes();
   if(id==='s-ev-admin-home')loadEvAdminHome();
   if(id==='s-ev-transfer')loadEvTransferMembers();
+  if(id==='s-ev-qr'){switchEvQRTab('meu');updateEvLabels();if(CU)gerarEvQR();const t=document.getElementById('ev-qr-title');if(t)t.textContent='QR · '+evMoeda;const s=document.getElementById('ev-qr-sub');if(s)s.textContent='mostre para receber '+evMoeda.toLowerCase();}
   if(id==='s-change-pw'){['cp-cur','cp-new','cp-new2'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});['pw-b2','pw-l2'].forEach(i=>{const el=document.getElementById(i);if(el){el.className='pw-bar';el.textContent='';}});}
 }
 
@@ -2576,6 +2614,68 @@ window.criarEvento=async function(){
     goBack();
   }catch(e){showErr('ce-err','erro: '+e.message);}
   finally{setLoad('ce-btn',false);}
+};
+
+
+// ── EV QR ──
+let evQRMode='livre', evHtml5Scan=null;
+
+window.switchEvQRTab=function(tab){
+  document.getElementById('ev-qr-tab-meu').classList.toggle('active',tab==='meu');
+  document.getElementById('ev-qr-tab-scan').classList.toggle('active',tab==='scan');
+  document.getElementById('ev-qr-panel-meu').style.display=tab==='meu'?'block':'none';
+  document.getElementById('ev-qr-panel-scan').style.display=tab==='scan'?'block':'none';
+  if(tab==='scan')pararEvScan();
+};
+
+window.setEvQRMode=function(mode){
+  evQRMode=mode;
+  document.getElementById('ev-qr-livre-btn').style.background=mode==='livre'?'var(--card3)':'var(--card2)';
+  document.getElementById('ev-qr-valor-btn').style.background=mode==='valor'?'var(--card3)':'var(--card2)';
+  document.getElementById('ev-qr-valor-input').style.display=mode==='valor'?'block':'none';
+  gerarEvQR();
+};
+
+window.gerarEvQR=function(){
+  if(!CU)return;
+  const canvas=document.getElementById('ev-qr-canvas');
+  canvas.innerHTML='';
+  const amt=evQRMode==='valor'?parseInt(document.getElementById('ev-qr-amt').value)||0:0;
+  const data=amt>0
+    ?`dracmas-adc://ev-pay?to=${CU.id}&amount=${amt}`
+    :`dracmas-adc://ev-pay?to=${CU.id}`;
+  try{
+    new QRCode(canvas,{text:data,width:200,height:200,colorDark:'#4c1d95',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+  }catch(e){}
+  const lbl=document.getElementById('ev-qr-label');
+  if(lbl)lbl.textContent=CU.name+' · @'+CU.id+(amt>0?' · '+amt+' '+evMoeda:'');
+};
+
+window.iniciarEvScan=function(){
+  document.getElementById('ev-qr-reader-wrap').style.display='block';
+  evHtml5Scan=new Html5Qrcode('ev-qr-reader');
+  evHtml5Scan.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250}},async decoded=>{
+    await pararEvScan();
+    try{
+      const url=new URL(decoded);
+      if(url.protocol!=='dracmas-adc:'){toast('QR invalido para evento');return;}
+      const to=url.searchParams.get('to');
+      const amt=url.searchParams.get('amount');
+      if(!to){toast('QR invalido');return;}
+      // prefill ev transfer
+      await loadEvTransferMembers();
+      const sel=document.getElementById('ev-tr-to');
+      for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===to){sel.selectedIndex=i;break;}}
+      if(amt)document.getElementById('ev-tr-amt').value=amt;
+      goTo('s-ev-transfer');
+      toast('QR lido! confirme o envio');
+    }catch(e){toast('QR invalido');}
+  },()=>{}).catch(e=>{toast('erro camera: '+e);document.getElementById('ev-qr-reader-wrap').style.display='none';});
+};
+
+window.pararEvScan=async function(){
+  if(evHtml5Scan){try{await evHtml5Scan.stop();}catch(e){}evHtml5Scan=null;}
+  document.getElementById('ev-qr-reader-wrap').style.display='none';
 };
 
 // ── ENTER KEYS ──
