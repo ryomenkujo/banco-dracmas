@@ -952,6 +952,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         <div class="ev-ag-btn" onclick="goTo('s-ev-pts')"><div class="ev-ag-icon">&#9876;</div><div class="ev-ag-label">pts do time</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-times')"><div class="ev-ag-icon">&#128101;</div><div class="ev-ag-label">gerir times</div></div>
         <div class="ev-ag-btn" onclick="encerrarEvento()"><div class="ev-ag-icon">&#127942;</div><div class="ev-ag-label">encerrar</div></div>
+        <div class="ev-ag-btn" onclick="deletarEvento()" style="border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.15)"><div class="ev-ag-icon">&#128465;</div><div class="ev-ag-label" style="color:#fca5a5">deletar</div></div>
       </div>
     </div>
     <div class="sec-hd" style="padding-left:0;color:rgba(196,181,253,.5)">ranking individual</div>
@@ -1438,11 +1439,13 @@ async function loadPendingBadge(){
 
 async function loadEvStatus(){
   try{
-    const snap=await getDocs(query(collection(db,'eventos'),where('ativo','==',true),limit(1)));
     const evBtns=document.getElementById('ev-home-btns');
     const evBtnsAdmin=document.getElementById('ev-home-btns-admin');
     const adminEvLabel=document.getElementById('admin-ev-label');
+    // busca qualquer evento (ativo OU pausado) — so some se admin deletar
+    const snap=await getDocs(query(collection(db,'eventos'),orderBy('criadoEm','desc'),limit(1)));
     if(snap.empty){
+      evData=null;
       if(evBtns)evBtns.style.display='none';
       if(evBtnsAdmin)evBtnsAdmin.style.display='none';
       if(adminEvLabel)adminEvLabel.textContent='evento';
@@ -1450,20 +1453,24 @@ async function loadEvStatus(){
     }
     evData=snap.docs[0].data();evData.id=snap.docs[0].id;
     evMoeda=evData.moeda||'Prata';
+    // mostra botoes sempre que existe evento (mesmo pausado)
     if(evBtns)evBtns.style.display='block';
     if(evBtnsAdmin)evBtnsAdmin.style.display='block';
     const hn=document.getElementById('ev-home-name');
     const hna=document.getElementById('ev-home-name-admin');
     const hmb=document.getElementById('ev-moeda-home-btn');
+    const evSubEl=document.querySelector('#ev-home-btns .ev-home-btn.ev-color .ev-btn-sub');
     if(hn)hn.textContent=evData.nome;
     if(hna)hna.textContent=evData.nome;
     if(hmb)hmb.textContent=evMoeda+' · Evento';
+    if(evSubEl)evSubEl.textContent=evData.ativo?'gincana em andamento · toque para ver':'evento pausado · toque para ver';
+    const liveDot=document.querySelector('#ev-home-btns .ev-live');
+    if(liveDot)liveDot.style.background=evData.ativo?'#4ade80':'#f97316';
     if(adminEvLabel)adminEvLabel.textContent=evData.nome.slice(0,8);
-    // load ev balance
     const evBal=CU.evBalance||0;
     const hb=document.getElementById('ev-prata-home-bal');
     if(hb)hb.textContent=evBal;
-  }catch(e){}
+  }catch(e){console.log('loadEvStatus error:',e);}
 }
 
 // ── HISTORY ──
@@ -2535,6 +2542,27 @@ window.toggleEvento=async function(){
     toast(newAtivo?'evento ativado!':'evento pausado');
     loadEvStatus();
   }catch(e){toast('erro: '+e.message);}
+};
+
+
+window.deletarEvento=function(){
+  if(!evData)return;
+  openModal('deletar evento',`Deletar "${evData.nome}" permanentemente? Os saldos de ${evMoeda} serao zerados e o evento removido.`,async()=>{
+    try{
+      // zerar ev balances
+      const snap=await getDocs(collection(db,'users'));
+      await Promise.all(snap.docs.filter(d=>(d.data().evBalance||0)>0).map(d=>updateDoc(doc(db,'users',d.id),{evBalance:0})));
+      // deletar times do evento
+      const timesSnap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
+      await Promise.all(timesSnap.docs.map(d=>deleteDoc(doc(db,'times',d.id))));
+      // deletar evento
+      await deleteDoc(doc(db,'eventos',evData.id));
+      evData=null;myTeam=null;evMoeda='Prata';
+      toast('evento deletado!');
+      goTo('s-home');
+      await loadEvStatus();
+    }catch(e){toast('erro: '+e.message);}
+  },true);
 };
 
 window.encerrarEvento=function(){
