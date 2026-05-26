@@ -1035,8 +1035,17 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <div id="s-ev-criar-time" class="screen">
   <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">criar time <span class="tag-ev">admin</span></span></div>
   <div class="form-section" style="padding-top:1.5rem">
+    <div class="form-group">
+      <label class="form-label">foto do time</label>
+      <div class="foto-placeholder" id="ct-foto-ph" style="background:#1e0d44;border-color:rgba(167,139,250,.3)" onclick="document.getElementById('ct-foto-inp').click()">
+        <span>&#128247;</span>
+        <p style="color:rgba(196,181,253,.6)">toque para escolher foto</p>
+      </div>
+      <img class="foto-preview" id="ct-foto-prev" src="" alt=""/>
+      <input type="file" id="ct-foto-inp" accept="image/*" style="display:none" onchange="previewFoto(this,'ct-foto-prev','ct-foto-ph')"/>
+    </div>
     <div class="form-group"><label class="form-label">nome do time</label><input class="form-input" id="ct-nome" type="text" placeholder="Ex: Time Roxo"/></div>
-    <div class="form-group"><label class="form-label">cor (hex)</label><input class="form-input" id="ct-cor" type="color" value="#5b21b6" style="height:48px;padding:8px"/></div>
+    <div class="form-group"><label class="form-label">cor do time</label><input class="form-input" id="ct-cor" type="color" value="#5b21b6" style="height:48px;padding:8px"/></div>
     <div class="err" id="ct-err"></div>
     <button class="btn-p ev" id="ct-btn" onclick="criarTime()">criar time</button>
   </div>
@@ -2180,9 +2189,16 @@ async function loadEvento(){
   const myTeamCard=document.getElementById('my-team-card');
   if(myTeam){
     myTeamCard.style.display='flex';
-    document.getElementById('my-team-color').textContent=myTeam.nome.slice(0,2);
-    document.getElementById('my-team-color').style.background=myTeam.cor||'#5b21b6';
-    document.getElementById('my-team-color').style.color='#fff';
+    const tcEl=document.getElementById('my-team-color');
+    if(myTeam.foto){
+      tcEl.innerHTML=`<img src="${myTeam.foto}" style="width:100%;height:100%;object-fit:cover;border-radius:12px"/>`;
+      tcEl.style.background='transparent';
+    }else{
+      tcEl.textContent=myTeam.nome.slice(0,2);
+      tcEl.innerHTML=myTeam.nome.slice(0,2);
+      tcEl.style.background=myTeam.cor||'#5b21b6';
+      tcEl.style.color='#fff';
+    }
     document.getElementById('my-team-name').textContent=myTeam.nome+' · seu time';
     const pos=getTeamPos(timesSnap,myTeam.id);
     document.getElementById('my-team-sub').textContent=`${myTeam.membros?.length||0} membros · ${pos}° lugar`;
@@ -2227,16 +2243,20 @@ function loadEvRanking(snap){
   const maxPts=teams[0].pontos||1;
   const medals=['🥇','🥈','🥉'];
   const rowCls=['tr-1','tr-2','tr-3','tr-4'];
-  el.innerHTML=teams.map((t,i)=>`
-    <div class="team-row ${rowCls[i]||'tr-4'}">
+  el.innerHTML=teams.map((t,i)=>{
+    const avatarBox=t.foto
+      ?`<img src="${t.foto}" style="width:36px;height:36px;border-radius:10px;object-fit:cover;border:2px solid ${t.cor||'#5b21b6'};flex-shrink:0"/>`
+      :`<div class="t-color-box" style="background:${t.cor||'#5b21b6'};color:#fff">${t.nome.slice(0,2)}</div>`;
+    return`<div class="team-row ${rowCls[i]||'tr-4'}">
       <div class="t-pos">${medals[i]||i+1}</div>
-      <div class="t-color-box" style="background:${t.cor||'#5b21b6'};color:#fff">${t.nome.slice(0,2)}</div>
+      ${avatarBox}
       <div class="t-info-col">
         <div class="t-name">${t.nome}</div>
         <div class="t-bar-wrap"><div class="t-bar" style="width:${Math.round(((t.pontos||0)/maxPts)*100)}%;background:${t.cor||'#7c3aed'}"></div></div>
       </div>
       <div class="t-pts-col">${t.pontos||0}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function loadEvRankingIndividual(){
@@ -2480,19 +2500,39 @@ async function loadEvTimes(){
 }
 
 window.adicionarAoTime=async function(teamId){
+  // pega todos os selecionados no multi-select
   const sel=document.getElementById(`add-m-${teamId}`);
-  if(!sel||!sel.value){toast('selecione um membro');return;}
-  const memberId=sel.value;
+  if(!sel){toast('selecione membros');return;}
+  const selecionados=Array.from(sel.selectedOptions).map(o=>o.value);
+  if(!selecionados.length){toast('selecione ao menos um membro');return;}
   try{
     const ref=doc(db,'times',teamId);
     const snap=await getDoc(ref);
     const membros=snap.data().membros||[];
-    if(membros.includes(memberId)){toast('membro ja esta no time');return;}
-    membros.push(memberId);
-    await updateDoc(ref,{membros});
-    toast('membro adicionado!');
+    const novos=selecionados.filter(m=>!membros.includes(m));
+    if(!novos.length){toast('membros ja estao no time');return;}
+    await updateDoc(ref,{membros:[...membros,...novos]});
+    toast(`${novos.length} membro(s) adicionado(s)!`);
     loadEvTimes();
   }catch(e){toast('erro: '+e.message);}
+};
+
+
+// ── EDITAR FOTO DO TIME ──
+window.editarFotoTime=async function(teamId){
+  const input=document.createElement('input');
+  input.type='file';input.accept='image/*';
+  input.onchange=async function(){
+    const file=input.files[0];if(!file)return;
+    toast('comprimindo foto...');
+    try{
+      const b64=await comprimirImg(file,300,300,0.8);
+      await updateDoc(doc(db,'times',teamId),{foto:b64});
+      toast('foto do time atualizada!');
+      loadEvTimes();
+    }catch(e){toast('erro: '+e.message);}
+  };
+  input.click();
 };
 
 window.removerDoTime=async function(teamId,memberId){
@@ -2516,12 +2556,17 @@ window.deletarTime=function(teamId,name){
 window.criarTime=async function(){
   const nome=document.getElementById('ct-nome').value.trim();
   const cor=document.getElementById('ct-cor').value;
+  const prev=document.getElementById('ct-foto-prev');
+  const foto=prev&&prev.style.display!=='none'?prev.src:'';
   if(!nome){showErr('ct-err','informe o nome do time');return;}
   if(!evData){showErr('ct-err','nenhum evento ativo');return;}
   setLoad('ct-btn',true);
   try{
-    await addDoc(collection(db,'times'),{nome,cor,eventoId:evData.id,membros:[],pontos:0,extraPontos:0,createdAt:serverTimestamp()});
+    await addDoc(collection(db,'times'),{nome,cor,foto,eventoId:evData.id,membros:[],pontos:0,extraPontos:0,createdAt:serverTimestamp()});
     document.getElementById('ct-nome').value='';
+    prev.style.display='none';prev.src='';
+    document.getElementById('ct-foto-ph').style.display='flex';
+    document.getElementById('ct-foto-inp').value='';
     toast('time criado!');
     goBack();
   }catch(e){showErr('ct-err','erro: '+e.message);}
