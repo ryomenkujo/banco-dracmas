@@ -1035,17 +1035,52 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <div id="s-ev-criar-time" class="screen">
   <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">criar time <span class="tag-ev">admin</span></span></div>
   <div class="form-section" style="padding-top:1.5rem">
+
+    <!-- FOTO -->
     <div class="form-group">
-      <label class="form-label">foto do time</label>
+      <label class="form-label">foto do time (opcional)</label>
       <div class="foto-placeholder" id="ct-foto-ph" style="background:#1e0d44;border-color:rgba(167,139,250,.3)" onclick="document.getElementById('ct-foto-inp').click()">
         <span>&#128247;</span>
-        <p style="color:rgba(196,181,253,.6)">toque para escolher foto</p>
+        <p style="color:rgba(196,181,253,.5);font-size:12px">toque para escolher foto</p>
       </div>
       <img class="foto-preview" id="ct-foto-prev" src="" alt=""/>
       <input type="file" id="ct-foto-inp" accept="image/*" style="display:none" onchange="previewFoto(this,'ct-foto-prev','ct-foto-ph')"/>
     </div>
+
+    <!-- NOME E COR -->
     <div class="form-group"><label class="form-label">nome do time</label><input class="form-input" id="ct-nome" type="text" placeholder="Ex: Time Roxo"/></div>
     <div class="form-group"><label class="form-label">cor do time</label><input class="form-input" id="ct-cor" type="color" value="#5b21b6" style="height:48px;padding:8px"/></div>
+
+    <!-- MODO -->
+    <div class="form-group">
+      <label class="form-label">tipo de participacao</label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:10px;background:#1e0d44;border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:12px;cursor:pointer">
+          <input type="radio" name="ct-modo" value="unico" checked style="accent-color:#7c3aed;width:18px;height:18px"/>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e9d5ff">1 time por membro</div>
+            <div style="font-size:11px;color:rgba(196,181,253,.55);margin-top:2px">ao adicionar, remove automaticamente de outros times</div>
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;background:#1e0d44;border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:12px;cursor:pointer">
+          <input type="radio" name="ct-modo" value="multiplo" style="accent-color:#7c3aed;width:18px;height:18px"/>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e9d5ff">varios times por membro</div>
+            <div style="font-size:11px;color:rgba(196,181,253,.55);margin-top:2px">membro pode estar em mais de um time</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- MEMBROS -->
+    <div class="form-group">
+      <label class="form-label">adicionar membros agora (opcional)</label>
+      <select id="ct-membros-sel" multiple size="5" style="width:100%;background:#1a0838;border:1px solid rgba(167,139,250,.35);border-radius:12px;color:#e9d5ff;font-size:13px;font-family:Inter,sans-serif;padding:6px;outline:none">
+        <option disabled style="color:rgba(196,181,253,.4)">carregando...</option>
+      </select>
+      <div style="font-size:11px;color:rgba(196,181,253,.45);margin-top:6px">segure Ctrl (Android/PC) ou toque em varios para selecionar multiplos</div>
+    </div>
+
     <div class="err" id="ct-err"></div>
     <button class="btn-p ev" id="ct-btn" onclick="criarTime()">criar time</button>
   </div>
@@ -2500,7 +2535,6 @@ async function loadEvTimes(){
 }
 
 window.adicionarAoTime=async function(teamId){
-  // pega todos os selecionados no multi-select
   const sel=document.getElementById(`add-m-${teamId}`);
   if(!sel){toast('selecione membros');return;}
   const selecionados=Array.from(sel.selectedOptions).map(o=>o.value);
@@ -2508,9 +2542,21 @@ window.adicionarAoTime=async function(teamId){
   try{
     const ref=doc(db,'times',teamId);
     const snap=await getDoc(ref);
-    const membros=snap.data().membros||[];
+    const data=snap.data();
+    const membros=data.membros||[];
+    const modo=data.modo||'unico';
     const novos=selecionados.filter(m=>!membros.includes(m));
     if(!novos.length){toast('membros ja estao no time');return;}
+    // se modo unico, remove esses membros de outros times
+    if(modo==='unico'){
+      const timesSnap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
+      await Promise.all(timesSnap.docs.filter(d=>d.id!==teamId).map(async d=>{
+        const td=d.data();
+        const filtered=(td.membros||[]).filter(m=>!novos.includes(m));
+        if(filtered.length!==(td.membros||[]).length)
+          await updateDoc(doc(db,'times',d.id),{membros:filtered});
+      }));
+    }
     await updateDoc(ref,{membros:[...membros,...novos]});
     toast(`${novos.length} membro(s) adicionado(s)!`);
     loadEvTimes();
@@ -2558,16 +2604,30 @@ window.criarTime=async function(){
   const cor=document.getElementById('ct-cor').value;
   const prev=document.getElementById('ct-foto-prev');
   const foto=prev&&prev.style.display!=='none'?prev.src:'';
+  const modo=document.querySelector('input[name="ct-modo"]:checked')?.value||'unico';
+  // membros selecionados no multiselect
+  const sel=document.getElementById('ct-membros-sel');
+  const membros=sel?Array.from(sel.selectedOptions).map(o=>o.value):[];
   if(!nome){showErr('ct-err','informe o nome do time');return;}
   if(!evData){showErr('ct-err','nenhum evento ativo');return;}
   setLoad('ct-btn',true);
   try{
-    await addDoc(collection(db,'times'),{nome,cor,foto,eventoId:evData.id,membros:[],pontos:0,extraPontos:0,createdAt:serverTimestamp()});
+    // se modo unico, remover esses membros de outros times primeiro
+    if(modo==='unico'&&membros.length>0){
+      const timesSnap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
+      await Promise.all(timesSnap.docs.map(async d=>{
+        const data=d.data();
+        const novosMembros=(data.membros||[]).filter(m=>!membros.includes(m));
+        if(novosMembros.length!==(data.membros||[]).length)
+          await updateDoc(doc(db,'times',d.id),{membros:novosMembros});
+      }));
+    }
+    await addDoc(collection(db,'times'),{nome,cor,foto,modo,eventoId:evData.id,membros,pontos:0,extraPontos:0,createdAt:serverTimestamp()});
     document.getElementById('ct-nome').value='';
-    prev.style.display='none';prev.src='';
-    document.getElementById('ct-foto-ph').style.display='flex';
-    document.getElementById('ct-foto-inp').value='';
-    toast('time criado!');
+    if(prev){prev.style.display='none';prev.src='';}
+    const ph=document.getElementById('ct-foto-ph');if(ph)ph.style.display='flex';
+    const inp=document.getElementById('ct-foto-inp');if(inp)inp.value='';
+    toast('time criado com '+(membros.length)+' membro(s)!');
     goBack();
   }catch(e){showErr('ct-err','erro: '+e.message);}
   finally{setLoad('ct-btn',false);}
@@ -2689,6 +2749,20 @@ window.criarEvento=async function(){
   finally{setLoad('ce-btn',false);}
 };
 
+
+
+// ── LOAD MEMBROS PARA CRIAR TIME ──
+async function loadCriarTimeMembers(){
+  const sel=document.getElementById('ct-membros-sel');
+  if(!sel)return;
+  sel.innerHTML='<option disabled>carregando...</option>';
+  try{
+    const snap=await getDocs(collection(db,'users'));
+    const opts=[];
+    snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')opts.push(`<option value="${d.id}" style="background:#1a0838;color:#e9d5ff;padding:4px">${data.name}</option>`);});
+    sel.innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
+  }catch(e){sel.innerHTML='<option disabled>erro</option>';}
+}
 
 // ── EV QR ──
 let evQRMode='livre', evHtml5Scan=null;
