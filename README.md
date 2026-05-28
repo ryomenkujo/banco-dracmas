@@ -1114,6 +1114,16 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="form-section" style="padding-top:1.5rem">
     <div class="form-group"><label class="form-label">nome do evento</label><input class="form-input" id="ce-nome" type="text" placeholder="Ex: Retiro ADC 2025"/></div>
     <div class="form-group"><label class="form-label">nome da moeda</label><input class="form-input" id="ce-moeda" type="text" placeholder="Ex: Prata"/></div>
+    <div class="form-group">
+      <label class="form-label">regra de times</label>
+      <label style="display:flex;align-items:flex-start;gap:12px;background:var(--card2);border:1.5px solid var(--border);border-radius:var(--rs);padding:13px;cursor:pointer;margin-top:4px">
+        <input type="checkbox" id="ce-nao-repetir" checked style="width:18px;height:18px;margin-top:1px;accent-color:var(--ev3);flex-shrink:0"/>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)">nao repetir membro em times</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5">ao adicionar alguem a um time, ele sai automaticamente dos outros. desmarque para permitir membro em varios times.</div>
+        </div>
+      </label>
+    </div>
     <div class="err" id="ce-err"></div>
     <button class="btn-p ev" id="ce-btn" onclick="criarEvento()">criar e ativar evento</button>
   </div>
@@ -2581,6 +2591,16 @@ window.editarFotoTime=async function(teamId){
   input.click();
 };
 
+
+window.toggleMembrosTime=function(tid){
+  const el=document.getElementById('membros-'+tid);
+  const arrow=document.getElementById('arrow-'+tid);
+  if(!el)return;
+  const open=el.style.display==='none';
+  el.style.display=open?'block':'none';
+  if(arrow)arrow.textContent=open?'▲':'▼';
+};
+
 window.removerDoTime=async function(teamId,memberId){
   try{
     const ref=doc(db,'times',teamId);
@@ -2733,13 +2753,13 @@ async function loadEvAdminHome(){
 window.criarEvento=async function(){
   const nome=document.getElementById('ce-nome').value.trim();
   const moeda=document.getElementById('ce-moeda').value.trim()||'Prata';
+  const naoRepetir=document.getElementById('ce-nao-repetir')?.checked!==false;
   if(!nome){showErr('ce-err','informe o nome do evento');return;}
   setLoad('ce-btn',true);
   try{
-    // desativar eventos anteriores
     const ativos=await getDocs(query(collection(db,'eventos'),where('ativo','==',true)));
     await Promise.all(ativos.docs.map(d=>updateDoc(doc(db,'eventos',d.id),{ativo:false})));
-    await addDoc(collection(db,'eventos'),{nome,moeda,ativo:true,criadoEm:serverTimestamp()});
+    await addDoc(collection(db,'eventos'),{nome,moeda,naoRepetir,ativo:true,criadoEm:serverTimestamp()});
     document.getElementById('ce-nome').value='';
     document.getElementById('ce-moeda').value='';
     toast('evento criado e ativado!');
