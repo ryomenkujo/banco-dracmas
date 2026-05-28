@@ -7,10 +7,12 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="Dracmas ADC"/>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script defer src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -42,7 +44,7 @@
 body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:420px;margin:0 auto;overflow-x:hidden}
 
 /* ── SCREENS ── */
-.screen{display:none;min-height:100vh;padding-bottom:90px}
+.screen{display:none;min-height:100vh;padding-bottom:90px;content-visibility:auto}
 .screen.active{display:block}
 #s-loader{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--p);padding-bottom:0}
 #s-loader.active{display:flex}
@@ -71,8 +73,9 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-h
 .btn-register{width:100%;padding:13px;font-size:15px;font-weight:700;font-family:"Inter",sans-serif;background:transparent;color:rgba(212,168,83,.85);border:1.5px solid rgba(212,168,83,.25);border-radius:var(--rs);cursor:pointer;margin-top:10px}
 
 /* ── TOPBAR ── */
-.topbar{background:var(--card);backdrop-filter:blur(20px);padding:.9rem 1rem;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--border)}
-.topbar.dark{background:rgba(15,10,26,.92);border-color:rgba(255,255,255,.07)}
+.topbar{background:var(--card);padding:.9rem 1rem;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;border-bottom:1px solid var(--border)}
+@supports(backdrop-filter:blur(1px)){.topbar{backdrop-filter:blur(12px)}}
+.topbar.dark{background:rgba(15,10,26,.95);border-color:rgba(255,255,255,.07)}
 .topbar.gold-bar{background:linear-gradient(90deg,var(--p),var(--p3));border-color:rgba(212,168,83,.15)}
 .topbar.ev-bar{background:linear-gradient(90deg,var(--ev2),var(--ev));border-color:rgba(139,92,246,.2)}
 .topbar-logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);display:flex;align-items:center;justify-content:center;font-family:"Cinzel",serif;font-size:16px;font-weight:600;flex-shrink:0}
@@ -234,7 +237,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .card-date{font-size:11px;color:var(--muted2);margin-top:6px}
 
 /* ── MODAL ── */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center}
+@supports(backdrop-filter:blur(1px)){.modal-overlay{backdrop-filter:blur(4px);background:rgba(0,0,0,.5)}}
 .modal-overlay.active{display:flex}
 .modal{background:var(--card);border-radius:24px 24px 0 0;padding:2rem 1.5rem;width:100%;max-width:420px;box-shadow:var(--sh2);border-top:1px solid var(--border)}
 .modal-title{font-family:"Cinzel",serif;font-size:17px;color:var(--p2);margin-bottom:.5rem}
@@ -429,7 +433,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .bv-btn{background:linear-gradient(135deg,var(--gold),var(--gd));color:var(--p);border:none;border-radius:var(--rs);padding:14px 40px;font-size:15px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--card);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:.55rem 0 .85rem;z-index:20}
+.bottom-nav{display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:var(--card);border-top:1px solid var(--border);padding:.55rem 0 .85rem;z-index:20}
+@supports(backdrop-filter:blur(1px)){.bottom-nav{backdrop-filter:blur(12px);background:rgba(255,255,255,.88)}[data-theme="dark"] .bottom-nav{background:rgba(26,16,40,.92)}}
 .bottom-nav.show{display:flex}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:.3rem 0}
 .bn-item:active{opacity:.6}
@@ -479,6 +484,35 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 [data-theme="light"] .bottom-nav{background:rgba(255,255,255,.95);border-color:rgba(46,26,71,.08)}
 [data-theme="light"] .topbar{background:rgba(244,241,249,.95);border-color:rgba(46,26,71,.08)}
 [data-theme="light"] .scan-area{background:var(--card2)}
+
+/* ── MULTISELECT CUSTOMIZADO ── */
+.ms-wrap{position:relative;width:100%}
+.ms-trigger{width:100%;padding:11px 36px 11px 14px;font-size:13px;font-family:"Inter",sans-serif;border:1px solid rgba(167,139,250,.35);border-radius:12px;background:#1a0838;color:#e9d5ff;cursor:pointer;text-align:left;position:relative;user-select:none;min-height:42px}
+.ms-trigger::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:rgba(196,181,253,.5);pointer-events:none}
+.ms-trigger.open{border-color:rgba(167,139,250,.7);border-radius:12px 12px 0 0}
+.ms-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#1a0838;border:1px solid rgba(167,139,250,.35);border-top:none;border-radius:0 0 12px 12px;z-index:100;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(124,58,237,.4) transparent}
+.ms-dropdown.open{display:block}
+.ms-search{padding:8px 10px;border-bottom:1px solid rgba(167,139,250,.15)}
+.ms-search input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:6px 10px;font-size:12px;font-family:"Inter",sans-serif;color:#e9d5ff;outline:none}
+.ms-search input::placeholder{color:rgba(196,181,253,.35)}
+.ms-option{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background .12s;font-size:13px;color:rgba(196,181,253,.8)}
+.ms-option:hover{background:rgba(124,58,237,.18)}
+.ms-option.selected{background:rgba(124,58,237,.15);color:#e9d5ff}
+.ms-option input[type=checkbox]{width:16px;height:16px;accent-color:#7c3aed;flex-shrink:0;cursor:pointer}
+.ms-option-name{flex:1}
+.ms-empty{padding:12px;text-align:center;font-size:12px;color:rgba(196,181,253,.35)}
+/* versão light mode */
+[data-theme="light"] .ms-trigger{background:var(--card);border-color:rgba(139,92,246,.3);color:var(--p2)}
+[data-theme="light"] .ms-trigger::after{color:rgba(91,33,182,.4)}
+[data-theme="light"] .ms-dropdown{background:var(--card);border-color:rgba(139,92,246,.2)}
+[data-theme="light"] .ms-search input{background:var(--card2);border-color:rgba(139,92,246,.2);color:var(--p2)}
+[data-theme="light"] .ms-option{color:var(--muted)}
+[data-theme="light"] .ms-option:hover{background:rgba(139,92,246,.08)}
+[data-theme="light"] .ms-option.selected{background:rgba(139,92,246,.12);color:var(--p2)}
+/* versão inline (dentro dos cards de time — fundo escuro fixo) */
+.ms-wrap.inline .ms-trigger{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12);color:#e9d5ff;border-radius:8px;padding:7px 32px 7px 10px;font-size:12px}
+.ms-wrap.inline .ms-trigger.open{border-radius:8px 8px 0 0}
+.ms-wrap.inline .ms-dropdown{background:#1a0838;border-color:rgba(255,255,255,.12)}
 </style>
 </head>
 <body>
@@ -1075,10 +1109,13 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <!-- MEMBROS -->
     <div class="form-group">
       <label class="form-label">adicionar membros agora (opcional)</label>
-      <select id="ct-membros-sel" multiple size="5" style="width:100%;background:#1a0838;border:1px solid rgba(167,139,250,.35);border-radius:12px;color:#e9d5ff;font-size:13px;font-family:Inter,sans-serif;padding:6px;outline:none">
-        <option disabled style="color:rgba(196,181,253,.4)">carregando...</option>
-      </select>
-      <div style="font-size:11px;color:rgba(196,181,253,.45);margin-top:6px">segure Ctrl (Android/PC) ou toque em varios para selecionar multiplos</div>
+      <div class="ms-wrap" id="ct-ms-wrap">
+        <div class="ms-trigger" id="ct-ms-trigger" onclick="toggleMS('ct')">nenhum selecionado</div>
+        <div class="ms-dropdown" id="ct-ms-dropdown">
+          <div class="ms-search"><input type="text" placeholder="buscar membro..." oninput="filterMS('ct',this.value)" id="ct-ms-search"/></div>
+          <div id="ct-ms-list"><div class="ms-empty">carregando...</div></div>
+        </div>
+      </div>
     </div>
 
     <div class="err" id="ct-err"></div>
@@ -1224,6 +1261,20 @@ const db=getFirestore(initializeApp(FC));
 let CU=null,allMembers=[],histAll=[],mhistAll=[],evHistAll=[],relAtual=[],relAnt=[],relMode='atual',evData=null,myTeam=null,evMoeda='Prata';
 const navStack=[];
 
+// ── CACHE DE USUARIOS ──
+// Evita buscar todos os usuarios do Firestore multiplas vezes
+let _usersCache=null,_usersCacheTs=0;
+const CACHE_TTL=60000; // 1 minuto
+async function getUsers(forceRefresh=false){
+  const now=Date.now();
+  if(!forceRefresh&&_usersCache&&(now-_usersCacheTs)<CACHE_TTL)return _usersCache;
+  const snap=await getDocs(collection(db,'users'));
+  _usersCache=snap;
+  _usersCacheTs=now;
+  return snap;
+}
+function invalidateUsersCache(){_usersCache=null;_usersCacheTs=0;}
+
 // ── CATS ──
 const CATS={culto:{icon:'⛪',cls:'cc',label:'Culto'},missao:{icon:'🙏',cls:'cm',label:'Missao'},evento:{icon:'🎉',cls:'ce',label:'Evento'},estudo:{icon:'📖',cls:'cs',label:'Estudo'},conquista:{icon:'🏆',cls:'cq',label:'Conquista'},presente:{icon:'🎁',cls:'cp',label:'Presente'},penalidade:{icon:'⚠️',cls:'cn',label:'Penalidade'},transferencia:{icon:'↔️',cls:'ct',label:'Transferencia'},outros:{icon:'📝',cls:'co',label:'Outros'},evento_moeda:{icon:'⬡',cls:'cev',label:'Evento'}};
 
@@ -1231,6 +1282,19 @@ const CATS={culto:{icon:'⛪',cls:'cc',label:'Culto'},missao:{icon:'🙏',cls:'c
 const inits=n=>n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const fmtDt=ts=>{if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});};
 const fmtDtShort=ts=>{if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});};
+const debounce=(fn,ms=250)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
+window.filtrarCom=debounce(function(q){
+  const f=q.trim()?comAll.filter(m=>m.name.toLowerCase().includes(q.toLowerCase())||m.id.toLowerCase().includes(q.toLowerCase())):comAll;
+  renderCom(f);
+},200);
+window.buscarExtrato=debounce(function(prefix,q){
+  const txs=prefix==='history'?histAll:mhistAll;
+  const uid=prefix==='history'?CU.id:window._mhUid;
+  const txt=q.trim().toLowerCase();
+  const f=txt?txs.filter(t=>(t.desc||'').toLowerCase().includes(txt)||(t.obs||'').toLowerCase().includes(txt)||(CATS[t.category]?.label||'').toLowerCase().includes(txt)):txs;
+  document.querySelectorAll(`#${prefix==='history'?'h':'mh'}-filters .chip`).forEach(c=>c.classList.toggle('active',c.dataset.key==='all'));
+  document.getElementById(prefix==='history'?'h-txs':'mh-txs').innerHTML=f.length?f.map(t=>txHtml(t,uid)).join(''):'<div class="empty">nenhuma transacao</div>';
+},200);
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window._tt);window._tt=setTimeout(()=>t.style.display='none',2500);}
 function showErr(id,msg){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
@@ -1357,14 +1421,7 @@ window.applyFilter=function(cid,key){
   const f=key==='all'?txs:txs.filter(t=>t.category===key);
   document.getElementById(listId).innerHTML=f.length?f.map(t=>txHtml(t,uid)).join(''):'<div class="empty">nenhuma transacao</div>';
 };
-window.buscarExtrato=function(prefix,q){
-  const txs=prefix==='history'?histAll:mhistAll;
-  const uid=prefix==='history'?CU.id:window._mhUid;
-  const txt=q.trim().toLowerCase();
-  const f=txt?txs.filter(t=>(t.desc||'').toLowerCase().includes(txt)||(t.obs||'').toLowerCase().includes(txt)||(CATS[t.category]?.label||'').toLowerCase().includes(txt)):txs;
-  document.querySelectorAll(`#${prefix==='history'?'h':'mh'}-filters .chip`).forEach(c=>c.classList.toggle('active',c.dataset.key==='all'));
-  document.getElementById(prefix==='history'?'h-txs':'mh-txs').innerHTML=f.length?f.map(t=>txHtml(t,uid)).join(''):'<div class="empty">nenhuma transacao</div>';
-};
+window.buscarExtrato=window.buscarExtrato; // definido com debounce acima
 
 // ── LOGIN ──
 window.doLogin=async function(){
@@ -1429,6 +1486,7 @@ window.doChangePw=async function(){
 // ── LOGOUT ──
 window.doLogout=function(){
   CU=null;allMembers=[];navStack.length=0;evData=null;myTeam=null;
+  invalidateUsersCache();
   document.getElementById('l-user').value='';
   document.getElementById('l-pw').value='';
   document.getElementById('bottom-nav').classList.remove('show');
@@ -1582,9 +1640,10 @@ async function notif(toId,text,icon='🔔'){
 // ── TRANSFER ──
 async function loadTransferMembers(){
   const sel=document.getElementById('tr-to');
+  if(allMembers.length){sel.innerHTML=allMembers.map(m=>`<option value="${m.id}">${m.name}${m.admin?' (admin)':''}</option>`).join('');return;}
   sel.innerHTML='<option>carregando...</option>';
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers();
     allMembers=[];
     snap.forEach(d=>{const data=d.data();if(d.id!==CU.id&&data.status==='approved')allMembers.push({id:d.id,...data});});
     sel.innerHTML=allMembers.length?allMembers.map(m=>`<option value="${m.id}">${m.name}${m.admin?' (admin)':''}</option>`).join(''):'<option disabled>nenhum membro</option>';
@@ -1890,7 +1949,7 @@ async function loadComunidade(){
   el.innerHTML='<div class="empty">carregando...</div>';
   document.getElementById('com-search').value='';
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers();
     comAll=[];
     snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')comAll.push({id:d.id,...data});});
     comAll.sort((a,b)=>b.balance-a.balance);
@@ -1913,11 +1972,6 @@ function renderCom(members){
   }).join('');
 }
 
-window.filtrarCom=function(q){
-  const f=q.trim()?comAll.filter(m=>m.name.toLowerCase().includes(q.toLowerCase())||m.id.toLowerCase().includes(q.toLowerCase())):comAll;
-  renderCom(f);
-};
-
 // ── ADMIN GERENCIAR ──
 window.switchAdminTab=function(tab){
   document.getElementById('tab-give').classList.toggle('active',tab==='give');
@@ -1926,9 +1980,10 @@ window.switchAdminTab=function(tab){
   document.getElementById('take-form').style.display=tab==='take'?'block':'none';
 };
 
+
 async function loadAdminSelects(){
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers();
     const opts=[];
     snap.forEach(d=>{const data=d.data();if(data.status==='approved')opts.push(`<option value="${d.id}">${data.name}${data.admin?' (admin)':''}</option>`);});
     const html=opts.join('')||'<option disabled>nenhum membro</option>';
@@ -1941,7 +1996,7 @@ async function loadAdminMembers(){
   const el=document.getElementById('admin-members');
   el.innerHTML='<div class="empty">carregando...</div>';
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers(true); // força refresh para ter dados atualizados
     const members=[];
     snap.forEach(d=>{const data=d.data();if(!data.admin&&(data.status==='approved'||data.status==='paused'))members.push({id:d.id,...data});});
     members.sort((a,b)=>b.balance-a.balance);
@@ -2019,21 +2074,21 @@ window.resetSenha=function(uid,name){
 
 window.pauseM=function(uid,name){
   openModal('pausar conta',`Pausar a conta de ${name}?`,async()=>{
-    try{await updateDoc(doc(db,'users',uid),{status:'paused'});await notif(uid,'Sua conta foi pausada.','⏸');toast('conta pausada');loadAdminMembers();}
+    try{await updateDoc(doc(db,'users',uid),{status:'paused'});await notif(uid,'Sua conta foi pausada.','⏸');invalidateUsersCache();toast('conta pausada');loadAdminMembers();}
     catch(e){toast('erro');}
   },true);
 };
 
 window.unpauseM=function(uid,name){
   openModal('reativar conta',`Reativar a conta de ${name}?`,async()=>{
-    try{await updateDoc(doc(db,'users',uid),{status:'approved'});await notif(uid,'Sua conta foi reativada!','✅');toast('conta reativada');loadAdminMembers();}
+    try{await updateDoc(doc(db,'users',uid),{status:'approved'});await notif(uid,'Sua conta foi reativada!','✅');invalidateUsersCache();toast('conta reativada');loadAdminMembers();}
     catch(e){toast('erro');}
   });
 };
 
 window.deleteMember=function(uid,name){
   openModal('deletar conta',`Deletar a conta de ${name}? Irreversivel.`,async()=>{
-    try{await deleteDoc(doc(db,'users',uid));toast('conta deletada');loadAdminMembers();loadAdminSelects();}
+    try{await deleteDoc(doc(db,'users',uid));invalidateUsersCache();toast('conta deletada');loadAdminMembers();loadAdminSelects();}
     catch(e){toast('erro');}
   },true);
 };
@@ -2063,13 +2118,14 @@ window.aprovarUser=async function(uid,name){
   try{
     await updateDoc(doc(db,'users',uid),{status:'approved'});
     await notif(uid,'Sua conta foi aprovada! Bem-vindo ao Dracmas ADC 🎉','✅');
+    invalidateUsersCache();
     toast('conta aprovada!');loadPending();loadPendingBadge();
   }catch(e){toast('erro');}
 };
 
 window.recusarUser=function(uid,name){
   openModal('recusar conta',`Recusar a solicitacao de ${name}?`,async()=>{
-    try{await deleteDoc(doc(db,'users',uid));toast('recusado');loadPending();loadPendingBadge();}
+    try{await deleteDoc(doc(db,'users',uid));invalidateUsersCache();toast('recusado');loadPending();loadPendingBadge();}
     catch(e){toast('erro');}
   },true);
 };
@@ -2090,7 +2146,7 @@ async function loadRelatorio(){
     const iA=new Date(agora.getFullYear(),agora.getMonth(),1);
     const iAnt=new Date(agora.getFullYear(),agora.getMonth()-1,1);
     const fAnt=new Date(agora.getFullYear(),agora.getMonth(),0,23,59,59);
-    const uS=await getDocs(collection(db,'users'));
+    const uS=await getUsers();
     const members=[];let tot=0;
     uS.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved'){members.push({name:data.name,balance:data.balance});tot+=data.balance;}});
     members.sort((a,b)=>b.balance-a.balance);
@@ -2159,7 +2215,7 @@ window.gerarPDF=async function(){
 window.exportCSV=async function(){
   toast('gerando CSV...');
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers(true); // dados frescos para exportação
     const members=[];
     snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved'){const dt=data.createdAt?(data.createdAt.toDate?data.createdAt.toDate():new Date(data.createdAt)).toLocaleDateString('pt-BR'):'desconhecida';members.push({nome:data.name,usuario:d.id,saldo:data.balance,entrada:dt});}});
     members.sort((a,b)=>b.saldo-a.saldo);
@@ -2183,7 +2239,7 @@ window.exportPDFMembers=async function(){
     pdf.setFontSize(10);pdf.setFont('helvetica','normal');pdf.setTextColor(107,114,128);
     pdf.text(`Gerado em ${new Date().toLocaleString('pt-BR')}`,M,y);y+=8;
     pdf.setDrawColor(220,220,220);pdf.line(M,y,W-M,y);y+=8;
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers(true);
     const members=[];
     snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved'){const dt=data.createdAt?(data.createdAt.toDate?data.createdAt.toDate():new Date(data.createdAt)).toLocaleDateString('pt-BR'):'desconhecida';members.push({name:data.name,id:d.id,balance:data.balance,dt});}});
     members.sort((a,b)=>b.balance-a.balance);
@@ -2220,7 +2276,7 @@ async function loadEvento(){
   const adminTab=document.getElementById('ev-tab-admin');
   if(adminTab)adminTab.style.display=CU.admin?'block':'none';
   // stats
-  const membersSnap=await getDocs(collection(db,'users'));
+  const membersSnap=await getUsers();
   let totalMembros=0;membersSnap.forEach(d=>{if(!d.data().admin&&d.data().status==='approved')totalMembros++;});
   const timesSnap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
   document.getElementById('ev-stat-times').textContent=timesSnap.size;
@@ -2309,9 +2365,9 @@ async function loadEvRankingIndividual(){
   if(!el)return;
   el.innerHTML='<div class="empty">carregando...</div>';
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers();
     const members=[];
-    snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')members.push({id:d.id,name:data.name,evBal:data.evBalance||0,foto:data.foto});});
+    snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')members.push({id:d.id,name:data.name,evBal:data.evBalance||0,foto:data.foto});});;
     members.sort((a,b)=>b.evBal-a.evBal);
     // get teams for member
     const timesSnap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
@@ -2384,7 +2440,7 @@ async function loadEvTransferMembers(){
   const sel=document.getElementById('ev-tr-to');
   sel.innerHTML='<option>carregando...</option>';
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers();
     const opts=[];
     snap.forEach(d=>{const data=d.data();if(d.id!==CU.id&&data.status==='approved')opts.push(`<option value="${d.id}">${data.name}${data.admin?' (admin)':''}</option>`);});
     sel.innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
@@ -2430,7 +2486,7 @@ async function loadEvDarSelects(){
   const sel=document.getElementById('ev-dar-member');
   sel.innerHTML='<option>carregando...</option>';
   try{
-    const snap=await getDocs(collection(db,'users'));
+    const snap=await getUsers();
     const opts=[];
     snap.forEach(d=>{const data=d.data();if(data.status==='approved')opts.push(`<option value="${d.id}">${data.name}</option>`);});
     sel.innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
@@ -2452,13 +2508,14 @@ window.doEvDar=async function(){
     await addDoc(collection(db,'ev_transactions'),{from:'admin',to:toId,participants:['admin',toId],amount:amt,desc:obs||`${evMoeda} distribuida pelo admin`,obs:'',createdAt:serverTimestamp()});
     await notif(toId,`Voce recebeu ${amt} ${evMoeda} do admin${obs?' — "'+obs+'"':''}! ⬡`,'⬡');
     if(toId===CU.id)CU.evBalance=(CU.evBalance||0)+amt;
+    invalidateUsersCache(); // invalida cache pois saldo mudou
     // update team points (sum of members)
     if(evData){
       const timesSnap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
       timesSnap.forEach(async d=>{
         const data=d.data();
         if(data.membros&&data.membros.includes(toId)){
-          // recalc team points
+          // recalc team points usando getDocs fresco para precisão
           let total=0;
           const membersSnap=await getDocs(collection(db,'users'));
           membersSnap.forEach(md=>{if(data.membros.includes(md.id))total+=(md.data().evBalance||0);});
@@ -2520,7 +2577,7 @@ async function loadEvTimes(){
   try{
     const snap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
     if(snap.empty){el.innerHTML='<div class="empty">nenhum time criado ainda</div>';return;}
-    const usersSnap=await getDocs(collection(db,'users'));
+    const usersSnap=await getUsers();
     const userMap={};
     usersSnap.forEach(d=>userMap[d.id]={name:d.data().name,status:d.data().status});
     el.innerHTML=snap.docs.map(d=>{
@@ -2533,21 +2590,32 @@ async function loadEvTimes(){
           <button onclick="deletarTime('${d.id}','${t.nome}')" style="background:rgba(239,68,68,.15);color:#f87171;border:none;border-radius:8px;padding:5px 8px;font-size:11px;cursor:pointer">deletar</button>
         </div>
         <div style="margin-bottom:.5rem">${membrosHtml||'<div style="font-size:12px;color:rgba(233,213,255,.4)">nenhum membro ainda</div>'}</div>
-        <div style="display:flex;gap:6px;margin-top:.5rem">
-          <select id="add-m-${d.id}" style="flex:1;padding:6px 10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e9d5ff;font-size:12px;font-family:Inter,sans-serif">
-            ${usersSnap.docs.filter(u=>!u.data().admin&&u.data().status==='approved'&&!(t.membros||[]).includes(u.id)).map(u=>`<option value="${u.id}">${u.data().name}</option>`).join('')}
-          </select>
-          <button onclick="adicionarAoTime('${d.id}')" style="background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#c4b5fd;cursor:pointer;font-family:Inter,sans-serif">+ add</button>
+        <div style="display:flex;gap:6px;margin-top:.5rem;align-items:center">
+          <div class="ms-wrap inline" id="ms-wrap-${d.id}" style="flex:1">
+            <div class="ms-trigger" id="ms-trg-${d.id}" onclick="toggleMS('${d.id}')">selecionar membro</div>
+            <div class="ms-dropdown" id="ms-dd-${d.id}">
+              <div class="ms-search"><input type="text" placeholder="buscar..." oninput="filterMS('${d.id}',this.value)" id="ms-srch-${d.id}"/></div>
+              <div id="ms-list-${d.id}">
+                ${usersSnap.docs.filter(u=>!u.data().admin&&u.data().status==='approved'&&!(t.membros||[]).includes(u.id)).map(u=>`<div class="ms-option" data-id="${u.id}" data-name="${u.data().name}" onclick="toggleMSOption(this,'${d.id}')"><input type="checkbox" onclick="event.stopPropagation()"/><span class="ms-option-name">${u.data().name}</span></div>`).join('')||'<div class="ms-empty">nenhum disponível</div>'}
+              </div>
+            </div>
+          </div>
+          <button onclick="adicionarAoTime('${d.id}')" style="background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;color:#c4b5fd;cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap;flex-shrink:0">+ add</button>
         </div>
       </div>`;
     }).join('');
+    // registra items no _msData para cada time
+    snap.docs.forEach(d=>{
+      const t=d.data();
+      const items=usersSnap.docs.filter(u=>!u.data().admin&&u.data().status==='approved'&&!(t.membros||[]).includes(u.id)).map(u=>({id:u.id,name:u.data().name}));
+      items.sort((a,b)=>a.name.localeCompare(b.name));
+      _msData[d.id]={items,selected:new Set()};
+    });
   }catch(e){el.innerHTML='<div class="empty">erro: '+e.message+'</div>';}
 }
 
 window.adicionarAoTime=async function(teamId){
-  const sel=document.getElementById(`add-m-${teamId}`);
-  if(!sel){toast('selecione membros');return;}
-  const selecionados=Array.from(sel.selectedOptions).map(o=>o.value);
+  const selecionados=getMSSelected(teamId);
   if(!selecionados.length){toast('selecione ao menos um membro');return;}
   try{
     const ref=doc(db,'times',teamId);
@@ -2569,6 +2637,7 @@ window.adicionarAoTime=async function(teamId){
     }
     await updateDoc(ref,{membros:[...membros,...novos]});
     toast(`${novos.length} membro(s) adicionado(s)!`);
+    if(_msData[teamId])_msData[teamId].selected=new Set();
     loadEvTimes();
   }catch(e){toast('erro: '+e.message);}
 };
@@ -2625,9 +2694,8 @@ window.criarTime=async function(){
   const prev=document.getElementById('ct-foto-prev');
   const foto=prev&&prev.style.display!=='none'?prev.src:'';
   const modo=document.querySelector('input[name="ct-modo"]:checked')?.value||'unico';
-  // membros selecionados no multiselect
-  const sel=document.getElementById('ct-membros-sel');
-  const membros=sel?Array.from(sel.selectedOptions).map(o=>o.value):[];
+  // membros selecionados no multiselect customizado
+  const membros=getMSSelected('ct');
   if(!nome){showErr('ct-err','informe o nome do time');return;}
   if(!evData){showErr('ct-err','nenhum evento ativo');return;}
   setLoad('ct-btn',true);
@@ -2771,17 +2839,85 @@ window.criarEvento=async function(){
 
 
 
+// ── MULTISELECT CUSTOMIZADO ──
+// _msData: { [msId]: { items:[{id,name}], selected:Set } }
+const _msData={};
+
+window.toggleMS=function(msId){
+  const dd=document.getElementById(`${msId==='ct'?'ct-ms-':'ms-dd-'}${msId==='ct'?'dropdown':msId}`);
+  const trg=document.getElementById(`${msId==='ct'?'ct-ms-trigger':`ms-trg-${msId}`}`);
+  if(!dd||!trg)return;
+  const isOpen=dd.classList.contains('open');
+  // fecha todos abertos
+  document.querySelectorAll('.ms-dropdown.open').forEach(el=>{el.classList.remove('open');el.previousElementSibling?.classList.remove('open');});
+  if(!isOpen){dd.classList.add('open');trg.classList.add('open');}
+};
+
+window.toggleMSOption=function(el,msId){
+  const id=el.dataset.id;
+  const name=el.dataset.name;
+  if(!_msData[msId])_msData[msId]={items:[],selected:new Set()};
+  const sel=_msData[msId].selected;
+  const cb=el.querySelector('input[type=checkbox]');
+  if(sel.has(id)){sel.delete(id);el.classList.remove('selected');if(cb)cb.checked=false;}
+  else{sel.add(id);el.classList.add('selected');if(cb)cb.checked=true;}
+  updateMSTrigger(msId);
+};
+
+function updateMSTrigger(msId){
+  const trg=document.getElementById(msId==='ct'?'ct-ms-trigger':`ms-trg-${msId}`);
+  if(!trg)return;
+  const sel=_msData[msId]?.selected;
+  if(!sel||sel.size===0){trg.childNodes[0]&&(trg.childNodes[0].textContent='selecionar membro');trg.innerHTML=msId==='ct'?'nenhum selecionado':'selecionar membro';}
+  else{const names=_msData[msId].items.filter(i=>sel.has(i.id)).map(i=>i.name.split(' ')[0]);trg.innerHTML=`<span style="color:#c4b5fd;font-weight:700">${sel.size} selecionado${sel.size>1?'s':''}</span><span style="color:rgba(196,181,253,.5);font-size:11px;margin-left:6px">${names.slice(0,3).join(', ')}${names.length>3?'...':''}</span>`;}
+}
+
+function getMSSelected(msId){
+  return _msData[msId]?[..._msData[msId].selected]:[];
+}
+
+function populateMS(msId,items){
+  const listEl=document.getElementById(msId==='ct'?'ct-ms-list':`ms-list-${msId}`);
+  if(!listEl)return;
+  if(!_msData[msId])_msData[msId]={items:[],selected:new Set()};
+  _msData[msId].items=items;
+  if(!items.length){listEl.innerHTML='<div class="ms-empty">nenhum membro disponível</div>';return;}
+  listEl.innerHTML=items.map(m=>`<div class="ms-option${_msData[msId].selected.has(m.id)?' selected':''}" data-id="${m.id}" data-name="${m.name}" onclick="toggleMSOption(this,'${msId}')"><input type="checkbox" ${_msData[msId].selected.has(m.id)?'checked':''} onclick="event.stopPropagation()"/><span class="ms-option-name">${m.name}</span></div>`).join('');
+  updateMSTrigger(msId);
+}
+
+window.filterMS=function(msId,q){
+  if(!_msData[msId])return;
+  const txt=q.trim().toLowerCase();
+  const filtered=txt?_msData[msId].items.filter(m=>m.name.toLowerCase().includes(txt)):_msData[msId].items;
+  const listEl=document.getElementById(msId==='ct'?'ct-ms-list':`ms-list-${msId}`);
+  if(!listEl)return;
+  if(!filtered.length){listEl.innerHTML='<div class="ms-empty">nenhum resultado</div>';return;}
+  listEl.innerHTML=filtered.map(m=>`<div class="ms-option${_msData[msId].selected.has(m.id)?' selected':''}" data-id="${m.id}" data-name="${m.name}" onclick="toggleMSOption(this,'${msId}')"><input type="checkbox" ${_msData[msId].selected.has(m.id)?'checked':''} onclick="event.stopPropagation()"/><span class="ms-option-name">${m.name}</span></div>`).join('');
+};
+
+// fechar dropdown ao clicar fora
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ms-wrap')){
+    document.querySelectorAll('.ms-dropdown.open').forEach(el=>{el.classList.remove('open');el.previousElementSibling?.classList.remove('open');});
+  }
+});
+
 // ── LOAD MEMBROS PARA CRIAR TIME ──
 async function loadCriarTimeMembers(){
-  const sel=document.getElementById('ct-membros-sel');
-  if(!sel)return;
-  sel.innerHTML='<option disabled>carregando...</option>';
+  const listEl=document.getElementById('ct-ms-list');
+  if(!listEl)return;
+  listEl.innerHTML='<div class="ms-empty">carregando...</div>';
+  // reseta seleção ao abrir a tela
+  if(_msData['ct'])_msData['ct'].selected=new Set();
+  updateMSTrigger('ct');
   try{
-    const snap=await getDocs(collection(db,'users'));
-    const opts=[];
-    snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')opts.push(`<option value="${d.id}" style="background:#1a0838;color:#e9d5ff;padding:4px">${data.name}</option>`);});
-    sel.innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
-  }catch(e){sel.innerHTML='<option disabled>erro</option>';}
+    const snap=await getUsers();
+    const items=[];
+    snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')items.push({id:d.id,name:data.name});});
+    items.sort((a,b)=>a.name.localeCompare(b.name));
+    populateMS('ct',items);
+  }catch(e){listEl.innerHTML='<div class="ms-empty">erro ao carregar</div>';}
 }
 
 // ── EV QR ──
