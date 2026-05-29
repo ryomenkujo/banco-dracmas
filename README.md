@@ -946,7 +946,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title" id="ev-topbar-title">Evento</span></div>
   <div class="ev-header-card">
     <div class="ev-header-top">
-      <div class="ev-header-icon" id="ev-secret-tap" onclick="evSecretTap()" style="cursor:pointer;user-select:none">&#9876;</div>
+      <div class="ev-header-icon">&#9876;</div>
       <div>
         <div class="ev-header-name" id="ev-header-name">Evento ADC</div>
         <div class="ev-header-sub">Gincana em andamento</div>
@@ -988,7 +988,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
     </div>
     <div class="notice"><p>&#9888;&#65039; Esta moeda e temporaria e exclusiva do evento. Ao encerrar, o saldo sera zerado.</p></div>
-    <div style="padding:0 1rem .5rem">
+    <div id="ev-desafios-btn-wrap" style="padding:0 1rem .5rem;display:none">
       <button onclick="goTo('s-ev-desafios-membro')" style="width:100%;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(91,33,182,.15));border:1px solid rgba(139,92,246,.3);border-radius:14px;padding:12px;font-size:13px;font-weight:700;color:#c4b5fd;font-family:Inter,sans-serif;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
         <span style="font-size:20px">&#10024;</span>
         <div><div>desafios</div><div style="font-size:11px;font-weight:400;color:rgba(196,181,253,.5);margin-top:2px">complete e ganhe recompensas</div></div>
@@ -1205,6 +1205,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <div id="s-ev-desafios" class="screen">
   <div class="topbar gold-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">desafios <span class="tag-a">admin</span></span></div>
   <div style="padding:1rem">
+
+    <!-- TOGGLE VISIBILIDADE -->
+    <div class="ev-toggle-row" style="margin-bottom:1rem">
+      <div>
+        <div class="ev-toggle-label" id="ds-vis-label">Desafios ocultos</div>
+        <div class="ev-toggle-sub">membros nao veem a aba de desafios</div>
+      </div>
+      <div class="toggle-track off" id="ds-vis-toggle" onclick="toggleDesafiosVisiveis()"><div class="toggle-knob"></div></div>
+    </div>
 
     <!-- CRIAR DESAFIO -->
     <div class="ev-admin-card" style="margin-bottom:1rem">
@@ -2436,6 +2445,9 @@ async function loadEvento(){
   if(CU.admin)loadEvRankingIndividual();
   // wallet txs
   loadEvWalletTxs();
+  // botao desafios: admin sempre ve, membro so ve se admin habilitou
+  const dsBtnWrap=document.getElementById('ev-desafios-btn-wrap');
+  if(dsBtnWrap)dsBtnWrap.style.display=(CU.admin||evData.desafiosVisiveis)?'block':'none';
 }
 
 function updateEvLabels(){
@@ -3098,24 +3110,6 @@ window.pararEvScan=async function(){
 };
 
 // ── DESAFIOS ──
-// botão secreto: 5 toques no troféu em até 3s
-let _dsTaps=0,_dsTapTimer=null;
-window.evSecretTap=function(){
-  if(!CU?.admin)return; // só admin vê
-  const icon=document.getElementById('ev-secret-tap');
-  icon.classList.add('secret-flash');
-  setTimeout(()=>icon.classList.remove('secret-flash'),200);
-  _dsTaps++;
-  clearTimeout(_dsTapTimer);
-  if(_dsTaps>=5){
-    _dsTaps=0;
-    toast('🔐 modo desafios');
-    setTimeout(()=>goTo('s-ev-desafios'),300);
-    return;
-  }
-  _dsTapTimer=setTimeout(()=>{_dsTaps=0;},3000);
-};
-
 window.toggleDsVis=function(val){
   document.getElementById('ds-membros-wrap').style.display=val==='especificos'?'block':'none';
   if(val==='especificos')loadDsMembros();
@@ -3176,7 +3170,30 @@ window.criarDesafio=async function(){
   finally{setLoad('ds-btn',false);}
 };
 
+window.toggleDesafiosVisiveis=async function(){
+  if(!evData){toast('nenhum evento ativo');return;}
+  try{
+    const novo=!evData.desafiosVisiveis;
+    await updateDoc(doc(db,'eventos',evData.id),{desafiosVisiveis:novo});
+    evData.desafiosVisiveis=novo;
+    sincToggleDesafios();
+    // atualiza botao na tela do evento também
+    const dsBtnWrap=document.getElementById('ev-desafios-btn-wrap');
+    if(dsBtnWrap)dsBtnWrap.style.display=(CU.admin||novo)?'block':'none';
+    toast(novo?'desafios visiveis para membros!':'desafios ocultados');
+  }catch(e){toast('erro: '+e.message);}
+};
+
+function sincToggleDesafios(){
+  const tog=document.getElementById('ds-vis-toggle');
+  const lbl=document.getElementById('ds-vis-label');
+  const visivel=evData?.desafiosVisiveis||false;
+  if(tog)tog.classList.toggle('off',!visivel);
+  if(lbl)lbl.textContent=visivel?'Desafios visiveis':'Desafios ocultos';
+}
+
 async function loadDesafiosAdmin(){
+  sincToggleDesafios(); // sincroniza o toggle com o estado atual do evento
   const el=document.getElementById('ds-lista');
   if(!el)return;
   el.innerHTML='<div class="empty">carregando...</div>';
