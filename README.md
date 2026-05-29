@@ -510,7 +510,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .secret-flash{animation:secretFlash .2s ease}
 [data-theme="light"] .ds-badge.todos{background:rgba(139,92,246,.12);color:var(--ev)}
 [data-theme="light"] .ds-badge.especificos{background:rgba(245,158,11,.1);color:#d97706}
-</style>
+/* ── MULTISELECT CUSTOMIZADO ── */
 .ms-wrap{position:relative;width:100%}
 .ms-trigger{width:100%;padding:11px 36px 11px 14px;font-size:13px;font-family:"Inter",sans-serif;border:1px solid rgba(167,139,250,.35);border-radius:12px;background:#1a0838;color:#e9d5ff;cursor:pointer;text-align:left;position:relative;user-select:none;min-height:42px}
 .ms-trigger::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:rgba(196,181,253,.5);pointer-events:none}
