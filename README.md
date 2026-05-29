@@ -485,7 +485,32 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 [data-theme="light"] .topbar{background:rgba(244,241,249,.95);border-color:rgba(46,26,71,.08)}
 [data-theme="light"] .scan-area{background:var(--card2)}
 
-/* ── MULTISELECT CUSTOMIZADO ── */
+/* ── DESAFIOS ── */
+.ds-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:1rem;margin-bottom:.75rem;position:relative;overflow:hidden}
+.ds-card.completed{opacity:.55;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.04)}
+.ds-card.expired{opacity:.4}
+.ds-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.04em}
+.ds-badge.todos{background:rgba(139,92,246,.2);color:#c4b5fd}
+.ds-badge.especificos{background:rgba(245,158,11,.15);color:#fbbf24}
+.ds-badge.completed{background:rgba(34,197,94,.15);color:#4ade80}
+.ds-badge.expired{background:rgba(156,163,175,.1);color:#9ca3af}
+.ds-titulo{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;padding-right:70px}
+.ds-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:.75rem}
+.ds-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ds-reward{font-size:13px;font-weight:700;color:#c4b5fd}
+.ds-reward.dr{color:var(--gold)}
+.ds-prazo{font-size:11px;color:var(--muted2)}
+.ds-complete-btn{margin-left:auto;background:linear-gradient(135deg,var(--ev2),var(--ev));color:#fff;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer;transition:opacity .15s}
+.ds-complete-btn:active{opacity:.7}
+.ds-complete-btn.done{background:rgba(34,197,94,.15);color:#4ade80;cursor:default}
+.ds-admin-acts{display:flex;gap:6px;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+.ds-del-btn{background:rgba(239,68,68,.12);color:#f87171;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer}
+/* secret tap flash */
+@keyframes secretFlash{0%,100%{opacity:1}50%{opacity:.3}}
+.secret-flash{animation:secretFlash .2s ease}
+[data-theme="light"] .ds-badge.todos{background:rgba(139,92,246,.12);color:var(--ev)}
+[data-theme="light"] .ds-badge.especificos{background:rgba(245,158,11,.1);color:#d97706}
+</style>
 .ms-wrap{position:relative;width:100%}
 .ms-trigger{width:100%;padding:11px 36px 11px 14px;font-size:13px;font-family:"Inter",sans-serif;border:1px solid rgba(167,139,250,.35);border-radius:12px;background:#1a0838;color:#e9d5ff;cursor:pointer;text-align:left;position:relative;user-select:none;min-height:42px}
 .ms-trigger::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:rgba(196,181,253,.5);pointer-events:none}
@@ -921,7 +946,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title" id="ev-topbar-title">Evento</span></div>
   <div class="ev-header-card">
     <div class="ev-header-top">
-      <div class="ev-header-icon">&#9876;</div>
+      <div class="ev-header-icon" id="ev-secret-tap" onclick="evSecretTap()" style="cursor:pointer;user-select:none">&#9876;</div>
       <div>
         <div class="ev-header-name" id="ev-header-name">Evento ADC</div>
         <div class="ev-header-sub">Gincana em andamento</div>
@@ -963,6 +988,13 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
     </div>
     <div class="notice"><p>&#9888;&#65039; Esta moeda e temporaria e exclusiva do evento. Ao encerrar, o saldo sera zerado.</p></div>
+    <div style="padding:0 1rem .5rem">
+      <button onclick="goTo('s-ev-desafios-membro')" style="width:100%;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(91,33,182,.15));border:1px solid rgba(139,92,246,.3);border-radius:14px;padding:12px;font-size:13px;font-weight:700;color:#c4b5fd;font-family:Inter,sans-serif;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">&#10024;</span>
+        <div><div>desafios</div><div style="font-size:11px;font-weight:400;color:rgba(196,181,253,.5);margin-top:2px">complete e ganhe recompensas</div></div>
+        <span style="margin-left:auto;opacity:.5;font-size:18px">›</span>
+      </button>
+    </div>
     <div class="sec-hd">historico de prata</div>
     <div class="tx-list" id="ev-wallet-txs" style="padding:0"><div class="empty">carregando...</div></div>
   </div>
@@ -985,6 +1017,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         <div class="ev-ag-btn" onclick="goTo('s-ev-dar')"><div class="ev-ag-icon">&#11042;</div><div class="ev-ag-label">dar moeda</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-pts')"><div class="ev-ag-icon">&#9876;</div><div class="ev-ag-label">pts do time</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-times')"><div class="ev-ag-icon">&#128101;</div><div class="ev-ag-label">gerir times</div></div>
+        <div class="ev-ag-btn" onclick="goTo('s-ev-desafios')" style="border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.08)"><div class="ev-ag-icon">&#10024;</div><div class="ev-ag-label" style="color:#fbbf24">desafios</div></div>
         <div class="ev-ag-btn" onclick="encerrarEvento()"><div class="ev-ag-icon">&#127942;</div><div class="ev-ag-label">encerrar</div></div>
         <div class="ev-ag-btn" onclick="deletarEvento()" style="border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.15)"><div class="ev-ag-icon">&#128465;</div><div class="ev-ag-label" style="color:#fca5a5">deletar</div></div>
       </div>
@@ -1168,6 +1201,78 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
 <!-- EDIT LOJA MODAL -->
 
+<!-- EV DESAFIOS (admin) -->
+<div id="s-ev-desafios" class="screen">
+  <div class="topbar gold-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">desafios <span class="tag-a">admin</span></span></div>
+  <div style="padding:1rem">
+
+    <!-- CRIAR DESAFIO -->
+    <div class="ev-admin-card" style="margin-bottom:1rem">
+      <div class="ev-admin-title">&#10024; novo desafio</div>
+      <div class="form-group" style="margin-bottom:.6rem">
+        <label class="form-label">titulo do desafio</label>
+        <input class="form-input" id="ds-titulo" type="text" placeholder="Ex: Memorize o verso da semana"/>
+      </div>
+      <div class="form-group" style="margin-bottom:.6rem">
+        <label class="form-label">descricao / instrucao</label>
+        <textarea class="form-input" id="ds-desc" rows="2" style="resize:none;line-height:1.5" placeholder="O que o membro deve fazer?"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">recompensa</label>
+          <input class="form-input" id="ds-reward" type="number" min="1" placeholder="quantidade"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">moeda</label>
+          <select class="form-input" id="ds-moeda" style="cursor:pointer">
+            <option value="ev">moeda do evento</option>
+            <option value="dr">dracmas</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:.6rem">
+        <label class="form-label">validade</label>
+        <select class="form-input" id="ds-validade" style="cursor:pointer">
+          <option value="0">sem prazo</option>
+          <option value="1">1 dia</option>
+          <option value="3">3 dias</option>
+          <option value="7">1 semana</option>
+        </select>
+      </div>
+      <!-- QUEM PODE VER -->
+      <div class="form-group" style="margin-bottom:.8rem">
+        <label class="form-label">visivel para</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px;cursor:pointer">
+            <input type="radio" name="ds-vis" value="todos" checked onchange="toggleDsVis(this.value)" style="accent-color:#7c3aed;width:16px;height:16px"/>
+            <span style="font-size:13px;color:#e9d5ff">todos</span>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:10px;cursor:pointer">
+            <input type="radio" name="ds-vis" value="especificos" onchange="toggleDsVis(this.value)" style="accent-color:#7c3aed;width:16px;height:16px"/>
+            <span style="font-size:13px;color:#e9d5ff">especificos</span>
+          </label>
+        </div>
+        <!-- multiselect de membros (aparece só quando "especificos") -->
+        <div id="ds-membros-wrap" style="display:none">
+          <div class="ms-wrap" id="ds-ms-wrap">
+            <div class="ms-trigger" id="ds-ms-trigger" onclick="toggleMS('ds')">nenhum selecionado</div>
+            <div class="ms-dropdown" id="ds-ms-dropdown">
+              <div class="ms-search"><input type="text" placeholder="buscar membro..." oninput="filterMS('ds',this.value)"/></div>
+              <div id="ds-ms-list"><div class="ms-empty">carregando...</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="err" id="ds-err"></div>
+      <button class="btn-p ev" id="ds-btn" onclick="criarDesafio()">criar desafio</button>
+    </div>
+
+    <!-- LISTA DE DESAFIOS ATIVOS -->
+    <div class="sec-hd" style="padding-left:0;color:rgba(196,181,253,.5)">desafios ativos</div>
+    <div id="ds-lista"><div class="empty">nenhum desafio criado</div></div>
+  </div>
+</div>
+
 <!-- EV QR CODE -->
 <div id="s-ev-qr" class="screen">
   <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title" id="ev-qr-title">QR · Evento</span></div>
@@ -1213,6 +1318,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <button class="btn-s" onclick="closeModal('modal-loja-edit')">cancelar</button>
       <button class="btn-p" id="loja-edit-btn" onclick="salvarEdicaoLoja()">salvar</button>
     </div>
+  </div>
+</div>
+
+<!-- EV DESAFIOS (membro) -->
+<div id="s-ev-desafios-membro" class="screen">
+  <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">desafios &#10024;</span></div>
+  <div style="padding:1rem">
+    <div style="font-size:13px;color:rgba(196,181,253,.5);margin-bottom:1rem;line-height:1.6">Complete os desafios para ganhar recompensas! Cada desafio so pode ser completado uma vez.</div>
+    <div id="dsm-lista"><div class="empty">carregando...</div></div>
   </div>
 </div>
 
@@ -1387,6 +1501,8 @@ function onScreenLoad(id){
   if(id==='s-ev-admin-home')loadEvAdminHome();
   if(id==='s-ev-transfer')loadEvTransferMembers();
   if(id==='s-ev-qr'){switchEvQRTab('meu');updateEvLabels();if(CU)gerarEvQR();const t=document.getElementById('ev-qr-title');if(t)t.textContent='QR · '+evMoeda;const s=document.getElementById('ev-qr-sub');if(s)s.textContent='mostre para receber '+evMoeda.toLowerCase();}
+  if(id==='s-ev-desafios'){loadDesafiosAdmin();loadCriarTimeMembers();}
+  if(id==='s-ev-desafios-membro')loadDesafiosMembro();
   if(id==='s-change-pw'){['cp-cur','cp-new','cp-new2'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});['pw-b2','pw-l2'].forEach(i=>{const el=document.getElementById(i);if(el){el.className='pw-bar';el.textContent='';}});}
 }
 
@@ -2981,7 +3097,203 @@ window.pararEvScan=async function(){
   document.getElementById('ev-qr-reader-wrap').style.display='none';
 };
 
-// ── ENTER KEYS ──
+// ── DESAFIOS ──
+// botão secreto: 5 toques no troféu em até 3s
+let _dsTaps=0,_dsTapTimer=null;
+window.evSecretTap=function(){
+  if(!CU?.admin)return; // só admin vê
+  const icon=document.getElementById('ev-secret-tap');
+  icon.classList.add('secret-flash');
+  setTimeout(()=>icon.classList.remove('secret-flash'),200);
+  _dsTaps++;
+  clearTimeout(_dsTapTimer);
+  if(_dsTaps>=5){
+    _dsTaps=0;
+    toast('🔐 modo desafios');
+    setTimeout(()=>goTo('s-ev-desafios'),300);
+    return;
+  }
+  _dsTapTimer=setTimeout(()=>{_dsTaps=0;},3000);
+};
+
+window.toggleDsVis=function(val){
+  document.getElementById('ds-membros-wrap').style.display=val==='especificos'?'block':'none';
+  if(val==='especificos')loadDsMembros();
+};
+
+async function loadDsMembros(){
+  const listEl=document.getElementById('ds-ms-list');
+  if(!listEl)return;
+  if(_msData['ds']?.items?.length){return;} // já carregou
+  listEl.innerHTML='<div class="ms-empty">carregando...</div>';
+  try{
+    const snap=await getUsers();
+    const items=[];
+    snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')items.push({id:d.id,name:data.name});});
+    items.sort((a,b)=>a.name.localeCompare(b.name));
+    populateMS('ds',items);
+  }catch(e){listEl.innerHTML='<div class="ms-empty">erro</div>';}
+}
+
+window.criarDesafio=async function(){
+  const titulo=document.getElementById('ds-titulo').value.trim();
+  const desc=document.getElementById('ds-desc').value.trim();
+  const reward=parseInt(document.getElementById('ds-reward').value);
+  const moeda=document.getElementById('ds-moeda').value;
+  const validade=parseInt(document.getElementById('ds-validade').value);
+  const visMode=document.querySelector('input[name="ds-vis"]:checked')?.value||'todos';
+  const especificos=visMode==='especificos'?getMSSelected('ds'):[];
+
+  if(!titulo){showErr('ds-err','informe o titulo');return;}
+  if(!reward||reward<1){showErr('ds-err','informe a recompensa');return;}
+  if(visMode==='especificos'&&!especificos.length){showErr('ds-err','selecione ao menos um membro');return;}
+
+  setLoad('ds-btn',true);
+  try{
+    const expiresAt=validade>0?new Date(Date.now()+validade*86400000):null;
+    await addDoc(collection(db,'desafios'),{
+      titulo,desc,reward,moeda,
+      visMode, // 'todos' ou 'especificos'
+      especificos,
+      expiresAt:expiresAt?expiresAt:null,
+      createdAt:serverTimestamp(),
+      eventoId:evData?.id||null,
+      completados:[], // array de UIDs que ja completaram
+      ativo:true
+    });
+    // limpa form
+    document.getElementById('ds-titulo').value='';
+    document.getElementById('ds-desc').value='';
+    document.getElementById('ds-reward').value='';
+    document.getElementById('ds-validade').value='0';
+    document.querySelector('input[name="ds-vis"][value="todos"]').checked=true;
+    document.getElementById('ds-membros-wrap').style.display='none';
+    if(_msData['ds'])_msData['ds'].selected=new Set();
+    updateMSTrigger('ds');
+    toast('desafio criado!');
+    loadDesafiosAdmin();
+  }catch(e){showErr('ds-err','erro: '+e.message);}
+  finally{setLoad('ds-btn',false);}
+};
+
+async function loadDesafiosAdmin(){
+  const el=document.getElementById('ds-lista');
+  if(!el)return;
+  el.innerHTML='<div class="empty">carregando...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'desafios'),orderBy('createdAt','desc'),limit(50)));
+    if(snap.empty){el.innerHTML='<div class="empty">nenhum desafio criado</div>';return;}
+    const now=Date.now();
+    el.innerHTML=snap.docs.map(d=>{
+      const ds=d.data();
+      const expired=ds.expiresAt&&ds.expiresAt.toDate&&ds.expiresAt.toDate()<new Date();
+      const completados=ds.completados?.length||0;
+      const prazoTxt=ds.expiresAt?(expired?'expirado':'expira em '+ds.expiresAt.toDate().toLocaleDateString('pt-BR')):'sem prazo';
+      const moedaTxt=ds.moeda==='dr'?`₯ dracmas`:`⬡ ${evMoeda}`;
+      const visTxt=ds.visMode==='especificos'?`${ds.especificos?.length||0} membro(s)`:'todos';
+      return`<div class="ds-card${expired?' expired':''}">
+        <div class="ds-badge ${ds.visMode}">${visTxt}</div>
+        <div class="ds-titulo">${ds.titulo}</div>
+        ${ds.desc?`<div class="ds-desc">${ds.desc}</div>`:''}
+        <div class="ds-footer">
+          <span class="ds-reward${ds.moeda==='dr'?' dr':''}">+${ds.reward} ${moedaTxt}</span>
+          <span class="ds-prazo">${prazoTxt}</span>
+          <span class="ds-prazo">✓ ${completados} concluido(s)</span>
+        </div>
+        <div class="ds-admin-acts">
+          <button class="ds-del-btn" onclick="deletarDesafio('${d.id}','${ds.titulo.replace(/'/g,"\\'")}')">✕ remover</button>
+          <button class="ds-del-btn" style="background:rgba(139,92,246,.15);color:#c4b5fd;margin-left:auto" onclick="verCompletadosDesafio('${d.id}','${ds.titulo.replace(/'/g,"\\'")}')">ver concluintes</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div class="empty">erro: '+e.message+'</div>';}
+}
+
+window.deletarDesafio=function(id,titulo){
+  openModal('remover desafio',`Remover o desafio "${titulo}"? Irreversivel.`,async()=>{
+    try{await deleteDoc(doc(db,'desafios',id));toast('desafio removido');loadDesafiosAdmin();}
+    catch(e){toast('erro');}
+  },true);
+};
+
+window.verCompletadosDesafio=async function(id,titulo){
+  try{
+    const snap=await getDoc(doc(db,'desafios',id));
+    const completados=snap.data().completados||[];
+    if(!completados.length){toast('ninguem completou ainda');return;}
+    const usersSnap=await getUsers();
+    const userMap={};
+    usersSnap.forEach(d=>userMap[d.id]=d.data().name);
+    const nomes=completados.map(uid=>userMap[uid]||uid).join('\n');
+    openModal(`concluintes — ${titulo}`,nomes,null);
+  }catch(e){toast('erro');}
+};
+
+// ── DESAFIOS MEMBRO ──
+async function loadDesafiosMembro(){
+  const el=document.getElementById('dsm-lista');
+  if(!el)return;
+  el.innerHTML='<div class="empty">carregando...</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'desafios'),orderBy('createdAt','desc'),limit(50)));
+    const now=new Date();
+    const visiveis=snap.docs.filter(d=>{
+      const ds=d.data();
+      if(!ds.ativo)return false;
+      if(ds.expiresAt&&ds.expiresAt.toDate&&ds.expiresAt.toDate()<now)return false;
+      if(ds.visMode==='especificos'&&!ds.especificos?.includes(CU.id))return false;
+      return true;
+    });
+    if(!visiveis.length){el.innerHTML='<div class="empty">nenhum desafio disponivel agora</div>';return;}
+    el.innerHTML=visiveis.map(d=>{
+      const ds=d.data();
+      const done=(ds.completados||[]).includes(CU.id);
+      const moedaTxt=ds.moeda==='dr'?`₯ dracmas`:`⬡ ${evMoeda}`;
+      const prazoTxt=ds.expiresAt?'expira em '+ds.expiresAt.toDate().toLocaleDateString('pt-BR'):'';
+      return`<div class="ds-card${done?' completed':''}">
+        ${done?'<div class="ds-badge completed">✓ concluido</div>':''}
+        <div class="ds-titulo" style="${done?'':'padding-right:0'}">${ds.titulo}</div>
+        ${ds.desc?`<div class="ds-desc">${ds.desc}</div>`:''}
+        <div class="ds-footer">
+          <span class="ds-reward${ds.moeda==='dr'?' dr':''}">+${ds.reward} ${moedaTxt}</span>
+          ${prazoTxt?`<span class="ds-prazo">${prazoTxt}</span>`:''}
+          <button class="ds-complete-btn${done?' done':''}" onclick="${done?'':'completarDesafio(\''+d.id+'\')'}">${done?'✓ feito':'concluir'}</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div class="empty">erro: '+e.message+'</div>';}
+}
+
+window.completarDesafio=function(dsId){
+  openModal('concluir desafio','Confirma que voce completou este desafio? O admin pode verificar depois.',async()=>{
+    try{
+      const dsRef=doc(db,'desafios',dsId);
+      const dsSnap=await getDoc(dsRef);
+      const ds=dsSnap.data();
+      if((ds.completados||[]).includes(CU.id)){toast('voce ja completou este desafio');return;}
+      // credita recompensa
+      const userRef=doc(db,'users',CU.id);
+      if(ds.moeda==='dr'){
+        await updateDoc(userRef,{balance:CU.balance+ds.reward});
+        await addDoc(collection(db,'transactions'),{from:'admin',to:CU.id,participants:['admin',CU.id],amount:ds.reward,category:'conquista',desc:`Desafio: ${ds.titulo}`,obs:'',createdAt:serverTimestamp()});
+        CU.balance+=ds.reward;
+        invalidateUsersCache();
+        document.getElementById('balance').textContent=CU.balance;
+      }else{
+        await updateDoc(userRef,{evBalance:(CU.evBalance||0)+ds.reward});
+        await addDoc(collection(db,'ev_transactions'),{from:'admin',to:CU.id,participants:['admin',CU.id],amount:ds.reward,desc:`Desafio: ${ds.titulo}`,obs:'',createdAt:serverTimestamp()});
+        CU.evBalance=(CU.evBalance||0)+ds.reward;
+        invalidateUsersCache();
+      }
+      // marca como completado
+      await updateDoc(dsRef,{completados:[...(ds.completados||[]),CU.id]});
+      await notif(CU.id,`Voce completou o desafio "${ds.titulo}" e ganhou ${ds.reward} ${ds.moeda==='dr'?'dracmas':evMoeda}! 🎉`,'⚡');
+      toast(`+${ds.reward} ${ds.moeda==='dr'?'dracmas':evMoeda} ganhos!`);
+      loadDesafiosMembro();
+    }catch(e){toast('erro: '+e.message);}
+  });
+};
+
 document.getElementById('l-pw')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('r-pw2')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 document.getElementById('cp-new2')?.addEventListener('keydown',e=>{if(e.key==='Enter')doChangePw();});
