@@ -486,30 +486,62 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 [data-theme="light"] .scan-area{background:var(--card2)}
 
 /* ── DESAFIOS ── */
+.ds-tipo-opt{display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:2px solid rgba(167,139,250,.2);border-radius:14px;padding:12px 8px;cursor:pointer;transition:all .15s;user-select:none;text-align:center}
+.ds-tipo-opt.active{background:rgba(124,58,237,.2);border-color:rgba(139,92,246,.7)}
+.ds-tipo-opt span:first-child{font-size:24px}
+.ds-tipo-opt .ds-tipo-label{font-size:12px;font-weight:700;color:#e9d5ff}
+.ds-tipo-opt .ds-tipo-sub{font-size:10px;color:rgba(196,181,253,.45);line-height:1.3}
+/* questoes (multipla escolha) */
+.ds-q-block{background:rgba(255,255,255,.04);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:.75rem;margin-bottom:.6rem}
+.ds-q-num{font-size:11px;font-weight:700;color:rgba(196,181,253,.4);margin-bottom:6px}
+.ds-q-inp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;color:#e9d5ff;outline:none;resize:none;box-sizing:border-box;margin-bottom:.5rem}
+.ds-alt-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.ds-alt-row input[type=text]{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(167,139,250,.15);border-radius:8px;padding:7px 10px;font-size:12px;font-family:Inter,sans-serif;color:#e9d5ff;outline:none}
+.ds-alt-row input[type=radio]{width:16px;height:16px;accent-color:#22c55e;flex-shrink:0;cursor:pointer}
+.ds-alt-row.certa-row input[type=text]{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.06)}
+.ds-q-del-btn{background:rgba(239,68,68,.12);color:#f87171;border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:Inter,sans-serif;flex-shrink:0}
+/* cards */
 .ds-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:1rem;margin-bottom:.75rem;position:relative;overflow:hidden}
 .ds-card.completed{opacity:.55;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.04)}
 .ds-card.expired{opacity:.4}
+.ds-card.pendente-card{border-color:rgba(251,191,36,.2);background:rgba(251,191,36,.03)}
 .ds-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.04em}
 .ds-badge.todos{background:rgba(139,92,246,.2);color:#c4b5fd}
 .ds-badge.especificos{background:rgba(245,158,11,.15);color:#fbbf24}
 .ds-badge.completed{background:rgba(34,197,94,.15);color:#4ade80}
 .ds-badge.expired{background:rgba(156,163,175,.1);color:#9ca3af}
+.ds-badge.pendente{background:rgba(251,191,36,.15);color:#fbbf24}
+.ds-tipo-tag{font-size:10px;color:rgba(196,181,253,.4);margin-bottom:4px}
 .ds-titulo{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;padding-right:70px}
 .ds-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:.75rem}
 .ds-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ds-reward{font-size:13px;font-weight:700;color:#c4b5fd}
 .ds-reward.dr{color:var(--gold)}
 .ds-prazo{font-size:11px;color:var(--muted2)}
-.ds-complete-btn{margin-left:auto;background:linear-gradient(135deg,var(--ev2),var(--ev));color:#fff;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer;transition:opacity .15s}
+.ds-complete-btn{margin-left:auto;background:linear-gradient(135deg,var(--ev2),var(--ev3));color:#fff;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer;transition:opacity .15s}
 .ds-complete-btn:active{opacity:.7}
 .ds-complete-btn.done{background:rgba(34,197,94,.15);color:#4ade80;cursor:default}
+.ds-complete-btn.aguardando{background:rgba(251,191,36,.15);color:#fbbf24;cursor:default}
 .ds-admin-acts{display:flex;gap:6px;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
 .ds-del-btn{background:rgba(239,68,68,.12);color:#f87171;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer}
-/* secret tap flash */
-@keyframes secretFlash{0%,100%{opacity:1}50%{opacity:.3}}
-.secret-flash{animation:secretFlash .2s ease}
+/* quiz resposta (membro) */
+.dsq-opt{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);border:1.5px solid rgba(167,139,250,.15);border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:all .12s}
+.dsq-opt:active{opacity:.7}
+.dsq-opt.sel{background:rgba(124,58,237,.18);border-color:rgba(139,92,246,.5)}
+.dsq-opt.certa{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4)}
+.dsq-opt.errada{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);opacity:.6}
+.dsq-letra{width:28px;height:28px;border-radius:8px;background:rgba(139,92,246,.2);color:#c4b5fd;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dsq-opt.sel .dsq-letra{background:rgba(139,92,246,.5);color:#fff}
+.dsq-opt.certa .dsq-letra{background:rgba(34,197,94,.3);color:#4ade80}
+.dsq-opt.errada .dsq-letra{background:rgba(239,68,68,.2);color:#f87171}
+/* respostas discursivas (admin) */
+.ds-resp-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:.75rem}
+.ds-resp-texto{font-size:13px;color:var(--text);line-height:1.6;background:rgba(255,255,255,.04);border-radius:8px;padding:.75rem;margin:.5rem 0;white-space:pre-wrap}
+[data-theme="light"] .ds-tipo-opt{background:var(--card2);border-color:rgba(139,92,246,.2)}
+[data-theme="light"] .ds-tipo-opt.active{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.6)}
 [data-theme="light"] .ds-badge.todos{background:rgba(139,92,246,.12);color:var(--ev)}
 [data-theme="light"] .ds-badge.especificos{background:rgba(245,158,11,.1);color:#d97706}
+[data-theme="light"] .ds-q-inp,[data-theme="light"] .ds-alt-row input[type=text]{background:var(--card);border-color:rgba(139,92,246,.2);color:var(--p2)}
 /* ── MULTISELECT CUSTOMIZADO ── */
 .ms-wrap{position:relative;width:100%}
 .ms-trigger{width:100%;padding:11px 36px 11px 14px;font-size:13px;font-family:"Inter",sans-serif;border:1px solid rgba(167,139,250,.35);border-radius:12px;background:#1a0838;color:#e9d5ff;cursor:pointer;text-align:left;position:relative;user-select:none;min-height:42px}
@@ -1171,6 +1203,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         <div class="ev-ag-btn" onclick="goTo('s-ev-pts')"><div class="ev-ag-icon">&#9876;</div><div class="ev-ag-label">pts do time</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-times')"><div class="ev-ag-icon">&#128101;</div><div class="ev-ag-label">gerir times</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-criar-evento')"><div class="ev-ag-icon">&#43;</div><div class="ev-ag-label">novo evento</div></div>
+        <div class="ev-ag-btn" onclick="goTo('s-ev-desafios')" style="border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.06)"><div class="ev-ag-icon">&#10024;</div><div class="ev-ag-label" style="color:#fbbf24">desafios</div></div>
       </div>
     </div>
     <div class="sec-hd gold">ranking atual</div>
@@ -1206,11 +1239,11 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="topbar gold-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">desafios <span class="tag-a">admin</span></span></div>
   <div style="padding:1rem">
 
-    <!-- TOGGLE VISIBILIDADE -->
+    <!-- TOGGLE MEMBROS VEREM -->
     <div class="ev-toggle-row" style="margin-bottom:1rem">
       <div>
         <div class="ev-toggle-label" id="ds-vis-label">Desafios ocultos</div>
-        <div class="ev-toggle-sub">membros nao veem a aba de desafios</div>
+        <div class="ev-toggle-sub" id="ds-vis-sub">membros nao veem a aba de desafios</div>
       </div>
       <div class="toggle-track off" id="ds-vis-toggle" onclick="toggleDesafiosVisiveis()"><div class="toggle-knob"></div></div>
     </div>
@@ -1218,14 +1251,69 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <!-- CRIAR DESAFIO -->
     <div class="ev-admin-card" style="margin-bottom:1rem">
       <div class="ev-admin-title">&#10024; novo desafio</div>
-      <div class="form-group" style="margin-bottom:.6rem">
-        <label class="form-label">titulo do desafio</label>
-        <input class="form-input" id="ds-titulo" type="text" placeholder="Ex: Memorize o verso da semana"/>
+
+      <!-- TIPO -->
+      <div class="form-group" style="margin-bottom:.8rem">
+        <label class="form-label">tipo</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="ds-tipo-opt active" id="ds-tipo-disc" onclick="setDsTipo('discursiva')">
+            <span>&#9999;&#65039;</span>
+            <span class="ds-tipo-label">discursiva</span>
+            <span class="ds-tipo-sub">membro escreve a resposta</span>
+          </div>
+          <div class="ds-tipo-opt" id="ds-tipo-quiz" onclick="setDsTipo('quiz')">
+            <span>&#10067;</span>
+            <span class="ds-tipo-label">multipla escolha</span>
+            <span class="ds-tipo-sub">quiz com alternativas</span>
+          </div>
+        </div>
       </div>
+
       <div class="form-group" style="margin-bottom:.6rem">
-        <label class="form-label">descricao / instrucao</label>
-        <textarea class="form-input" id="ds-desc" rows="2" style="resize:none;line-height:1.5" placeholder="O que o membro deve fazer?"></textarea>
+        <label class="form-label">titulo</label>
+        <input class="form-input" id="ds-titulo" type="text" placeholder="Ex: Qual o verso de Joao 3:16?"/>
       </div>
+      <div class="form-group" style="margin-bottom:.6rem" id="ds-desc-group">
+        <label class="form-label" id="ds-desc-label">descricao / instrucao</label>
+        <textarea class="form-input" id="ds-desc" rows="2" style="resize:none;line-height:1.5" placeholder="Enunciado ou instrucao para o membro..."></textarea>
+      </div>
+
+      <!-- QUESTOES (so aparece no modo quiz) -->
+      <div id="ds-quiz-section" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label class="form-label" style="margin:0">questoes</label>
+          <button onclick="addDsQuestao()" style="background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#c4b5fd;cursor:pointer;font-family:Inter,sans-serif">+ questao</button>
+        </div>
+        <div id="ds-questoes-list"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem;margin-top:.5rem">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">nota minima (%)</label>
+            <input class="form-input" id="ds-nota-min" type="number" min="0" max="100" value="70" placeholder="70"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">timer (min, 0=sem)</label>
+            <input class="form-input" id="ds-timer" type="number" min="0" value="0" placeholder="0"/>
+          </div>
+        </div>
+        <label style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(167,139,250,.15);border-radius:10px;padding:10px;cursor:pointer;margin-bottom:.6rem">
+          <input type="checkbox" id="ds-embaralhar" style="accent-color:#7c3aed;width:16px;height:16px;flex-shrink:0"/>
+          <div><div style="font-size:12px;font-weight:700;color:#e9d5ff">embaralhar questoes</div><div style="font-size:10px;color:rgba(196,181,253,.4);margin-top:2px">ordem aleatoria para cada membro</div></div>
+        </label>
+      </div>
+
+      <!-- TIMER DISCURSIVA -->
+      <div id="ds-disc-section" style="display:none;margin-bottom:.6rem">
+        <div class="form-group" style="margin-bottom:.5rem">
+          <label class="form-label">timer (min, 0=sem)</label>
+          <input class="form-input" id="ds-disc-timer" type="number" min="0" value="0" placeholder="0"/>
+        </div>
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px;margin-bottom:.5rem">
+          <div style="font-size:11px;font-weight:700;color:#fbbf24">&#9888;&#65039; aprovacao manual</div>
+          <div style="font-size:11px;color:rgba(251,191,36,.6);margin-top:3px;line-height:1.5">Discursivas precisam de aprovacao sua antes de creditar a recompensa.</div>
+        </div>
+      </div>
+
+      <!-- RECOMPENSA -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
         <div class="form-group" style="margin-bottom:0">
           <label class="form-label">recompensa</label>
@@ -1248,7 +1336,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
           <option value="7">1 semana</option>
         </select>
       </div>
-      <!-- QUEM PODE VER -->
+
+      <!-- VISIBILIDADE -->
       <div class="form-group" style="margin-bottom:.8rem">
         <label class="form-label">visivel para</label>
         <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -1261,7 +1350,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
             <span style="font-size:13px;color:#e9d5ff">especificos</span>
           </label>
         </div>
-        <!-- multiselect de membros (aparece só quando "especificos") -->
         <div id="ds-membros-wrap" style="display:none">
           <div class="ms-wrap" id="ds-ms-wrap">
             <div class="ms-trigger" id="ds-ms-trigger" onclick="toggleMS('ds')">nenhum selecionado</div>
@@ -1272,14 +1360,52 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
           </div>
         </div>
       </div>
+
       <div class="err" id="ds-err"></div>
       <button class="btn-p ev" id="ds-btn" onclick="criarDesafio()">criar desafio</button>
     </div>
 
-    <!-- LISTA DE DESAFIOS ATIVOS -->
-    <div class="sec-hd" style="padding-left:0;color:rgba(196,181,253,.5)">desafios ativos</div>
+    <!-- RESPOSTAS DISCURSIVAS PENDENTES -->
+    <div id="ds-pendentes-section" style="display:none;margin-bottom:1rem">
+      <div class="sec-hd" style="padding-left:0;color:#fbbf24">&#9203; respostas aguardando</div>
+      <div id="ds-pendentes-lista"></div>
+    </div>
+
+    <!-- LISTA DE DESAFIOS -->
+    <div class="sec-hd" style="padding-left:0;color:rgba(196,181,253,.5)">desafios criados</div>
     <div id="ds-lista"><div class="empty">nenhum desafio criado</div></div>
   </div>
+</div>
+
+<!-- DESAFIOS MEMBRO: TELA DISCURSIVA -->
+<div id="s-ds-disc" class="screen">
+  <div class="topbar ev-bar">
+    <button class="topbar-back" onclick="sairDesafio()">&#8592;</button>
+    <span class="topbar-title" id="dsd-titulo-bar">desafio</span>
+    <span id="dsd-timer-bar" style="margin-left:auto;font-size:13px;font-weight:700;color:#fbbf24"></span>
+  </div>
+  <div style="padding:1rem">
+    <div class="ds-card" style="margin-bottom:1rem">
+      <div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.5;margin-bottom:.5rem" id="dsd-titulo"></div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6" id="dsd-enunciado"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">sua resposta</label>
+      <textarea class="form-input" id="dsd-resposta" rows="7" style="resize:none;line-height:1.6" placeholder="Escreva sua resposta aqui..."></textarea>
+    </div>
+    <div class="err" id="dsd-err"></div>
+    <button class="btn-p ev" id="dsd-btn" onclick="enviarDiscursiva()">enviar resposta</button>
+  </div>
+</div>
+
+<!-- DESAFIOS MEMBRO: TELA QUIZ -->
+<div id="s-ds-quiz" class="screen">
+  <div class="topbar ev-bar">
+    <button class="topbar-back" onclick="sairDesafio()">&#8592;</button>
+    <span class="topbar-title" id="dsq-titulo-bar">questionario</span>
+    <span id="dsq-timer-bar" style="margin-left:auto;font-size:13px;font-weight:700;color:#fbbf24"></span>
+  </div>
+  <div style="padding:1rem" id="dsq-content"></div>
 </div>
 
 <!-- EV QR CODE -->
@@ -1334,7 +1460,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <div id="s-ev-desafios-membro" class="screen">
   <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">desafios &#10024;</span></div>
   <div style="padding:1rem">
-    <div style="font-size:13px;color:rgba(196,181,253,.5);margin-bottom:1rem;line-height:1.6">Complete os desafios para ganhar recompensas! Cada desafio so pode ser completado uma vez.</div>
+    <div style="font-size:12px;color:rgba(196,181,253,.45);margin-bottom:1rem;line-height:1.6;background:rgba(255,255,255,.04);border-radius:10px;padding:.75rem">&#10024; Complete os desafios para ganhar recompensas! Discursivas precisam de aprovacao do admin.</div>
     <div id="dsm-lista"><div class="empty">carregando...</div></div>
   </div>
 </div>
@@ -1510,8 +1636,9 @@ function onScreenLoad(id){
   if(id==='s-ev-admin-home')loadEvAdminHome();
   if(id==='s-ev-transfer')loadEvTransferMembers();
   if(id==='s-ev-qr'){switchEvQRTab('meu');updateEvLabels();if(CU)gerarEvQR();const t=document.getElementById('ev-qr-title');if(t)t.textContent='QR · '+evMoeda;const s=document.getElementById('ev-qr-sub');if(s)s.textContent='mostre para receber '+evMoeda.toLowerCase();}
-  if(id==='s-ev-desafios'){loadDesafiosAdmin();loadCriarTimeMembers();}
+  if(id==='s-ev-desafios'){loadDesafiosAdmin();}
   if(id==='s-ev-desafios-membro')loadDesafiosMembro();
+  if(id==='s-ds-disc'||id==='s-ds-quiz'){}// carregado por abrirDesafio
   if(id==='s-change-pw'){['cp-cur','cp-new','cp-new2'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});['pw-b2','pw-l2'].forEach(i=>{const el=document.getElementById(i);if(el){el.className='pw-bar';el.textContent='';}});}
 }
 
@@ -3110,15 +3237,67 @@ window.pararEvScan=async function(){
 };
 
 // ── DESAFIOS ──
+// Estado
+let _dsTipo='discursiva', _dsQuestoes=[], _dsQIdx=0, _dsDesafioAtual=null, _dsTimerInt=null, _dsQuizState=null;
+
+// ── ADMIN: TIPO ──
+window.setDsTipo=function(tipo){
+  _dsTipo=tipo;
+  document.getElementById('ds-tipo-disc').classList.toggle('active',tipo==='discursiva');
+  document.getElementById('ds-tipo-quiz').classList.toggle('active',tipo==='quiz');
+  document.getElementById('ds-disc-section').style.display=tipo==='discursiva'?'block':'none';
+  document.getElementById('ds-quiz-section').style.display=tipo==='quiz'?'block':'none';
+  if(tipo==='quiz'&&_dsQuestoes.length===0)addDsQuestao();
+};
+
+// ── ADMIN: QUESTOES ──
+window.addDsQuestao=function(){
+  _dsQIdx++;
+  const qId=_dsQIdx;
+  _dsQuestoes.push({id:qId,enunciado:'',alts:['','','',''],correta:0});
+  renderDsQuestoes();
+};
+window.removerQuestao=function(qId){
+  _dsQuestoes=_dsQuestoes.filter(q=>q.id!==qId);
+  renderDsQuestoes();
+};
+window.atualizarQuestao=function(qId,campo,val){
+  const q=_dsQuestoes.find(q=>q.id===qId);
+  if(!q)return;
+  if(campo==='enunciado')q.enunciado=val;
+  else if(campo.startsWith('a'))q.alts[parseInt(campo.slice(1))]=val;
+  else if(campo==='correta')q.correta=parseInt(val);
+};
+function renderDsQuestoes(){
+  const el=document.getElementById('ds-questoes-list');
+  if(!el)return;
+  if(!_dsQuestoes.length){el.innerHTML='<div style="font-size:12px;color:rgba(196,181,253,.35);text-align:center;padding:8px">nenhuma questao — clique em "+ questao"</div>';return;}
+  el.innerHTML=_dsQuestoes.map((q,qi)=>`
+    <div class="ds-q-block">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span class="ds-q-num">QUESTAO ${qi+1}</span>
+        <button class="ds-q-del-btn" onclick="removerQuestao(${q.id})">✕ remover</button>
+      </div>
+      <textarea class="ds-q-inp" rows="2" placeholder="Enunciado da questao..." oninput="atualizarQuestao(${q.id},'enunciado',this.value)">${q.enunciado}</textarea>
+      ${['A','B','C','D'].map((L,i)=>`
+        <div class="ds-alt-row${q.correta===i?' certa-row':''}">
+          <input type="radio" name="q${q.id}-correta" ${q.correta===i?'checked':''} title="marcar como correta"
+            onchange="atualizarQuestao(${q.id},'correta',${i});document.querySelectorAll('.ds-q-block')[${qi}].querySelectorAll('.ds-alt-row').forEach((r,j)=>{r.classList.toggle('certa-row',j===${i})})"/>
+          <span style="font-size:11px;font-weight:700;color:#c4b5fd;width:14px">${L}</span>
+          <input type="text" placeholder="Alternativa ${L}" value="${q.alts[i]||''}" oninput="atualizarQuestao(${q.id},'a${i}',this.value)"/>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── ADMIN: VISIBILIDADE ──
 window.toggleDsVis=function(val){
   document.getElementById('ds-membros-wrap').style.display=val==='especificos'?'block':'none';
   if(val==='especificos')loadDsMembros();
 };
-
 async function loadDsMembros(){
   const listEl=document.getElementById('ds-ms-list');
   if(!listEl)return;
-  if(_msData['ds']?.items?.length){return;} // já carregou
+  if(_msData['ds']?.items?.length)return;
   listEl.innerHTML='<div class="ms-empty">carregando...</div>';
   try{
     const snap=await getUsers();
@@ -3129,6 +3308,7 @@ async function loadDsMembros(){
   }catch(e){listEl.innerHTML='<div class="ms-empty">erro</div>';}
 }
 
+// ── ADMIN: CRIAR DESAFIO ──
 window.criarDesafio=async function(){
   const titulo=document.getElementById('ds-titulo').value.trim();
   const desc=document.getElementById('ds-desc').value.trim();
@@ -3141,21 +3321,31 @@ window.criarDesafio=async function(){
   if(!titulo){showErr('ds-err','informe o titulo');return;}
   if(!reward||reward<1){showErr('ds-err','informe a recompensa');return;}
   if(visMode==='especificos'&&!especificos.length){showErr('ds-err','selecione ao menos um membro');return;}
+  if(_dsTipo==='quiz'){
+    if(!_dsQuestoes.length){showErr('ds-err','adicione ao menos uma questao');return;}
+    for(const q of _dsQuestoes){
+      if(!q.enunciado.trim()){showErr('ds-err','preencha o enunciado de todas as questoes');return;}
+      if(q.alts.filter(a=>a.trim()).length<2){showErr('ds-err','cada questao precisa de ao menos 2 alternativas');return;}
+    }
+  }
 
   setLoad('ds-btn',true);
   try{
     const expiresAt=validade>0?new Date(Date.now()+validade*86400000):null;
-    await addDoc(collection(db,'desafios'),{
-      titulo,desc,reward,moeda,
-      visMode, // 'todos' ou 'especificos'
-      especificos,
-      expiresAt:expiresAt?expiresAt:null,
-      createdAt:serverTimestamp(),
-      eventoId:evData?.id||null,
-      completados:[], // array de UIDs que ja completaram
-      ativo:true
-    });
-    // limpa form
+    const dsData={titulo,desc,tipo:_dsTipo,reward,moeda,visMode,especificos,
+      expiresAt:expiresAt||null,createdAt:serverTimestamp(),
+      eventoId:evData?.id||null,completados:[],pendentes:[],ativo:true};
+    if(_dsTipo==='quiz'){
+      dsData.questoes=_dsQuestoes.map(q=>({enunciado:q.enunciado,alts:q.alts.filter(a=>a.trim()),correta:q.correta}));
+      dsData.embaralhar=document.getElementById('ds-embaralhar').checked;
+      dsData.notaMin=parseInt(document.getElementById('ds-nota-min').value)||70;
+      dsData.timerMin=parseInt(document.getElementById('ds-timer').value)||0;
+    }
+    if(_dsTipo==='discursiva'){
+      dsData.timerMin=parseInt(document.getElementById('ds-disc-timer').value)||0;
+    }
+    await addDoc(collection(db,'desafios'),dsData);
+    // reset
     document.getElementById('ds-titulo').value='';
     document.getElementById('ds-desc').value='';
     document.getElementById('ds-reward').value='';
@@ -3164,12 +3354,16 @@ window.criarDesafio=async function(){
     document.getElementById('ds-membros-wrap').style.display='none';
     if(_msData['ds'])_msData['ds'].selected=new Set();
     updateMSTrigger('ds');
+    _dsQuestoes=[];_dsQIdx=0;
+    renderDsQuestoes();
+    setDsTipo('discursiva');
     toast('desafio criado!');
     loadDesafiosAdmin();
   }catch(e){showErr('ds-err','erro: '+e.message);}
   finally{setLoad('ds-btn',false);}
 };
 
+// ── ADMIN: TOGGLE VISIBILIDADE PRA MEMBROS ──
 window.toggleDesafiosVisiveis=async function(){
   if(!evData){toast('nenhum evento ativo');return;}
   try{
@@ -3177,83 +3371,175 @@ window.toggleDesafiosVisiveis=async function(){
     await updateDoc(doc(db,'eventos',evData.id),{desafiosVisiveis:novo});
     evData.desafiosVisiveis=novo;
     sincToggleDesafios();
-    // atualiza botao na tela do evento também
-    const dsBtnWrap=document.getElementById('ev-desafios-btn-wrap');
-    if(dsBtnWrap)dsBtnWrap.style.display=(CU.admin||novo)?'block':'none';
+    const wrap=document.getElementById('ev-desafios-btn-wrap');
+    if(wrap)wrap.style.display=(CU.admin||novo)?'block':'none';
     toast(novo?'desafios visiveis para membros!':'desafios ocultados');
   }catch(e){toast('erro: '+e.message);}
 };
-
 function sincToggleDesafios(){
   const tog=document.getElementById('ds-vis-toggle');
   const lbl=document.getElementById('ds-vis-label');
-  const visivel=evData?.desafiosVisiveis||false;
-  if(tog)tog.classList.toggle('off',!visivel);
-  if(lbl)lbl.textContent=visivel?'Desafios visiveis':'Desafios ocultos';
+  const sub=document.getElementById('ds-vis-sub');
+  const v=evData?.desafiosVisiveis||false;
+  if(tog)tog.classList.toggle('off',!v);
+  if(lbl)lbl.textContent=v?'Desafios visiveis':'Desafios ocultos';
+  if(sub)sub.textContent=v?'membros podem ver e responder os desafios':'membros nao veem a aba de desafios';
 }
 
+// ── ADMIN: LOAD LISTA ──
 async function loadDesafiosAdmin(){
-  sincToggleDesafios(); // sincroniza o toggle com o estado atual do evento
+  if(!evData)await loadEvStatus();
+  sincToggleDesafios();
   const el=document.getElementById('ds-lista');
   if(!el)return;
   el.innerHTML='<div class="empty">carregando...</div>';
   try{
-    const snap=await getDocs(query(collection(db,'desafios'),orderBy('createdAt','desc'),limit(50)));
-    if(snap.empty){el.innerHTML='<div class="empty">nenhum desafio criado</div>';return;}
-    const now=Date.now();
+    const evId=evData?.id||null;
+    const q=evId
+      ?query(collection(db,'desafios'),where('eventoId','==',evId),orderBy('createdAt','desc'))
+      :query(collection(db,'desafios'),orderBy('createdAt','desc'),limit(50));
+    const snap=await getDocs(q);
+    if(snap.empty){el.innerHTML='<div class="empty">nenhum desafio criado ainda</div>';return;}
+    // conta pendentes por desafio
+    const pendSnap=await getDocs(query(collection(db,'ds_respostas'),where('eventoId','==',evId),where('aprovado','==',null)));
+    const pendCount={};
+    pendSnap.forEach(d=>{const r=d.data();pendCount[r.desafioId]=(pendCount[r.desafioId]||0)+1;});
+    const now=new Date();
     el.innerHTML=snap.docs.map(d=>{
       const ds=d.data();
-      const expired=ds.expiresAt&&ds.expiresAt.toDate&&ds.expiresAt.toDate()<new Date();
+      const expired=ds.expiresAt&&ds.expiresAt.toDate&&ds.expiresAt.toDate()<now;
       const completados=ds.completados?.length||0;
-      const prazoTxt=ds.expiresAt?(expired?'expirado':'expira em '+ds.expiresAt.toDate().toLocaleDateString('pt-BR')):'sem prazo';
-      const moedaTxt=ds.moeda==='dr'?`₯ dracmas`:`⬡ ${evMoeda}`;
+      const pend=pendCount[d.id]||0;
+      const prazoTxt=ds.expiresAt?(expired?'expirado':'expira '+ds.expiresAt.toDate().toLocaleDateString('pt-BR')):'sem prazo';
+      const moedaTxt=ds.moeda==='dr'?'₯ dracmas':`⬡ ${evMoeda}`;
       const visTxt=ds.visMode==='especificos'?`${ds.especificos?.length||0} membro(s)`:'todos';
+      const tipoIcon=ds.tipo==='quiz'?'❓':'✏️';
+      const tipoLabel=ds.tipo==='quiz'?'multipla escolha':'discursiva';
+      const timerTxt=ds.timerMin>0?` · ⏱ ${ds.timerMin}min`:'';
+      const embarTxt=ds.embaralhar?' · 🔀':'';
       return`<div class="ds-card${expired?' expired':''}">
         <div class="ds-badge ${ds.visMode}">${visTxt}</div>
+        <div class="ds-tipo-tag">${tipoIcon} ${tipoLabel}${timerTxt}${embarTxt}</div>
         <div class="ds-titulo">${ds.titulo}</div>
         ${ds.desc?`<div class="ds-desc">${ds.desc}</div>`:''}
         <div class="ds-footer">
           <span class="ds-reward${ds.moeda==='dr'?' dr':''}">+${ds.reward} ${moedaTxt}</span>
           <span class="ds-prazo">${prazoTxt}</span>
           <span class="ds-prazo">✓ ${completados} concluido(s)</span>
+          ${pend?`<span class="ds-prazo" style="color:#fbbf24">⏳ ${pend} pendente(s)</span>`:''}
         </div>
         <div class="ds-admin-acts">
-          <button class="ds-del-btn" onclick="deletarDesafio('${d.id}','${ds.titulo.replace(/'/g,"\\'")}')">✕ remover</button>
-          <button class="ds-del-btn" style="background:rgba(139,92,246,.15);color:#c4b5fd;margin-left:auto" onclick="verCompletadosDesafio('${d.id}','${ds.titulo.replace(/'/g,"\\'")}')">ver concluintes</button>
+          <button class="ds-del-btn" onclick="deletarDesafio('${d.id}','${ds.titulo.replace(/'/g,"\'")}')">✕ remover</button>
+          ${ds.tipo==='discursiva'?`<button class="ds-del-btn" style="background:rgba(251,191,36,.12);color:#fbbf24" onclick="verRespostasAdmin('${d.id}','${ds.titulo.replace(/'/g,"\'")}')">ver respostas</button>`:''}
+          <button class="ds-del-btn" style="background:rgba(139,92,246,.12);color:#c4b5fd;margin-left:auto" onclick="verConcluintesDs('${d.id}','${ds.titulo.replace(/'/g,"\'")}')">concluintes</button>
         </div>
       </div>`;
     }).join('');
-  }catch(e){el.innerHTML='<div class="empty">erro: '+e.message+'</div>';}
+    // mostra secao pendentes
+    const pendSec=document.getElementById('ds-pendentes-section');
+    if(pendSec)pendSec.style.display=Object.values(pendCount).some(v=>v>0)?'block':'none';
+  }catch(e){el.innerHTML=`<div class="empty">erro: ${e.message}</div>`;}
 }
 
 window.deletarDesafio=function(id,titulo){
-  openModal('remover desafio',`Remover o desafio "${titulo}"? Irreversivel.`,async()=>{
+  openModal('remover desafio',`Remover "${titulo}"?`,async()=>{
     try{await deleteDoc(doc(db,'desafios',id));toast('desafio removido');loadDesafiosAdmin();}
     catch(e){toast('erro');}
   },true);
 };
-
-window.verCompletadosDesafio=async function(id,titulo){
+window.verConcluintesDs=async function(id,titulo){
   try{
     const snap=await getDoc(doc(db,'desafios',id));
     const completados=snap.data().completados||[];
     if(!completados.length){toast('ninguem completou ainda');return;}
-    const usersSnap=await getUsers();
-    const userMap={};
-    usersSnap.forEach(d=>userMap[d.id]=d.data().name);
-    const nomes=completados.map(uid=>userMap[uid]||uid).join('\n');
-    openModal(`concluintes — ${titulo}`,nomes,null);
+    const usnap=await getUsers();
+    const um={};usnap.forEach(d=>um[d.id]=d.data().name);
+    openModal(`concluintes — ${titulo}`,completados.map(u=>um[u]||u).join('
+'),null);
   }catch(e){toast('erro');}
 };
 
-// ── DESAFIOS MEMBRO ──
+// ── ADMIN: VER RESPOSTAS DISCURSIVAS ──
+window.verRespostasAdmin=async function(dsId,titulo){
+  const el=document.getElementById('ds-pendentes-lista');
+  const sec=document.getElementById('ds-pendentes-section');
+  if(!el||!sec)return;
+  sec.style.display='block';
+  el.innerHTML='<div class="empty">carregando...</div>';
+  // scroll to section
+  sec.scrollIntoView({behavior:'smooth'});
+  try{
+    const snap=await getDocs(query(collection(db,'ds_respostas'),where('desafioId','==',dsId)));
+    if(snap.empty){el.innerHTML='<div class="empty">nenhuma resposta ainda</div>';return;}
+    const usnap=await getUsers();
+    const um={};usnap.forEach(d=>um[d.id]=d.data().name);
+    const dsSnap=await getDoc(doc(db,'desafios',dsId));
+    const ds=dsSnap.data();
+    el.innerHTML=snap.docs.map(r=>{
+      const resp=r.data();
+      const nome=um[resp.uid]||resp.uid;
+      const status=resp.aprovado===null?'pendente':resp.aprovado?'aprovado':'reprovado';
+      const cor=status==='pendente'?'#fbbf24':status==='aprovado'?'#4ade80':'#f87171';
+      return`<div class="ds-resp-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${nome}</div>
+          <span style="font-size:11px;font-weight:700;background:${cor}22;color:${cor};padding:2px 8px;border-radius:12px">${status}</span>
+        </div>
+        <div class="ds-resp-texto">${resp.resposta}</div>
+        ${status==='pendente'?`<div style="display:flex;gap:8px;margin-top:.5rem">
+          <button class="ds-del-btn" style="flex:1;background:rgba(34,197,94,.15);color:#4ade80" onclick="avaliarResposta('${r.id}','${dsId}','${resp.uid}',true,${ds.reward},'${ds.moeda}','${(ds.titulo||'').replace(/'/g,"\'")}')">✓ aprovar</button>
+          <button class="ds-del-btn" style="flex:1" onclick="avaliarResposta('${r.id}','${dsId}','${resp.uid}',false,${ds.reward},'${ds.moeda}','${(ds.titulo||'').replace(/'/g,"\'")}')">✕ reprovar</button>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML=`<div class="empty">erro: ${e.message}</div>`;}
+};
+
+window.avaliarResposta=async function(respId,dsId,uid,aprovado,reward,moeda,titulo){
+  try{
+    await updateDoc(doc(db,'ds_respostas',respId),{aprovado});
+    if(aprovado){
+      const userRef=doc(db,'users',uid);
+      const uSnap=await getDoc(userRef);
+      const bal=moeda==='dr'?{balance:(uSnap.data().balance||0)+reward}:{evBalance:(uSnap.data().evBalance||0)+reward};
+      await updateDoc(userRef,bal);
+      if(moeda==='dr'){
+        await addDoc(collection(db,'transactions'),{from:'admin',to:uid,participants:['admin',uid],amount:reward,category:'conquista',desc:`Desafio aprovado: ${titulo}`,obs:'',createdAt:serverTimestamp()});
+      }else{
+        await addDoc(collection(db,'ev_transactions'),{from:'admin',to:uid,participants:['admin',uid],amount:reward,desc:`Desafio aprovado: ${titulo}`,obs:'',createdAt:serverTimestamp()});
+      }
+      const dsRef=doc(db,'desafios',dsId);
+      const dss=await getDoc(dsRef);
+      const comp=dss.data().completados||[];
+      if(!comp.includes(uid))await updateDoc(dsRef,{completados:[...comp,uid]});
+      await notif(uid,`Sua resposta em "${titulo}" foi aprovada! +${reward} ${moeda==='dr'?'dracmas':evMoeda} 🎉`,'✅');
+      invalidateUsersCache();
+    }else{
+      await notif(uid,`Sua resposta em "${titulo}" foi reprovada. Tente novamente!`,'❌');
+    }
+    toast(aprovado?'aprovado e recompensa creditada!':'reprovado');
+    verRespostasAdmin(dsId,titulo);
+  }catch(e){toast('erro: '+e.message);}
+};
+
+// ── MEMBRO: LOAD DESAFIOS ──
 async function loadDesafiosMembro(){
   const el=document.getElementById('dsm-lista');
   if(!el)return;
   el.innerHTML='<div class="empty">carregando...</div>';
   try{
-    const snap=await getDocs(query(collection(db,'desafios'),orderBy('createdAt','desc'),limit(50)));
+    const evId=evData?.id||null;
+    const q=evId
+      ?query(collection(db,'desafios'),where('eventoId','==',evId),orderBy('createdAt','desc'))
+      :query(collection(db,'desafios'),orderBy('createdAt','desc'),limit(50));
+    const snap=await getDocs(q);
     const now=new Date();
+    // minhas respostas discursivas
+    const minhasResp={};
+    if(!snap.empty){
+      const rsnap=await getDocs(query(collection(db,'ds_respostas'),where('uid','==',CU.id)));
+      rsnap.forEach(d=>{minhasResp[d.data().desafioId]=d.data().aprovado;});
+    }
     const visiveis=snap.docs.filter(d=>{
       const ds=d.data();
       if(!ds.ativo)return false;
@@ -3261,55 +3547,176 @@ async function loadDesafiosMembro(){
       if(ds.visMode==='especificos'&&!ds.especificos?.includes(CU.id))return false;
       return true;
     });
-    if(!visiveis.length){el.innerHTML='<div class="empty">nenhum desafio disponivel agora</div>';return;}
+    if(!visiveis.length){el.innerHTML='<div class="empty">nenhum desafio disponivel agora ✨</div>';return;}
     el.innerHTML=visiveis.map(d=>{
       const ds=d.data();
       const done=(ds.completados||[]).includes(CU.id);
-      const moedaTxt=ds.moeda==='dr'?`₯ dracmas`:`⬡ ${evMoeda}`;
-      const prazoTxt=ds.expiresAt?'expira em '+ds.expiresAt.toDate().toLocaleDateString('pt-BR'):'';
-      return`<div class="ds-card${done?' completed':''}">
-        ${done?'<div class="ds-badge completed">✓ concluido</div>':''}
-        <div class="ds-titulo" style="${done?'':'padding-right:0'}">${ds.titulo}</div>
+      const aguardando=!done&&d.id in minhasResp&&minhasResp[d.id]===null;
+      const tipoIcon=ds.tipo==='quiz'?'❓':'✏️';
+      const tipoLabel=ds.tipo==='quiz'?'multipla escolha':'discursiva';
+      const moedaTxt=ds.moeda==='dr'?'₯ dracmas':`⬡ ${evMoeda}`;
+      const prazoTxt=ds.expiresAt?'expira '+ds.expiresAt.toDate().toLocaleDateString('pt-BR'):'';
+      let btn;
+      if(done)btn='<button class="ds-complete-btn done">✓ feito</button>';
+      else if(aguardando)btn='<button class="ds-complete-btn aguardando">⏳ aguardando</button>';
+      else btn=`<button class="ds-complete-btn" onclick="abrirDesafio('${d.id}')">responder</button>`;
+      return`<div class="ds-card${done?' completed':aguardando?' pendente-card':''}">
+        ${done?'<div class="ds-badge completed">✓ concluido</div>':aguardando?'<div class="ds-badge pendente">⏳ pendente</div>':''}
+        <div class="ds-tipo-tag">${tipoIcon} ${tipoLabel}${ds.timerMin?` · ⏱ ${ds.timerMin}min`:''}${ds.embaralhar?' · 🔀':''}</div>
+        <div class="ds-titulo" style="padding-right:${done||aguardando?'70px':'0'}">${ds.titulo}</div>
         ${ds.desc?`<div class="ds-desc">${ds.desc}</div>`:''}
         <div class="ds-footer">
           <span class="ds-reward${ds.moeda==='dr'?' dr':''}">+${ds.reward} ${moedaTxt}</span>
           ${prazoTxt?`<span class="ds-prazo">${prazoTxt}</span>`:''}
-          <button class="ds-complete-btn${done?' done':''}" onclick="${done?'':'completarDesafio(\''+d.id+'\')'}">${done?'✓ feito':'concluir'}</button>
+          ${btn}
         </div>
       </div>`;
     }).join('');
-  }catch(e){el.innerHTML='<div class="empty">erro: '+e.message+'</div>';}
+  }catch(e){el.innerHTML=`<div class="empty">erro: ${e.message}</div>`;}
 }
 
-window.completarDesafio=function(dsId){
-  openModal('concluir desafio','Confirma que voce completou este desafio? O admin pode verificar depois.',async()=>{
-    try{
-      const dsRef=doc(db,'desafios',dsId);
-      const dsSnap=await getDoc(dsRef);
-      const ds=dsSnap.data();
-      if((ds.completados||[]).includes(CU.id)){toast('voce ja completou este desafio');return;}
-      // credita recompensa
-      const userRef=doc(db,'users',CU.id);
-      if(ds.moeda==='dr'){
-        await updateDoc(userRef,{balance:CU.balance+ds.reward});
-        await addDoc(collection(db,'transactions'),{from:'admin',to:CU.id,participants:['admin',CU.id],amount:ds.reward,category:'conquista',desc:`Desafio: ${ds.titulo}`,obs:'',createdAt:serverTimestamp()});
-        CU.balance+=ds.reward;
-        invalidateUsersCache();
-        document.getElementById('balance').textContent=CU.balance;
-      }else{
-        await updateDoc(userRef,{evBalance:(CU.evBalance||0)+ds.reward});
-        await addDoc(collection(db,'ev_transactions'),{from:'admin',to:CU.id,participants:['admin',CU.id],amount:ds.reward,desc:`Desafio: ${ds.titulo}`,obs:'',createdAt:serverTimestamp()});
-        CU.evBalance=(CU.evBalance||0)+ds.reward;
-        invalidateUsersCache();
-      }
-      // marca como completado
-      await updateDoc(dsRef,{completados:[...(ds.completados||[]),CU.id]});
-      await notif(CU.id,`Voce completou o desafio "${ds.titulo}" e ganhou ${ds.reward} ${ds.moeda==='dr'?'dracmas':evMoeda}! 🎉`,'⚡');
-      toast(`+${ds.reward} ${ds.moeda==='dr'?'dracmas':evMoeda} ganhos!`);
-      loadDesafiosMembro();
-    }catch(e){toast('erro: '+e.message);}
-  });
+// ── MEMBRO: ABRIR DESAFIO ──
+window.abrirDesafio=async function(dsId){
+  const dsnap=await getDoc(doc(db,'desafios',dsId));
+  _dsDesafioAtual={id:dsId,...dsnap.data()};
+  const ds=_dsDesafioAtual;
+  if(ds.tipo==='discursiva'){
+    document.getElementById('dsd-titulo-bar').textContent=ds.titulo;
+    document.getElementById('dsd-titulo').textContent=ds.titulo;
+    document.getElementById('dsd-enunciado').textContent=ds.desc||'';
+    document.getElementById('dsd-resposta').value='';
+    goTo('s-ds-disc');
+    if(ds.timerMin>0)iniciarTimer('dsd-timer-bar',ds.timerMin,()=>enviarDiscursiva(true));
+  }else if(ds.tipo==='quiz'){
+    iniciarQuiz(ds);
+    goTo('s-ds-quiz');
+  }
 };
+window.sairDesafio=function(){pararTimer();goBack();};
+
+// ── TIMER ──
+function iniciarTimer(barId,min,onExpire){
+  pararTimer();
+  let restante=min*60;
+  const bar=document.getElementById(barId);
+  const tick=()=>{
+    if(!bar)return;
+    const m=Math.floor(restante/60),s=restante%60;
+    bar.textContent=`⏱ ${m}:${s.toString().padStart(2,'0')}`;
+    bar.style.color=restante<60?'#f87171':'#fbbf24';
+  };
+  tick();
+  _dsTimerInt=setInterval(()=>{restante--;tick();if(restante<=0){pararTimer();if(onExpire)onExpire();}},1000);
+}
+function pararTimer(){if(_dsTimerInt){clearInterval(_dsTimerInt);_dsTimerInt=null;}}
+
+// ── MEMBRO: DISCURSIVA ──
+window.enviarDiscursiva=async function(auto=false){
+  const resposta=document.getElementById('dsd-resposta')?.value?.trim();
+  if(!resposta&&!auto){showErr('dsd-err','escreva sua resposta');return;}
+  pararTimer();
+  const ds=_dsDesafioAtual;
+  setLoad('dsd-btn',true);
+  try{
+    await addDoc(collection(db,'ds_respostas'),{
+      desafioId:ds.id,uid:CU.id,
+      resposta:resposta||'(tempo esgotado)',
+      aprovado:null,
+      createdAt:serverTimestamp(),
+      eventoId:ds.eventoId||null
+    });
+    toast('resposta enviada! aguarde aprovacao do admin');
+    goBack();
+    loadDesafiosMembro();
+  }catch(e){showErr('dsd-err','erro: '+e.message);}
+  finally{setLoad('dsd-btn',false);}
+};
+
+// ── MEMBRO: QUIZ ──
+function iniciarQuiz(ds){
+  let questoes=[...ds.questoes];
+  if(ds.embaralhar)questoes=questoes.sort(()=>Math.random()-.5);
+  _dsQuizState={ds,questoes,respostas:[],qAtual:0,finalizado:false};
+  document.getElementById('dsq-titulo-bar').textContent=ds.titulo;
+  if(ds.timerMin>0)iniciarTimer('dsq-timer-bar',ds.timerMin,()=>finalizarQuiz(true));
+  renderQuiz();
+}
+function renderQuiz(){
+  const el=document.getElementById('dsq-content');
+  if(!el||!_dsQuizState)return;
+  const {questoes,qAtual,respostas,finalizado,ds}=_dsQuizState;
+  if(finalizado){
+    pararTimer();
+    const certas=respostas.filter((r,i)=>r===questoes[i].correta).length;
+    const pct=Math.round(certas/questoes.length*100);
+    const passou=pct>=(ds.notaMin||70);
+    el.innerHTML=`<div style="text-align:center;padding:1.5rem 0">
+      <div style="font-size:52px;margin-bottom:.75rem">${passou?'🏆':'😔'}</div>
+      <div style="font-size:28px;font-weight:800;color:${passou?'#4ade80':'#f87171'};margin-bottom:.25rem">${pct}%</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:.25rem">${certas} de ${questoes.length} corretas</div>
+      <div style="font-size:13px;color:${passou?'#4ade80':'#f87171'};margin-bottom:1.5rem">${passou?'Parabens! Recompensa creditada!':'Nota minima: ${ds.notaMin||70}%. Tente novamente!'}</div>
+      ${questoes.map((q,i)=>{const c=respostas[i]===q.correta;return`<div style="text-align:left;background:${c?'rgba(34,197,94,.07)':'rgba(239,68,68,.06)'};border:1px solid ${c?'rgba(34,197,94,.2)':'rgba(239,68,68,.15)'};border-radius:10px;padding:.6rem .75rem;margin-bottom:.4rem"><div style="font-size:12px;font-weight:700;color:var(--text)">${i+1}. ${q.enunciado}</div><div style="font-size:11px;color:${c?'#4ade80':'#f87171'};margin-top:3px">${c?'✓ correto':'✗ errado'} — correto: ${q.alts[q.correta]||'?'}</div></div>`;}).join('')}
+      <button class="btn-p ev" style="margin-top:1rem" onclick="sairDesafio()">fechar</button>
+    </div>`;
+    if(passou)creditarDesafioQuiz(ds);
+    return;
+  }
+  const q=questoes[qAtual];
+  const L=['A','B','C','D','E'];
+  el.innerHTML=`
+    <div style="font-size:11px;color:rgba(196,181,253,.4);margin-bottom:.75rem">questao ${qAtual+1} de ${questoes.length}</div>
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem">
+      <div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.5">${q.enunciado}</div>
+    </div>
+    ${q.alts.map((alt,i)=>`<div class="dsq-opt" id="dsq-${i}" onclick="selecionarAlt(${i})"><div class="dsq-letra">${L[i]}</div><div style="font-size:13px;color:var(--text)">${alt}</div></div>`).join('')}
+    <button id="dsq-prox" style="display:none;width:100%;margin-top:.75rem" class="btn-p ev" onclick="proximaQuestao()">
+      ${qAtual===questoes.length-1?'ver resultado':'proxima →'}
+    </button>`;
+}
+window.selecionarAlt=function(idx){
+  const prox=document.getElementById('dsq-prox');
+  if(prox?.style.display==='block')return;
+  const {questoes,qAtual}=_dsQuizState;
+  _dsQuizState.respostas[qAtual]=idx;
+  const correta=questoes[qAtual].correta;
+  document.querySelectorAll('.dsq-opt').forEach((el,i)=>{
+    if(i===idx)el.classList.add(i===correta?'certa':'errada');
+    if(i===correta&&i!==idx)el.classList.add('certa');
+  });
+  if(prox)prox.style.display='block';
+};
+window.proximaQuestao=function(){
+  _dsQuizState.qAtual++;
+  if(_dsQuizState.qAtual>=_dsQuizState.questoes.length)_dsQuizState.finalizado=true;
+  renderQuiz();
+};
+function finalizarQuiz(auto=false){
+  const {questoes,respostas}=_dsQuizState;
+  for(let i=0;i<questoes.length;i++){if(respostas[i]===undefined)respostas[i]=-1;}
+  _dsQuizState.finalizado=true;
+  renderQuiz();
+}
+async function creditarDesafioQuiz(ds){
+  try{
+    const dsRef=doc(db,'desafios',ds.id);
+    const dss=await getDoc(dsRef);
+    if((dss.data().completados||[]).includes(CU.id))return;
+    const userRef=doc(db,'users',CU.id);
+    if(ds.moeda==='dr'){
+      await updateDoc(userRef,{balance:CU.balance+ds.reward});
+      await addDoc(collection(db,'transactions'),{from:'admin',to:CU.id,participants:['admin',CU.id],amount:ds.reward,category:'conquista',desc:`Quiz: ${ds.titulo}`,obs:'',createdAt:serverTimestamp()});
+      CU.balance+=ds.reward;
+      const b=document.getElementById('home-bal');if(b)b.textContent=CU.balance;
+    }else{
+      await updateDoc(userRef,{evBalance:(CU.evBalance||0)+ds.reward});
+      await addDoc(collection(db,'ev_transactions'),{from:'admin',to:CU.id,participants:['admin',CU.id],amount:ds.reward,desc:`Quiz: ${ds.titulo}`,obs:'',createdAt:serverTimestamp()});
+      CU.evBalance=(CU.evBalance||0)+ds.reward;
+    }
+    invalidateUsersCache();
+    await updateDoc(dsRef,{completados:[...(dss.data().completados||[]),CU.id]});
+    await notif(CU.id,`Quiz "${ds.titulo}" concluido! +${ds.reward} ${ds.moeda==='dr'?'dracmas':evMoeda} 🏆`,'🏆');
+  }catch(e){console.error(e);}
+}
 
 document.getElementById('l-pw')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('r-pw2')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
