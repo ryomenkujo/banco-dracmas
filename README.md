@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
@@ -1303,10 +1304,21 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
       <!-- TIMER DISCURSIVA -->
       <div id="ds-disc-section" style="display:none;margin-bottom:.6rem">
+        <!-- PERGUNTAS DISCURSIVAS -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label class="form-label" style="margin:0">perguntas</label>
+          <button onclick="addDsDiscPergunta()" style="background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#c4b5fd;cursor:pointer;font-family:Inter,sans-serif">+ pergunta</button>
+        </div>
+        <div id="ds-disc-perguntas-list"></div>
+        <div style="font-size:11px;color:rgba(196,181,253,.35);margin-bottom:.75rem;line-height:1.5">A primeira pergunta usa o campo "descricao" acima. Adicione mais se quiser.</div>
         <div class="form-group" style="margin-bottom:.5rem">
-          <label class="form-label">timer (min, 0=sem)</label>
+          <label class="form-label">timer total (min, 0=sem)</label>
           <input class="form-input" id="ds-disc-timer" type="number" min="0" value="0" placeholder="0"/>
         </div>
+        <label style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(167,139,250,.15);border-radius:10px;padding:10px;cursor:pointer;margin-bottom:.5rem">
+          <input type="checkbox" id="ds-disc-embaralhar" style="accent-color:#7c3aed;width:16px;height:16px;flex-shrink:0"/>
+          <div><div style="font-size:12px;font-weight:700;color:#e9d5ff">embaralhar perguntas</div><div style="font-size:10px;color:rgba(196,181,253,.4);margin-top:2px">ordem aleatoria para cada membro</div></div>
+        </label>
         <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px;margin-bottom:.5rem">
           <div style="font-size:11px;font-weight:700;color:#fbbf24">&#9888;&#65039; aprovacao manual</div>
           <div style="font-size:11px;color:rgba(251,191,36,.6);margin-top:3px;line-height:1.5">Discursivas precisam de aprovacao sua antes de creditar a recompensa.</div>
@@ -3660,33 +3672,83 @@ function renderQuiz(){
   const el=document.getElementById('dsq-content');
   if(!el||!_dsQuizState)return;
   const {questoes,qAtual,respostas,finalizado,ds}=_dsQuizState;
+
   if(finalizado){
     pararTimer();
     const certas=respostas.filter((r,i)=>r===questoes[i].correta).length;
     const pct=Math.round(certas/questoes.length*100);
     const passou=pct>=(ds.notaMin||70);
-    el.innerHTML=`<div style="text-align:center;padding:1.5rem 0">
-      <div style="font-size:52px;margin-bottom:.75rem">${passou?'🏆':'😔'}</div>
-      <div style="font-size:28px;font-weight:800;color:${passou?'#4ade80':'#f87171'};margin-bottom:.25rem">${pct}%</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:.25rem">${certas} de ${questoes.length} corretas</div>
-      <div style="font-size:13px;color:${passou?'#4ade80':'#f87171'};margin-bottom:1.5rem">${passou?'Parabens! Recompensa creditada!':'Nota minima: '+(ds.notaMin||70)+'%. Tente novamente!'}</div>
-      ${questoes.map((q,i)=>{const c=respostas[i]===q.correta;const bg=c?'rgba(34,197,94,.07)':'rgba(239,68,68,.06)';const bd=c?'rgba(34,197,94,.2)':'rgba(239,68,68,.15)';const clr=c?'#4ade80':'#f87171';const lbl=c?'✓ correto':'✗ errado';const ans=q.alts[q.correta]||'?';return'<div style="text-align:left;background:'+bg+';border:1px solid '+bd+';border-radius:10px;padding:.6rem .75rem;margin-bottom:.4rem"><div style="font-size:12px;font-weight:700;color:var(--text)">'+(i+1)+'. '+q.enunciado+'</div><div style="font-size:11px;color:'+clr+';margin-top:3px">'+lbl+' — correto: '+ans+'</div></div>';}).join('')}
-      <button class="btn-p ev" style="margin-top:1rem" onclick="sairDesafio()">fechar</button>
-    </div>`;
+    // gabarito
+    let gabarito='';
+    questoes.forEach((q,i)=>{
+      const c=respostas[i]===q.correta;
+      const bg=c?'rgba(34,197,94,.07)':'rgba(239,68,68,.06)';
+      const bd=c?'rgba(34,197,94,.2)':'rgba(239,68,68,.15)';
+      const clr=c?'#4ade80':'#f87171';
+      gabarito+='<div style="text-align:left;background:'+bg+';border:1px solid '+bd+';border-radius:10px;padding:.6rem .75rem;margin-bottom:.4rem">'
+        +'<div style="font-size:12px;font-weight:700;color:var(--text)">'+(i+1)+'. '+q.enunciado+'</div>'
+        +'<div style="font-size:11px;color:'+clr+';margin-top:3px">'+(c?'✓ correto':'✗ errado')+' — correto: '+(q.alts[q.correta]||'?')+'</div>'
+        +'</div>';
+    });
+    el.innerHTML='<div style="text-align:center;padding:1.5rem 0">'
+      +'<div style="font-size:52px;margin-bottom:.75rem">'+(passou?'🏆':'😔')+'</div>'
+      +'<div style="font-size:28px;font-weight:800;color:'+(passou?'#4ade80':'#f87171')+';margin-bottom:.25rem">'+pct+'%</div>'
+      +'<div style="font-size:13px;color:var(--muted);margin-bottom:.25rem">'+certas+' de '+questoes.length+' corretas</div>'
+      +'<div style="font-size:13px;color:'+(passou?'#4ade80':'#f87171')+';margin-bottom:1.5rem">'+(passou?'Parabens! Recompensa creditada!':'Nota minima: '+(ds.notaMin||70)+'%. Tente novamente!')+'</div>'
+      +gabarito
+      +'<button class="btn-p ev" style="margin-top:1rem" onclick="sairDesafio()">fechar</button>'
+      +'</div>';
     if(passou)creditarDesafioQuiz(ds);
     return;
   }
+
   const q=questoes[qAtual];
-  const L=['A','B','C','D','E'];
-  el.innerHTML=`
-    <div style="font-size:11px;color:rgba(196,181,253,.4);margin-bottom:.75rem">questao ${qAtual+1} de ${questoes.length}</div>
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem">
-      <div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.5">${q.enunciado}</div>
-    </div>
-    ${q.alts.map((alt,i)=>{const L=['A','B','C','D','E'];return '<div class="dsq-opt" id="dsq-'+i+'" onclick="selecionarAlt('+i+')"><div class="dsq-letra">'+L[i]+'</div><div style="font-size:13px;color:var(--text)">'+alt+'</div></div>';}).join('')}}
-    <button id="dsq-prox" style="display:none;width:100%;margin-top:.75rem" class="btn-p ev" onclick="proximaQuestao()">
-      ${qAtual===questoes.length-1?'ver resultado':'proxima →'}
-    </button>`;
+  const total=questoes.length;
+  const progPct=Math.round((qAtual/total)*100);
+  const letras=['A','B','C','D','E'];
+
+  // monta alternativas sem template literal aninhado
+  let altsHtml='';
+  q.alts.forEach(function(alt,i){
+    altsHtml+='<div class="dsq-opt" id="dsq-'+i+'" onclick="selecionarAlt('+i+')">'
+      +'<div class="dsq-letra">'+letras[i]+'</div>'
+      +'<div style="font-size:13px;color:var(--text);line-height:1.4">'+alt+'</div>'
+      +'</div>';
+  });
+
+  el.innerHTML=
+    // ── barra de progresso ──
+    '<div style="margin-bottom:1rem">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        +'<span style="font-size:11px;font-weight:700;color:rgba(196,181,253,.5)">questao '+(qAtual+1)+' de '+total+'</span>'
+        +'<span style="font-size:11px;color:rgba(196,181,253,.35)">'+progPct+'% concluido</span>'
+      +'</div>'
+      +'<div style="height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden">'
+        +'<div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,var(--ev2),var(--ev3));border-radius:99px;transition:width .3s"></div>'
+      +'</div>'
+      // mini bolinhas de questões
+      +'<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">'
+        +questoes.map(function(_,i){
+          const respondida=respostas[i]!==undefined;
+          const atual=i===qAtual;
+          const certa=respondida&&respostas[i]===questoes[i].correta;
+          const errada=respondida&&respostas[i]!==questoes[i].correta;
+          const bg=atual?'var(--ev3)':certa?'rgba(34,197,94,.5)':errada?'rgba(239,68,68,.4)':'rgba(255,255,255,.12)';
+          const size=atual?'10px':'7px';
+          return '<div style="width:'+size+';height:'+size+';border-radius:50%;background:'+bg+';transition:all .2s;margin-top:'+(atual?'0':'1.5px')+'"></div>';
+        }).join('')
+      +'</div>'
+    +'</div>'
+    // ── enunciado ──
+    +'<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:1rem">'
+      +'<div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.5">'+q.enunciado+'</div>'
+    +'</div>'
+    // ── alternativas ──
+    +altsHtml
+    // ── botão próxima ──
+    +'<button id="dsq-prox" style="display:none;width:100%;margin-top:.75rem" class="btn-p ev" onclick="proximaQuestao()">'
+      +(qAtual===total-1?'ver resultado ✓':'proxima →')
+    +'</button>';
 }
 window.selecionarAlt=function(idx){
   const prox=document.getElementById('dsq-prox');
