@@ -1395,18 +1395,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <span class="topbar-title" id="dsd-titulo-bar">desafio</span>
     <span id="dsd-timer-bar" style="margin-left:auto;font-size:13px;font-weight:700;color:#fbbf24"></span>
   </div>
-  <div style="padding:1rem">
-    <div class="ds-card" style="margin-bottom:1rem">
-      <div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.5;margin-bottom:.5rem" id="dsd-titulo"></div>
-      <div style="font-size:13px;color:var(--muted);line-height:1.6" id="dsd-enunciado"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">sua resposta</label>
-      <textarea class="form-input" id="dsd-resposta" rows="7" style="resize:none;line-height:1.6" placeholder="Escreva sua resposta aqui..."></textarea>
-    </div>
-    <div class="err" id="dsd-err"></div>
-    <button class="btn-p ev" id="dsd-btn" onclick="enviarDiscursiva()">enviar resposta</button>
-  </div>
+  <div style="padding:1rem" id="dsd-content"></div>
 </div>
 
 <!-- DESAFIOS MEMBRO: TELA QUIZ -->
@@ -3249,7 +3238,54 @@ window.pararEvScan=async function(){
 
 // ── DESAFIOS ──
 // Estado
-let _dsTipo='discursiva', _dsQuestoes=[], _dsQIdx=0, _dsDesafioAtual=null, _dsTimerInt=null, _dsQuizState=null;
+let _dsTipo='discursiva', _dsQuestoes=[], _dsQIdx=0, _dsDiscPerguntas=[], _dsDiscPIdx=0;
+let _dsDesafioAtual=null, _dsTimerInt=null, _dsQuizState=null, _dsDiscState=null;
+
+// ── ADMIN: TIPO ──
+window.setDsTipo=function(tipo){
+  _dsTipo=tipo;
+  document.getElementById('ds-tipo-disc').classList.toggle('active',tipo==='discursiva');
+  document.getElementById('ds-tipo-quiz').classList.toggle('active',tipo==='quiz');
+  document.getElementById('ds-disc-section').style.display=tipo==='discursiva'?'block':'none';
+  document.getElementById('ds-quiz-section').style.display=tipo==='quiz'?'block':'none';
+  if(tipo==='quiz'&&_dsQuestoes.length===0)addDsQuestao();
+  if(tipo==='discursiva')renderDsDiscPerguntas();
+};
+
+// ── ADMIN: PERGUNTAS DISCURSIVAS ──
+window.addDsDiscPergunta=function(){
+  _dsDiscPIdx++;
+  _dsDiscPerguntas.push({id:_dsDiscPIdx,texto:''});
+  renderDsDiscPerguntas();
+};
+window.removerDiscPergunta=function(id){
+  _dsDiscPerguntas=_dsDiscPerguntas.filter(p=>p.id!==id);
+  renderDsDiscPerguntas();
+};
+window.atualizarDiscPergunta=function(id,val){
+  const p=_dsDiscPerguntas.find(p=>p.id===id);
+  if(p)p.texto=val;
+};
+function renderDsDiscPerguntas(){
+  const el=document.getElementById('ds-disc-perguntas-list');
+  if(!el)return;
+  if(!_dsDiscPerguntas.length){
+    el.innerHTML='';
+    return;
+  }
+  let html='';
+  _dsDiscPerguntas.forEach(function(p,pi){
+    html+='<div class="ds-q-block">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+      +'<span class="ds-q-num">PERGUNTA '+(pi+2)+'</span>'
+      +'<button class="ds-q-del-btn" onclick="removerDiscPergunta('+p.id+')">✕</button>'
+      +'</div>'
+      +'<textarea class="ds-q-inp" rows="2" placeholder="Digite a pergunta..."'
+      +' oninput="atualizarDiscPergunta('+p.id+',this.value)">'+p.texto+'</textarea>'
+      +'</div>';
+  });
+  el.innerHTML=html;
+}
 
 // ── ADMIN: TIPO ──
 window.setDsTipo=function(tipo){
@@ -3346,6 +3382,7 @@ window.criarDesafio=async function(){
   const especificos=visMode==='especificos'?getMSSelected('ds'):[];
 
   if(!titulo){showErr('ds-err','informe o titulo');return;}
+  if(!desc.trim()){showErr('ds-err','informe pelo menos a primeira pergunta no campo descricao');return;}
   if(!reward||reward<1){showErr('ds-err','informe a recompensa');return;}
   if(visMode==='especificos'&&!especificos.length){showErr('ds-err','selecione ao menos um membro');return;}
   if(_dsTipo==='quiz'){
@@ -3370,6 +3407,10 @@ window.criarDesafio=async function(){
     }
     if(_dsTipo==='discursiva'){
       dsData.timerMin=parseInt(document.getElementById('ds-disc-timer').value)||0;
+      dsData.embaralhar=document.getElementById('ds-disc-embaralhar').checked;
+      // perguntas extras (a primeira é o campo desc)
+      const extras=_dsDiscPerguntas.filter(p=>p.texto.trim()).map(p=>p.texto.trim());
+      dsData.perguntas=extras; // perguntas adicionais além da desc
     }
     await addDoc(collection(db,'desafios'),dsData);
     // reset
@@ -3382,7 +3423,9 @@ window.criarDesafio=async function(){
     if(_msData['ds'])_msData['ds'].selected=new Set();
     updateMSTrigger('ds');
     _dsQuestoes=[];_dsQIdx=0;
+    _dsDiscPerguntas=[];_dsDiscPIdx=0;
     renderDsQuestoes();
+    renderDsDiscPerguntas();
     setDsTipo('discursiva');
     toast('desafio criado!');
     loadDesafiosAdmin();
@@ -3607,18 +3650,88 @@ window.abrirDesafio=async function(dsId){
   _dsDesafioAtual={id:dsId,...dsnap.data()};
   const ds=_dsDesafioAtual;
   if(ds.tipo==='discursiva'){
+    // monta lista de perguntas: primeira é ds.desc, extras em ds.perguntas[]
+    const todasPerguntas=[ds.desc,...(ds.perguntas||[])];
+    let ordem=[...Array(todasPerguntas.length).keys()];
+    if(ds.embaralhar)ordem=ordem.sort(()=>Math.random()-.5);
+    _dsDiscState={ds,perguntas:todasPerguntas,ordem,qAtual:0,respostas:[]};
     document.getElementById('dsd-titulo-bar').textContent=ds.titulo;
-    document.getElementById('dsd-titulo').textContent=ds.titulo;
-    document.getElementById('dsd-enunciado').textContent=ds.desc||'';
-    document.getElementById('dsd-resposta').value='';
     goTo('s-ds-disc');
     if(ds.timerMin>0)iniciarTimer('dsd-timer-bar',ds.timerMin,()=>enviarDiscursiva(true));
+    renderDisc();
   }else if(ds.tipo==='quiz'){
     iniciarQuiz(ds);
     goTo('s-ds-quiz');
   }
 };
 window.sairDesafio=function(){pararTimer();goBack();};
+
+function renderDisc(){
+  const el=document.getElementById('dsd-content');
+  if(!el||!_dsDiscState)return;
+  const {perguntas,ordem,qAtual,respostas,ds}=_dsDiscState;
+  const total=ordem.length;
+  const perguntaIdx=ordem[qAtual];
+  const pergunta=perguntas[perguntaIdx];
+  const progPct=Math.round((qAtual/total)*100);
+
+  // barra de progresso + bolinhas
+  let bolinhas='';
+  for(let i=0;i<total;i++){
+    const respondida=respostas[i]!==undefined&&respostas[i].trim()!=='';
+    const atual=i===qAtual;
+    const bg=atual?'var(--ev3)':respondida?'rgba(139,92,246,.5)':'rgba(255,255,255,.12)';
+    const sz=atual?'10px':'7px';
+    bolinhas+='<div style="width:'+sz+';height:'+sz+';border-radius:50%;background:'+bg+';transition:all .2s;margin-top:'+(atual?'0':'1.5px')+'"></div>';
+  }
+
+  el.innerHTML=
+    '<div style="margin-bottom:1rem">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        +'<span style="font-size:11px;font-weight:700;color:rgba(196,181,253,.5)">pergunta '+(qAtual+1)+' de '+total+'</span>'
+        +'<span style="font-size:11px;color:rgba(196,181,253,.35)">'+progPct+'% concluido</span>'
+      +'</div>'
+      +'<div style="height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden">'
+        +'<div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,var(--ev2),var(--ev3));border-radius:99px;transition:width .3s"></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">'+bolinhas+'</div>'
+    +'</div>'
+    +'<div class="ds-card" style="margin-bottom:1rem">'
+      +'<div style="font-size:15px;font-weight:700;color:var(--text);line-height:1.5">'+pergunta+'</div>'
+    +'</div>'
+    +'<div class="form-group">'
+      +'<label class="form-label">sua resposta</label>'
+      +'<textarea class="form-input" id="dsd-resposta-'+qAtual+'" rows="6" style="resize:none;line-height:1.6" placeholder="Escreva sua resposta aqui...">'+(respostas[qAtual]||'')+'</textarea>'
+    +'</div>'
+    +'<div class="err" id="dsd-err"></div>'
+    +'<div style="display:flex;gap:8px;margin-top:.5rem">'
+      +(qAtual>0?'<button class="btn-s" onclick="discAnterior()" style="flex:1">← anterior</button>':'')
+      +'<button class="btn-p ev" style="flex:2" onclick="discProxima()">'
+        +(qAtual===total-1?'enviar tudo ✓':'proxima →')
+      +'</button>'
+    +'</div>';
+}
+
+window.discProxima=function(){
+  const {qAtual,ordem,perguntas}=_dsDiscState;
+  const respEl=document.getElementById('dsd-resposta-'+qAtual);
+  const resp=(respEl?.value||'').trim();
+  if(!resp){showErr('dsd-err','escreva sua resposta antes de continuar');return;}
+  _dsDiscState.respostas[qAtual]=resp;
+  if(qAtual===ordem.length-1){
+    enviarDiscursiva(false);
+  }else{
+    _dsDiscState.qAtual++;
+    renderDisc();
+  }
+};
+
+window.discAnterior=function(){
+  const respEl=document.getElementById('dsd-resposta-'+_dsDiscState.qAtual);
+  _dsDiscState.respostas[_dsDiscState.qAtual]=(respEl?.value||'').trim();
+  _dsDiscState.qAtual--;
+  renderDisc();
+};
 
 // ── TIMER ──
 function iniciarTimer(barId,min,onExpire){
@@ -3638,16 +3751,33 @@ function pararTimer(){if(_dsTimerInt){clearInterval(_dsTimerInt);_dsTimerInt=nul
 
 // ── MEMBRO: DISCURSIVA ──
 window.enviarDiscursiva=async function(auto=false){
-  const resposta=document.getElementById('dsd-resposta')?.value?.trim();
-  if(!resposta&&!auto){showErr('dsd-err','escreva sua resposta');return;}
   pararTimer();
   const ds=_dsDesafioAtual;
-  setLoad('dsd-btn',true);
+  const state=_dsDiscState;
+  // coleta resposta atual se não auto
+  if(!auto&&state){
+    const respEl=document.getElementById('dsd-resposta-'+state.qAtual);
+    if(respEl)state.respostas[state.qAtual]=(respEl.value||'').trim();
+  }
+  // monta texto final com todas as respostas
+  let textoFinal='';
+  if(state&&state.perguntas.length>1){
+    state.ordem.forEach(function(pi,i){
+      textoFinal+=(i+1)+'. '+state.perguntas[pi]+'\n';
+      textoFinal+='R: '+(state.respostas[i]||'(sem resposta)')+'\n\n';
+    });
+    textoFinal=textoFinal.trim();
+  }else{
+    const respEl=document.getElementById('dsd-resposta-0');
+    textoFinal=(respEl?.value||state?.respostas[0]||'').trim();
+  }
+  if(!textoFinal&&!auto){showErr('dsd-err','escreva sua resposta');return;}
   try{
     await addDoc(collection(db,'ds_respostas'),{
       desafioId:ds.id,uid:CU.id,
-      resposta:resposta||'(tempo esgotado)',
+      resposta:textoFinal||'(tempo esgotado)',
       aprovado:null,
+      totalPerguntas:(state?.perguntas?.length||1),
       createdAt:serverTimestamp(),
       eventoId:ds.eventoId||null
     });
@@ -3655,7 +3785,6 @@ window.enviarDiscursiva=async function(auto=false){
     goBack();
     loadDesafiosMembro();
   }catch(e){showErr('dsd-err','erro: '+e.message);}
-  finally{setLoad('dsd-btn',false);}
 };
 
 // ── MEMBRO: QUIZ ──
