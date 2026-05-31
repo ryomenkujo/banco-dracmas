@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script defer src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -3926,6 +3929,15 @@ async function creditarDesafioQuiz(ds){
 document.getElementById('l-pw')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('r-pw2')?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
 document.getElementById('cp-new2')?.addEventListener('keydown',e=>{if(e.key==='Enter')doChangePw();});
+
+// ── PWA: REGISTRA SERVICE WORKER ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/banco-dracmas/sw.js')
+      .then(r => console.log('SW registrado:', r.scope))
+      .catch(e => console.log('SW erro:', e));
+  });
+}
 
 // ── INIT ──
 async function init(){
