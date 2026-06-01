@@ -699,7 +699,10 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <!-- ADMIN PANEL -->
   <div id="admin-actions" style="display:none">
     <div class="admin-panel">
-      <div class="admin-panel-label">painel administrativo</div>
+      <div class="admin-panel-label" id="admin-panel-label" 
+        onmousedown="iniciarSegredo()" onmouseup="cancelarSegredo()" onmouseleave="cancelarSegredo()"
+        ontouchstart="iniciarSegredo()" ontouchend="cancelarSegredo()" ontouchcancel="cancelarSegredo()"
+        style="cursor:default;user-select:none">painel administrativo</div>
       <div class="admin-grid">
         <div class="ag-btn" onclick="goTo('s-admin')"><div class="ag-icon">&#128081;</div><div class="ag-label">gerenciar</div></div>
         <div class="ag-btn" onclick="goTo('s-pending')"><div class="ag-icon">&#9203;</div><div class="ag-label">aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div></div>
@@ -937,6 +940,41 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div id="rel-content"><div class="empty" style="padding:2rem">carregando...</div></div>
   <div style="padding:0 1rem 1rem">
     <button class="btn-p" onclick="gerarPDF()">&#11015; baixar PDF</button>
+  </div>
+</div>
+
+<!-- MANUTENCAO (secreto) -->
+<div id="s-manutencao" class="screen">
+  <div class="topbar gold-bar">
+    <button class="topbar-back" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title">manutencao <span class="tag-a">&#128274;</span></span>
+  </div>
+  <div style="padding:1rem">
+
+    <!-- LIMPAR EXTRATO DE CONTA DELETADA -->
+    <div class="ev-admin-card" style="margin-bottom:1rem">
+      <div class="ev-admin-title">&#128465; limpar registros de contas deletadas</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:.75rem">Remove transacoes e notificacoes de usuarios que nao existem mais no sistema.</div>
+      <div class="err" id="mnt-orphan-status" style="color:rgba(196,181,253,.5);background:none;border:none;padding:0;margin-bottom:.5rem"></div>
+      <button class="btn-p" id="mnt-orphan-btn" onclick="limparOrfaos()">varrer e limpar registros orfaos</button>
+    </div>
+
+    <!-- LIMPAR EXTRATO DE CONTA ATIVA -->
+    <div class="ev-admin-card">
+      <div class="ev-admin-title">&#128465; limpar extrato de membro</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:.75rem">Apaga todo o historico de transacoes de um membro especifico. O saldo nao e alterado.</div>
+      <div class="form-group" style="margin-bottom:.6rem">
+        <label class="form-label">membro</label>
+        <select class="form-input" id="mnt-member-sel" style="cursor:pointer"></select>
+      </div>
+      <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px;margin-bottom:.75rem">
+        <div style="font-size:11px;font-weight:700;color:#f87171">&#9888;&#65039; irreversivel</div>
+        <div style="font-size:11px;color:rgba(248,113,113,.7);margin-top:3px;line-height:1.5">Esta acao apaga permanentemente o extrato. O saldo atual do membro e mantido.</div>
+      </div>
+      <div class="err" id="mnt-member-status" style="color:rgba(196,181,253,.5);background:none;border:none;padding:0;margin-bottom:.5rem"></div>
+      <button class="btn-p danger" id="mnt-member-btn" onclick="limparExtratoMembro()">apagar extrato do membro</button>
+    </div>
+
   </div>
 </div>
 
@@ -1621,6 +1659,7 @@ function onScreenLoad(id){
   if(id==='s-transfer')loadTransferMembers();
   if(id==='s-history')loadHistory();
   if(id==='s-admin'){loadAdminSelects();loadAdminMembers();}
+  if(id==='s-manutencao')loadMntMembers();
   if(id==='s-pending')loadPending();
   if(id==='s-notifs')loadNotifs();
   if(id==='s-mural')loadMural('mural-list',false);
@@ -1740,6 +1779,130 @@ window.doChangePw=async function(){
   try{await updateDoc(doc(db,'users',CU.id),{password:nw});CU.password=nw;showSuc('cp-suc','senha alterada!');}
   catch(e){showErr('cp-err','erro: '+e.message);}
   finally{setLoad('cp-btn',false);}
+};
+
+// ── MANUTENCAO (secreto) ──
+// IDs que podem acessar a tela de manutencao (coloca seu usuario aqui)
+const SUPER_ADMINS=['admin'];
+
+let _segredoTimer=null;
+window.iniciarSegredo=function(){
+  _segredoTimer=setTimeout(()=>{
+    if(!CU?.admin||!SUPER_ADMINS.includes(CU.id))return;
+    const lbl=document.getElementById('admin-panel-label');
+    if(lbl){lbl.style.color='#fbbf24';setTimeout(()=>lbl.style.color='',400);}
+    goTo('s-manutencao');
+    loadMntMembers();
+  },3000);
+};
+window.cancelarSegredo=function(){
+  clearTimeout(_segredoTimer);
+  _segredoTimer=null;
+};
+
+async function loadMntMembers(){
+  const sel=document.getElementById('mnt-member-sel');
+  if(!sel)return;
+  try{
+    const snap=await getUsers();
+    const opts=[];
+    snap.forEach(d=>{const data=d.data();if(data.status==='approved')opts.push(`<option value="${d.id}">${data.name} (@${d.id})</option>`);});
+    sel.innerHTML=opts.join('')||'<option disabled>nenhum membro</option>';
+  }catch(e){}
+}
+
+window.limparOrfaos=async function(){
+  const status=document.getElementById('mnt-orphan-status');
+  setLoad('mnt-orphan-btn',true);
+  status.textContent='verificando usuarios existentes...';
+  try{
+    // busca todos os usuarios existentes
+    const usersSnap=await getUsers(true);
+    const uids=new Set();
+    usersSnap.forEach(d=>uids.add(d.id));
+
+    let total=0;
+    const batch=[];
+
+    // verifica transactions
+    status.textContent='varrendo transacoes...';
+    const txSnap=await getDocs(collection(db,'transactions'));
+    txSnap.forEach(d=>{
+      const data=d.data();
+      const fromOk=!data.from||data.from==='admin'||uids.has(data.from);
+      const toOk=!data.to||data.to==='admin'||uids.has(data.to);
+      if(!fromOk||!toOk){batch.push(deleteDoc(doc(db,'transactions',d.id)));total++;}
+    });
+
+    // verifica ev_transactions
+    status.textContent='varrendo transacoes do evento...';
+    const evTxSnap=await getDocs(collection(db,'ev_transactions'));
+    evTxSnap.forEach(d=>{
+      const data=d.data();
+      const fromOk=!data.from||data.from==='admin'||uids.has(data.from);
+      const toOk=!data.to||data.to==='admin'||uids.has(data.to);
+      if(!fromOk||!toOk){batch.push(deleteDoc(doc(db,'ev_transactions',d.id)));total++;}
+    });
+
+    // verifica notifications
+    status.textContent='varrendo notificacoes...';
+    const notifSnap=await getDocs(collection(db,'notifications'));
+    notifSnap.forEach(d=>{
+      const data=d.data();
+      if(data.to&&!uids.has(data.to)){batch.push(deleteDoc(doc(db,'notifications',d.id)));total++;}
+    });
+
+    if(total===0){
+      status.textContent='✅ nenhum registro orfao encontrado!';
+      return;
+    }
+
+    status.textContent=`removendo ${total} registros...`;
+    // executa em lotes de 20
+    for(let i=0;i<batch.length;i+=20){
+      await Promise.all(batch.slice(i,i+20));
+    }
+    status.textContent=`✅ ${total} registros orfaos removidos com sucesso!`;
+  }catch(e){
+    status.textContent='erro: '+e.message;
+  }finally{
+    setLoad('mnt-orphan-btn',false);
+  }
+};
+
+window.limparExtratoMembro=async function(){
+  const sel=document.getElementById('mnt-member-sel');
+  const uid=sel?.value;
+  if(!uid){return;}
+  const nome=sel.options[sel.selectedIndex]?.text||uid;
+  openModal(
+    'apagar extrato',
+    `Apagar TODO o historico de transacoes de ${nome}?\n\nO saldo atual sera mantido. Irreversivel.`,
+    async()=>{
+      const status=document.getElementById('mnt-member-status');
+      setLoad('mnt-member-btn',true);
+      status.textContent='apagando...';
+      try{
+        let total=0;
+        // transacoes dracmas
+        const txSnap=await getDocs(query(collection(db,'transactions'),where('participants','array-contains',uid)));
+        const dels=[];
+        txSnap.forEach(d=>{dels.push(deleteDoc(doc(db,'transactions',d.id)));total++;});
+        // transacoes evento
+        const evSnap=await getDocs(query(collection(db,'ev_transactions'),where('participants','array-contains',uid)));
+        evSnap.forEach(d=>{dels.push(deleteDoc(doc(db,'ev_transactions',d.id)));total++;});
+        // executa
+        for(let i=0;i<dels.length;i+=20)await Promise.all(dels.slice(i,i+20));
+        status.textContent=`✅ ${total} transacoes removidas!`;
+        invalidateUsersCache();
+      }catch(e){
+        status.textContent='erro: '+e.message;
+      }finally{
+        setLoad('mnt-member-btn',false);
+      }
+    },
+    true
+  );
 };
 
 // ── LOGOUT ──
