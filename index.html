@@ -1697,6 +1697,7 @@ window.doLogin=async function(){
     goTo('s-home');
     document.getElementById('bottom-nav').classList.add('show');
     if(!CU.admin)checkBV();
+    initPush(u); // inicia listener de notificações push
   }catch(e){showErr('l-err','erro de conexao: '+e.message);}
   finally{setLoad('l-btn',false);}
 };
@@ -3932,12 +3933,42 @@ document.getElementById('r-pw2')?.addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('cp-new2')?.addEventListener('keydown',e=>{if(e.key==='Enter')doChangePw();});
 
 // ── PWA: REGISTRA SERVICE WORKER ──
+let _swReg = null;
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/banco-dracmas/sw.js')
-      .then(r => console.log('SW registrado:', r.scope))
+      .then(r => { _swReg = r; console.log('SW registrado'); })
       .catch(e => console.log('SW erro:', e));
   });
+}
+
+// Inicia listener de push no SW após login
+async function initPush(uid) {
+  if (!('Notification' in window)) return;
+  try {
+    let perm = Notification.permission;
+    if (perm === 'default') {
+      perm = await Notification.requestPermission();
+    }
+    if (perm !== 'granted') return;
+    // Aguarda SW ficar pronto
+    const reg = await navigator.serviceWorker.ready;
+    // Passa o uid e o timestamp atual para o SW começar a escutar
+    reg.active?.postMessage({
+      type: 'INIT_PUSH',
+      uid,
+      lastSeen: new Date().toISOString()
+    });
+    // Atualiza o lastSeen a cada vez que o app fica em foco
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        reg.active?.postMessage({
+          type: 'UPDATE_SEEN',
+          lastSeen: new Date().toISOString()
+        });
+      }
+    });
+  } catch(e) { console.log('Push erro:', e); }
 }
 
 // ── INIT ──
