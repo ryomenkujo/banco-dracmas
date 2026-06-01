@@ -1693,11 +1693,12 @@ window.doLogin=async function(){
     if(data.status==='pending'){showErr('l-err','conta aguardando aprovacao ⏳');return;}
     if(data.status==='paused'){showErr('l-err','conta pausada. fale com o admin');return;}
     CU={id:u,...data};
+    localStorage.setItem('dracmas_session', JSON.stringify({id:u, password:p}));
     renderHome();
     goTo('s-home');
     document.getElementById('bottom-nav').classList.add('show');
     if(!CU.admin)checkBV();
-    initPush(u); // inicia listener de notificações push
+    initPush(u);
   }catch(e){showErr('l-err','erro de conexao: '+e.message);}
   finally{setLoad('l-btn',false);}
 };
@@ -1744,6 +1745,7 @@ window.doChangePw=async function(){
 window.doLogout=function(){
   CU=null;allMembers=[];navStack.length=0;evData=null;myTeam=null;
   invalidateUsersCache();
+  localStorage.removeItem('dracmas_session');
   document.getElementById('l-user').value='';
   document.getElementById('l-pw').value='';
   document.getElementById('bottom-nav').classList.remove('show');
@@ -3978,6 +3980,27 @@ async function init(){
     const ref=doc(db,'users','admin');
     if(!(await getDoc(ref)).exists()){
       await setDoc(ref,{name:'Administrador',password:'admin123',balance:0,evBalance:0,admin:true,status:'approved',createdAt:serverTimestamp()});
+    }
+  }catch(e){}
+  // tenta restaurar sessão salva
+  try{
+    const saved=localStorage.getItem('dracmas_session');
+    if(saved){
+      const {id,password}=JSON.parse(saved);
+      const snap=await getDoc(doc(db,'users',id));
+      if(snap.exists()){
+        const data=snap.data();
+        if(data.password===password&&data.status==='approved'){
+          CU={id,...data};
+          renderHome();
+          goTo('s-home');
+          document.getElementById('bottom-nav').classList.add('show');
+          initPush(id);
+          return;
+        }
+      }
+      // sessão inválida — limpa
+      localStorage.removeItem('dracmas_session');
     }
   }catch(e){}
   goTo('s-login');
