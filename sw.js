@@ -1,45 +1,36 @@
-// Service Worker — Dracmas ADC
-const CACHE = 'dracmas-v1';
+// Service Worker — Dracmas ADC (com notificações push)
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js');
 
-// Arquivos que ficam em cache para funcionar offline
+const CACHE = 'dracmas-v2';
 const STATIC = [
   '/banco-dracmas/',
   '/banco-dracmas/index.html',
   '/banco-dracmas/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@400;600;700;900&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
 ];
 
-// Instala e faz cache dos arquivos estáticos
+// ── CACHE ──
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(STATIC)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then(c => c.addAll(STATIC))
+      .then(() => self.skipWaiting())
   );
 });
-
-// Remove caches antigos quando atualizar
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
-
-// Estratégia: tenta rede primeiro, cai no cache se offline
 self.addEventListener('fetch', e => {
-  // Requisições do Firebase vão sempre pela rede (dados em tempo real)
   if (e.request.url.includes('firestore.googleapis.com') ||
       e.request.url.includes('firebase') ||
-      e.request.url.includes('googleapis.com/identitytoolkit')) {
-    return;
-  }
-
+      e.request.url.includes('googleapis.com')) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        // Atualiza cache com resposta nova
         if (res.ok) {
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
@@ -47,5 +38,90 @@ self.addEventListener('fetch', e => {
         return res;
       })
       .catch(() => caches.match(e.request))
+  );
+});
+
+// ── NOTIFICAÇÕES PUSH ──
+// Recebe mensagem do app principal via postMessage
+self.addEventListener('message', e => {
+  if (e.data?.type === 'INIT_PUSH') {
+    initPushListener(e.data.uid, e.data.lastSeen);
+  }
+  if (e.data?.type === 'UPDATE_SEEN') {
+    _lastSeen = e.data.lastSeen;
+  }
+});
+
+let _db = null;
+let _uid = null;
+let _lastSeen = null;
+let _unsubscribe = null;
+
+function getDB() {
+  if (_db) return _db;
+  firebase.initializeApp({
+    apiKey: "AIzaSyA-t2k2EVpfv-xqtQxtq4bt043tOqTtTDw",
+    authDomain: "banco-dracmas.firebaseapp.com",
+    projectId: "banco-dracmas",
+    storageBucket: "banco-dracmas.firebasestorage.app",
+    messagingSenderId: "755685605861",
+    appId: "1:755685605861:web:651fd974ad8a784af7af0c"
+  });
+  _db = firebase.firestore();
+  return _db;
+}
+
+function initPushListener(uid, lastSeen) {
+  if (_unsubscribe) _unsubscribe();
+  _uid = uid;
+  _lastSeen = lastSeen || new Date();
+
+  try {
+    const db = getDB();
+    const ref = db.collection('notifications')
+      .where('to', '==', uid)
+      .where('read', '==', false)
+      .orderBy('createdAt', 'desc')
+      .limit(10);
+
+    _unsubscribe = ref.onSnapshot(snap => {
+      snap.docChanges().forEach(change => {
+        if (change.type !== 'added') return;
+        const data = change.doc.data();
+        // só notifica se for nova (depois do lastSeen)
+        const ts = data.createdAt?.toDate?.() || new Date();
+        if (_lastSeen && ts <= new Date(_lastSeen)) return;
+        // não notifica se o app tiver aberto
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+          .then(clients => {
+            const appAberto = clients.some(c => c.visibilityState === 'visible');
+            if (!appAberto) {
+              self.registration.showNotification('Dracmas ADC', {
+                body: data.text || 'Nova notificacao',
+                icon: '/banco-dracmas/icon-192.png',
+                badge: '/banco-dracmas/icon-192.png',
+                tag: change.doc.id,
+                data: { url: '/banco-dracmas/' },
+                vibrate: [200, 100, 200],
+              });
+            }
+          });
+      });
+    });
+  } catch (e) {
+    console.log('Push listener erro:', e);
+  }
+}
+
+// Abre o app ao clicar na notificação
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clients => {
+        const appAberto = clients.find(c => c.url.includes('banco-dracmas'));
+        if (appAberto) return appAberto.focus();
+        return self.clients.openWindow('/banco-dracmas/');
+      })
   );
 });
