@@ -1699,6 +1699,7 @@ window.doLogin=async function(){
     document.getElementById('bottom-nav').classList.add('show');
     if(!CU.admin)checkBV();
     initPush(u);
+    setTimeout(checkNotifOnResume, 1500); // verifica notificações novas após carregar
   }catch(e){showErr('l-err','erro de conexao: '+e.message);}
   finally{setLoad('l-btn',false);}
 };
@@ -1873,6 +1874,48 @@ async function loadMemberHistory(uid,name){
 }
 
 // ── NOTIFS ──
+// Salva timestamp da última vez que o usuário viu as notificações
+function getLastNotifSeen(){
+  return localStorage.getItem('dracmas_notif_seen_'+(CU?.id||''))||null;
+}
+function setLastNotifSeen(){
+  localStorage.setItem('dracmas_notif_seen_'+(CU?.id||''), new Date().toISOString());
+}
+
+// Verifica notificações novas ao reabrir o app
+async function checkNotifOnResume(){
+  if(!CU)return;
+  try{
+    const lastSeen=getLastNotifSeen();
+    const q=lastSeen
+      ?query(collection(db,'notifications'),where('to','==',CU.id),where('read','==',false),orderBy('createdAt','desc'),limit(20))
+      :query(collection(db,'notifications'),where('to','==',CU.id),where('read','==',false),limit(5));
+    const snap=await getDocs(q);
+    if(snap.empty)return;
+    // filtra só as novas (depois do lastSeen)
+    const novas=lastSeen
+      ?snap.docs.filter(d=>{const ts=d.data().createdAt?.toDate?.();return ts&&ts>new Date(lastSeen);})
+      :snap.docs;
+    if(!novas.length)return;
+    // mostra toast com resumo
+    const ultima=novas[0].data();
+    if(novas.length===1){
+      toast((ultima.icon||'🔔')+' '+ultima.text);
+    }else{
+      toast('🔔 '+novas.length+' notificacoes novas!');
+    }
+    // atualiza o sino
+    loadNotifBell();
+  }catch(e){}
+}
+
+// Escuta quando o app volta ao foco (usuário minimizou e voltou)
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&CU){
+    checkNotifOnResume();
+  }
+});
+
 async function loadNotifs(){
   const el=document.getElementById('notifs-list');
   el.innerHTML='<div class="empty">carregando...</div>';
@@ -1889,6 +1932,7 @@ async function loadNotifs(){
     }).join('');
     snap.docs.forEach(d=>{if(!d.data().read)updateDoc(doc(db,'notifications',d.id),{read:true});});
     document.getElementById('notif-bell').textContent='🔔';
+    setLastNotifSeen(); // marca que o usuário viu agora
   }catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
 }
 
@@ -3996,6 +4040,7 @@ async function init(){
           goTo('s-home');
           document.getElementById('bottom-nav').classList.add('show');
           initPush(id);
+          setTimeout(checkNotifOnResume, 1500);
           return;
         }
       }
