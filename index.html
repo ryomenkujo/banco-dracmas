@@ -1856,16 +1856,9 @@ function onScreenLoad(id){
   if(id==='s-admin'){loadAdminSelects();loadAdminMembers();}
   if(id==='s-manutencao')loadMntMembers();
   if(id==='s-massa-dr')loadMassaDrMs();
-  if(id==='s-ev-massa'){
-    // atualiza label com nome da moeda
-    const lbl=document.getElementById('ev-massa-moeda-label');
-    if(lbl)lbl.textContent='quantidade de '+evMoeda.toLowerCase();
-    const title=document.getElementById('ev-massa-title');
-    if(title)title.innerHTML=evMoeda.toLowerCase()+' em massa <span class="tag-a">admin</span>';
-    // reseta destino
-    const radio=document.querySelector('input[name="ev-massa-dest"][value="todos"]');
-    if(radio){radio.checked=true;toggleEvMassaDest('todos');}
-  }
+  if(id==='s-notif-massa'){const r=document.querySelector('input[name="notif-dest"][value="todos"]');if(r)r.checked=true;document.getElementById('notif-massa-ms-wrap').style.display='none';}
+  if(id==='s-ev-transf-time'){_evTTMembros=[];document.getElementById('ev-tt-membros-section').style.display='none';loadEvTTTimes();}
+  if(id==='s-editar-desafio'){}
   if(id==='s-pending')loadPending();
   if(id==='s-notifs')loadNotifs();
   if(id==='s-mural')loadMural('mural-list',false);
@@ -2051,93 +2044,222 @@ window.doMassaDr=async function(){
   finally{setLoad('massa-dr-btn',false);}
 };
 
-// ── MASSA MOEDA EVENTO ──
-window.toggleEvMassaDest=async function(val){
-  document.getElementById('ev-massa-time-wrap').style.display=val==='time'?'block':'none';
-  document.getElementById('ev-massa-ms-wrap').style.display=val==='especificos'?'block':'none';
-  if(val==='time')loadEvMassaTimes();
-  if(val==='especificos')loadEvMassaMs();
-};
+// ── TRANSF PERSONALIZADA POR TIME (evento) ──
+let _evTTMembros=[];
 
-async function loadEvMassaTimes(){
-  const sel=document.getElementById('ev-massa-time-sel');
+async function loadEvTTTimes(){
+  const sel=document.getElementById('ev-tt-time-sel');
   if(!sel||!evData)return;
-  sel.innerHTML='<option disabled selected>carregando...</option>';
+  sel.innerHTML='<option disabled selected value="">carregando...</option>';
   try{
     const snap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
-    if(snap.empty){sel.innerHTML='<option disabled>nenhum time criado</option>';return;}
-    sel.innerHTML='<option disabled selected>selecione um time...</option>';
+    if(snap.empty){sel.innerHTML='<option disabled value="">nenhum time criado</option>';return;}
+    sel.innerHTML='<option disabled selected value="">selecione um time...</option>';
     snap.forEach(d=>{
       const t=d.data();
       sel.innerHTML+=`<option value="${d.id}">${t.nome||'Time'} (${(t.membros||[]).length} membros)</option>`;
     });
+    const lbl=document.getElementById('ev-tt-moeda-label');
+    if(lbl)lbl.textContent='moeda: '+evMoeda;
+    const title=document.getElementById('ev-tt-title');
+    if(title)title.innerHTML='transf. '+evMoeda.toLowerCase()+' por time <span class="tag-a">admin</span>';
   }catch(e){sel.innerHTML='<option disabled>erro</option>';}
 }
 
-async function loadEvMassaMs(){
-  const listEl=document.getElementById('ev-massa-ms-list');
-  if(!listEl||_msData['ev-massa']?.items?.length)return;
+window.loadEvTTMembros=async function(){
+  if(!evData)return;
+  const timeId=document.getElementById('ev-tt-time-sel').value;
+  if(!timeId)return;
+  const sec=document.getElementById('ev-tt-membros-section');
+  const lista=document.getElementById('ev-tt-membros-lista');
+  sec.style.display='none';
+  lista.innerHTML='<div class="empty">carregando...</div>';
+  try{
+    const timeSnap=await getDoc(doc(db,'times',timeId));
+    const membros=timeSnap.data().membros||[];
+    if(!membros.length){lista.innerHTML='<div class="empty">nenhum membro neste time</div>';sec.style.display='block';return;}
+    _evTTMembros=[];
+    const usnap=await getUsers();
+    const umap={};usnap.forEach(d=>umap[d.id]=d.data());
+    membros.forEach(uid=>{const u=umap[uid];if(u)_evTTMembros.push({id:uid,name:u.name,evBalance:u.evBalance||0,foto:u.foto});});
+    lista.innerHTML=_evTTMembros.map(m=>{
+      const av=m.foto?`<img src="${m.foto}" style="width:32px;height:32px;border-radius:50%;object-fit:cover"/>`:`<div style="width:32px;height:32px;border-radius:50%;background:rgba(139,92,246,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#c4b5fd;flex-shrink:0">${inits(m.name)}</div>`;
+      return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        ${av}
+        <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--text)">${m.name}</div><div style="font-size:11px;color:var(--muted2)">${m.evBalance} ${evMoeda}</div></div>
+        <input type="number" min="0" placeholder="0" id="ev-tt-amt-${m.id}" style="width:80px;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.25);border-radius:8px;padding:6px 8px;font-size:13px;font-family:Inter,sans-serif;color:#e9d5ff;outline:none;text-align:center" inputmode="numeric"/>
+      </div>`;
+    }).join('');
+    sec.style.display='block';
+  }catch(e){lista.innerHTML='<div class="empty">erro: '+e.message+'</div>';sec.style.display='block';}
+};
+
+window.aplicarGlobal=function(){
+  const val=document.getElementById('ev-tt-global-amt').value;
+  if(!val)return;
+  _evTTMembros.forEach(m=>{const inp=document.getElementById('ev-tt-amt-'+m.id);if(inp)inp.value=val;});
+};
+
+window.doEvTransfTime=async function(){
+  if(!evData){toast('nenhum evento ativo');return;}
+  const obs=document.getElementById('ev-tt-obs').value.trim();
+  const envios=[];
+  for(const m of _evTTMembros){
+    const inp=document.getElementById('ev-tt-amt-'+m.id);
+    const amt=parseInt(inp?.value||'0');
+    if(amt>0)envios.push({...m,amt});
+  }
+  if(!envios.length){showErr('ev-tt-err','informe ao menos uma quantia');return;}
+  setLoad('ev-tt-btn',true);
+  const prog=document.getElementById('ev-tt-progress');
+  prog.style.display='block';
+  try{
+    let done=0;
+    for(const m of envios){
+      const uSnap=await getDoc(doc(db,'users',m.id));
+      if(!uSnap.exists())continue;
+      const bal=uSnap.data().evBalance||0;
+      await updateDoc(doc(db,'users',m.id),{evBalance:bal+m.amt});
+      await addDoc(collection(db,'ev_transactions'),{from:'admin',to:m.id,participants:['admin',m.id],amount:m.amt,desc:(obs||evMoeda+' do admin'),obs:'',createdAt:serverTimestamp()});
+      await notif(m.id,'Voce recebeu '+m.amt+' '+evMoeda+' do admin'+(obs?' — "'+obs+'"':'')+'! ⬡','⬡');
+      done++;prog.textContent='enviado para '+done+' de '+envios.length+'...';
+    }
+    invalidateUsersCache();
+    prog.textContent='✅ enviado para '+done+' membros!';
+    document.getElementById('ev-tt-obs').value='';
+    _evTTMembros.forEach(m=>{const inp=document.getElementById('ev-tt-amt-'+m.id);if(inp)inp.value='';});
+    document.getElementById('ev-tt-global-amt').value='';
+    toast(evMoeda+' enviado para '+done+' membros do time!');
+  }catch(e){showErr('ev-tt-err','erro: '+e.message);prog.style.display='none';}
+  finally{setLoad('ev-tt-btn',false);}
+};
+
+// ── NOTIFICACAO EM MASSA ──
+window.toggleNotifDest=function(val){
+  document.getElementById('notif-massa-ms-wrap').style.display=val==='especificos'?'block':'none';
+  if(val==='especificos')loadNotifMassaMs();
+};
+async function loadNotifMassaMs(){
+  const listEl=document.getElementById('notif-massa-ms-list');
+  if(!listEl||_msData['notif-massa']?.items?.length)return;
   listEl.innerHTML='<div class="ms-empty">carregando...</div>';
   const snap=await getUsers();
   const items=[];
   snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')items.push({id:d.id,name:data.name});});
   items.sort((a,b)=>a.name.localeCompare(b.name));
-  populateMS('ev-massa',items);
+  populateMS('notif-massa',items);
 }
-
-window.doEvMassa=async function(){
-  if(!evData){toast('nenhum evento ativo');return;}
-  const amt=parseInt(document.getElementById('ev-massa-amt').value);
-  const obs=document.getElementById('ev-massa-obs').value.trim();
-  const dest=document.querySelector('input[name="ev-massa-dest"]:checked')?.value||'todos';
-  const timeId=document.getElementById('ev-massa-time-sel')?.value;
-  const especificos=dest==='especificos'?getMSSelected('ev-massa'):[];
-
-  if(!amt||amt<1){showErr('ev-massa-err','informe a quantidade');return;}
-  if(dest==='time'&&(!timeId||timeId==='selecione um time...')){showErr('ev-massa-err','selecione um time');return;}
-  if(dest==='especificos'&&!especificos.length){showErr('ev-massa-err','selecione ao menos um membro');return;}
-
-  setLoad('ev-massa-btn',true);
-  const prog=document.getElementById('ev-massa-progress');
+window.doNotifMassa=async function(){
+  const texto=document.getElementById('notif-massa-texto').value.trim();
+  const icon=document.getElementById('notif-massa-icon').value.trim()||'📢';
+  const dest=document.querySelector('input[name="notif-dest"]:checked')?.value||'todos';
+  const especificos=dest==='especificos'?getMSSelected('notif-massa'):[];
+  if(!texto){showErr('notif-massa-err','escreva a mensagem');return;}
+  if(dest==='especificos'&&!especificos.length){showErr('notif-massa-err','selecione ao menos um membro');return;}
+  setLoad('notif-massa-btn',true);
+  const prog=document.getElementById('notif-massa-progress');
   prog.style.display='block';
   try{
-    let targetIds=[];
-    if(dest==='time'){
-      const timeSnap=await getDoc(doc(db,'times',timeId));
-      targetIds=timeSnap.data().membros||[];
-    }else if(dest==='especificos'){
-      targetIds=especificos;
-    }else{
-      // todos
-      const snap=await getUsers();
-      snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')targetIds.push(d.id);});
-    }
-    if(!targetIds.length){showErr('ev-massa-err','nenhum membro encontrado');return;}
-
-    prog.textContent='enviando para 0 de '+targetIds.length+'...';
+    const snap=await getUsers();
+    const targets=[];
+    snap.forEach(d=>{const data=d.data();if(data.admin||data.status!=='approved')return;if(dest==='especificos'&&!especificos.includes(d.id))return;targets.push(d.id);});
+    prog.textContent='enviando para 0 de '+targets.length+'...';
     let done=0;
-    for(const uid of targetIds){
-      const uSnap=await getDoc(doc(db,'users',uid));
-      if(!uSnap.exists())continue;
-      const bal=uSnap.data().evBalance||0;
-      await updateDoc(doc(db,'users',uid),{evBalance:bal+amt});
-      await addDoc(collection(db,'ev_transactions'),{
-        from:'admin',to:uid,participants:['admin',uid],
-        amount:amt,
-        desc:(obs||evMoeda+' em massa pelo admin'),
-        obs:'',createdAt:serverTimestamp()
+    for(const uid of targets){await notif(uid,texto,icon);done++;prog.textContent='enviando para '+done+' de '+targets.length+'...';}
+    prog.textContent='✅ notificacao enviada para '+done+' membros!';
+    document.getElementById('notif-massa-texto').value='';
+    toast('notificacao enviada para '+done+' membros!');
+  }catch(e){showErr('notif-massa-err','erro: '+e.message);prog.style.display='none';}
+  finally{setLoad('notif-massa-btn',false);}
+};
+
+// ── EDITAR DESAFIO ──
+let _editDsId=null;
+window.abrirEditarDesafio=async function(dsId){
+  _editDsId=dsId;
+  try{
+    const snap=await getDoc(doc(db,'desafios',dsId));
+    const ds=snap.data();
+    document.getElementById('edit-ds-titulo').value=ds.titulo||'';
+    document.getElementById('edit-ds-desc').value=ds.desc||'';
+    document.getElementById('edit-ds-reward').value=ds.reward||'';
+    document.getElementById('edit-ds-moeda').value=ds.moeda||'ev';
+    let val='0';
+    if(ds.expiresAt){const diff=Math.round((ds.expiresAt.toDate()-new Date())/(86400000));val=diff<=1?'1':diff<=3?'3':'7';}
+    document.getElementById('edit-ds-validade').value=val;
+    goTo('s-editar-desafio');
+  }catch(e){toast('erro ao carregar desafio');}
+};
+window.salvarEdicaoDesafio=async function(){
+  if(!_editDsId)return;
+  const titulo=document.getElementById('edit-ds-titulo').value.trim();
+  const desc=document.getElementById('edit-ds-desc').value.trim();
+  const reward=parseInt(document.getElementById('edit-ds-reward').value);
+  const moeda=document.getElementById('edit-ds-moeda').value;
+  const validade=parseInt(document.getElementById('edit-ds-validade').value);
+  if(!titulo){showErr('edit-ds-err','informe o titulo');return;}
+  if(!reward||reward<1){showErr('edit-ds-err','informe a recompensa');return;}
+  setLoad('edit-ds-btn',true);
+  try{
+    const expiresAt=validade>0?new Date(Date.now()+validade*86400000):null;
+    await updateDoc(doc(db,'desafios',_editDsId),{titulo,desc,reward,moeda,expiresAt:expiresAt||null});
+    toast('desafio atualizado!');goBack();loadDesafiosAdmin();
+  }catch(e){showErr('edit-ds-err','erro: '+e.message);}
+  finally{setLoad('edit-ds-btn',false);}
+};
+
+// ── EXPORTAR RESULTADO QUIZ ──
+window.exportarResultadoQuiz=async function(dsId,titulo){
+  toast('gerando relatorio...');
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:'mm',format:'a4'});
+    const W=210,M=15;let y=20;
+    pdf.setFontSize(16);pdf.setFont('helvetica','bold');pdf.setTextColor(46,26,71);
+    pdf.text('Resultado do Quiz — '+titulo,M,y);y+=8;
+    pdf.setFontSize(10);pdf.setFont('helvetica','normal');pdf.setTextColor(107,114,128);
+    pdf.text('Gerado em '+new Date().toLocaleString('pt-BR'),M,y);y+=8;
+    pdf.setDrawColor(220,220,220);pdf.line(M,y,W-M,y);y+=8;
+    const dsSnap=await getDoc(doc(db,'desafios',dsId));
+    const ds=dsSnap.data();
+    const questoes=ds.questoes||[];
+    const completados=ds.completados||[];
+    if(!completados.length){toast('ninguem completou ainda');return;}
+    const usnap=await getUsers();
+    const umap={};usnap.forEach(d=>umap[d.id]=d.data().name);
+    pdf.setFontSize(12);pdf.setFont('helvetica','bold');pdf.setTextColor(46,26,71);
+    pdf.text('Total de conclusoes: '+completados.length,M,y);y+=6;
+    pdf.text('Questoes: '+questoes.length,M,y);y+=6;
+    pdf.text('Nota minima: '+(ds.notaMin||70)+'%',M,y);y+=10;
+    pdf.setFontSize(11);pdf.setFont('helvetica','bold');
+    pdf.text('Membros que concluiram:',M,y);y+=7;
+    pdf.setFont('helvetica','normal');pdf.setFontSize(10);
+    completados.forEach((uid,i)=>{if(y>270){pdf.addPage();y=20;}pdf.text((i+1)+'. '+(umap[uid]||uid),M+3,y);y+=5;});
+    y+=5;
+    if(questoes.length){
+      if(y>250){pdf.addPage();y=20;}
+      pdf.setFontSize(11);pdf.setFont('helvetica','bold');pdf.setTextColor(46,26,71);
+      pdf.text('Gabarito:',M,y);y+=7;
+      pdf.setFont('helvetica','normal');pdf.setFontSize(10);
+      const letras=['A','B','C','D','E'];
+      questoes.forEach((q,qi)=>{
+        if(y>265){pdf.addPage();y=20;}
+        pdf.setFont('helvetica','bold');
+        const lines=pdf.splitTextToSize((qi+1)+'. '+q.enunciado,W-M*2);
+        pdf.text(lines,M,y);y+=lines.length*5+2;
+        pdf.setFont('helvetica','normal');
+        q.alts.forEach((alt,ai)=>{
+          if(y>270){pdf.addPage();y=20;}
+          const isC=ai===q.correta;
+          if(isC)pdf.setTextColor(34,139,34);
+          pdf.text((isC?'✓ ':'  ')+letras[ai]+') '+alt,M+3,y);y+=5;
+          pdf.setTextColor(46,26,71);
+        });y+=3;
       });
-      await notif(uid,'Voce recebeu '+amt+' '+evMoeda+' do admin'+(obs?' — "'+obs+'"':'')+'! ⬡','⬡');
-      done++;
-      prog.textContent='enviando para '+done+' de '+targetIds.length+'...';
     }
-    invalidateUsersCache();
-    prog.textContent='✅ enviado para '+done+' membros!';
-    document.getElementById('ev-massa-amt').value='';
-    document.getElementById('ev-massa-obs').value='';
-    toast('+'+amt+' '+evMoeda+' para '+done+' membros!');
-  }catch(e){showErr('ev-massa-err','erro: '+e.message);prog.style.display='none';}
-  finally{setLoad('ev-massa-btn',false);}
+    pdf.save('resultado-quiz-'+titulo.replace(/\s+/g,'-').toLowerCase()+'.pdf');
+    toast('PDF baixado!');
+  }catch(e){toast('erro: '+e.message);}
 };
 
 // ── MANUTENCAO (secreto) ──
