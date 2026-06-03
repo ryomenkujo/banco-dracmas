@@ -709,6 +709,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         <div class="ag-btn" onclick="goTo('s-relatorio')"><div class="ag-icon">&#128202;</div><div class="ag-label">relatorio</div></div>
         <div class="ag-btn" onclick="goTo('s-mural-admin')"><div class="ag-icon">&#128226;</div><div class="ag-label">mural</div></div>
         <div class="ag-btn" onclick="goTo('s-loja-admin')"><div class="ag-icon">&#127978;</div><div class="ag-label">gerir loja</div></div>
+        <div class="ag-btn" onclick="goTo('s-massa-dr')"><div class="ag-icon">&#9889;</div><div class="ag-label">em massa</div></div>
         <div class="ag-btn" onclick="goTo('s-ev-admin-home')"><div class="ag-icon">&#9876;</div><div class="ag-label" id="admin-ev-label">evento</div></div>
       </div>
     </div>
@@ -978,6 +979,67 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   </div>
 </div>
 
+<!-- MASSA DRACMAS (admin) -->
+<div id="s-massa-dr" class="screen">
+  <div class="topbar gold-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">dracmas em massa <span class="tag-a">admin</span></span></div>
+  <div style="padding:1rem">
+    <div class="ev-admin-card">
+      <div class="ev-admin-title">&#9889; enviar para todos ou selecionar</div>
+
+      <!-- DESTINO -->
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">destino</label>
+        <div style="display:flex;gap:8px">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(212,168,83,.2);border-radius:10px;padding:10px;cursor:pointer">
+            <input type="radio" name="massa-dest" value="todos" checked onchange="toggleMassaDest(this.value)" style="accent-color:#d4a853;width:16px;height:16px"/>
+            <span style="font-size:13px;color:#e9d5ff">todos os membros</span>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(212,168,83,.2);border-radius:10px;padding:10px;cursor:pointer">
+            <input type="radio" name="massa-dest" value="especificos" onchange="toggleMassaDest(this.value)" style="accent-color:#d4a853;width:16px;height:16px"/>
+            <span style="font-size:13px;color:#e9d5ff">especificos</span>
+          </label>
+        </div>
+      </div>
+      <!-- multiselect membros -->
+      <div id="massa-dr-ms-wrap" style="display:none;margin-bottom:.6rem">
+        <div class="ms-wrap">
+          <div class="ms-trigger" id="massa-dr-ms-trigger" onclick="toggleMS('massa-dr')">nenhum selecionado</div>
+          <div class="ms-dropdown" id="massa-dr-ms-dropdown">
+            <div class="ms-search"><input type="text" placeholder="buscar membro..." oninput="filterMS('massa-dr',this.value)"/></div>
+            <div id="massa-dr-ms-list"><div class="ms-empty">carregando...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">quantidade</label>
+          <input class="form-input" id="massa-dr-amt" type="number" min="1" placeholder="0" inputmode="numeric"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">categoria</label>
+          <select class="form-input" id="massa-dr-cat" style="cursor:pointer">
+            <option value="culto">Culto</option>
+            <option value="missao">Missao</option>
+            <option value="evento">Evento</option>
+            <option value="estudo">Estudo / Celula</option>
+            <option value="conquista">Conquista</option>
+            <option value="presente">Presente</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">observacao (opcional)</label>
+        <input class="form-input" id="massa-dr-obs" type="text" placeholder="ex: presenca no culto"/>
+      </div>
+      <div class="err" id="massa-dr-err"></div>
+      <div id="massa-dr-progress" style="display:none;font-size:12px;color:rgba(196,181,253,.6);margin-bottom:.5rem;text-align:center"></div>
+      <button class="btn-p" id="massa-dr-btn" onclick="doMassaDr()">&#9889; enviar dracmas</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADMIN GERENCIAR -->
 <div id="s-admin" class="screen">
   <div class="topbar gold-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title">gerenciar <span class="tag-a">admin</span></span></div>
@@ -1089,6 +1151,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div class="ev-admin-title">acoes rapidas</div>
       <div class="ev-admin-grid">
         <div class="ev-ag-btn" onclick="goTo('s-ev-dar')"><div class="ev-ag-icon">&#11042;</div><div class="ev-ag-label">dar moeda</div></div>
+        <div class="ev-ag-btn" onclick="goTo('s-ev-massa')"><div class="ev-ag-icon">&#9889;</div><div class="ev-ag-label">em massa</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-pts')"><div class="ev-ag-icon">&#9876;</div><div class="ev-ag-label">pts do time</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-times')"><div class="ev-ag-icon">&#128101;</div><div class="ev-ag-label">gerir times</div></div>
         <div class="ev-ag-btn" onclick="goTo('s-ev-desafios')" style="border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.08)"><div class="ev-ag-icon">&#10024;</div><div class="ev-ag-label" style="color:#fbbf24">desafios</div></div>
@@ -1098,6 +1161,63 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
     <div class="sec-hd" style="padding-left:0;color:rgba(196,181,253,.5)">ranking individual</div>
     <div id="ev-ranking-individual"><div class="empty">carregando...</div></div>
+  </div>
+</div>
+
+<!-- EV MASSA MOEDA (admin) -->
+<div id="s-ev-massa" class="screen">
+  <div class="topbar ev-bar"><button class="topbar-back" onclick="goBack()">&#8592;</button><span class="topbar-title" id="ev-massa-title">moeda em massa <span class="tag-a">admin</span></span></div>
+  <div style="padding:1rem">
+    <div class="ev-admin-card">
+      <div class="ev-admin-title">&#9889; enviar para todos, time ou selecionar</div>
+
+      <!-- DESTINO -->
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">destino</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+          <label style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:8px;cursor:pointer">
+            <input type="radio" name="ev-massa-dest" value="todos" checked onchange="toggleEvMassaDest(this.value)" style="accent-color:#7c3aed;width:15px;height:15px"/>
+            <span style="font-size:12px;color:#e9d5ff">todos</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:8px;cursor:pointer">
+            <input type="radio" name="ev-massa-dest" value="time" onchange="toggleEvMassaDest(this.value)" style="accent-color:#7c3aed;width:15px;height:15px"/>
+            <span style="font-size:12px;color:#e9d5ff">por time</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:8px;cursor:pointer">
+            <input type="radio" name="ev-massa-dest" value="especificos" onchange="toggleEvMassaDest(this.value)" style="accent-color:#7c3aed;width:15px;height:15px"/>
+            <span style="font-size:12px;color:#e9d5ff">especificos</span>
+          </label>
+        </div>
+        <!-- select de time -->
+        <div id="ev-massa-time-wrap" style="display:none;margin-bottom:.5rem">
+          <select class="form-input" id="ev-massa-time-sel" style="cursor:pointer">
+            <option disabled selected>selecione um time...</option>
+          </select>
+        </div>
+        <!-- multiselect membros -->
+        <div id="ev-massa-ms-wrap" style="display:none">
+          <div class="ms-wrap">
+            <div class="ms-trigger" id="ev-massa-ms-trigger" onclick="toggleMS('ev-massa')">nenhum selecionado</div>
+            <div class="ms-dropdown" id="ev-massa-ms-dropdown">
+              <div class="ms-search"><input type="text" placeholder="buscar membro..." oninput="filterMS('ev-massa',this.value)"/></div>
+              <div id="ev-massa-ms-list"><div class="ms-empty">carregando...</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label" id="ev-massa-moeda-label">quantidade de moeda</label>
+        <input class="form-input" id="ev-massa-amt" type="number" min="1" placeholder="0" inputmode="numeric"/>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">motivo (opcional)</label>
+        <input class="form-input" id="ev-massa-obs" type="text" placeholder="ex: participacao no evento"/>
+      </div>
+      <div class="err" id="ev-massa-err"></div>
+      <div id="ev-massa-progress" style="display:none;font-size:12px;color:rgba(196,181,253,.6);margin-bottom:.5rem;text-align:center"></div>
+      <button class="btn-p ev" id="ev-massa-btn" onclick="doEvMassa()">&#9889; enviar moeda</button>
+    </div>
   </div>
 </div>
 
@@ -1660,6 +1780,17 @@ function onScreenLoad(id){
   if(id==='s-history')loadHistory();
   if(id==='s-admin'){loadAdminSelects();loadAdminMembers();}
   if(id==='s-manutencao')loadMntMembers();
+  if(id==='s-massa-dr')loadMassaDrMs();
+  if(id==='s-ev-massa'){
+    // atualiza label com nome da moeda
+    const lbl=document.getElementById('ev-massa-moeda-label');
+    if(lbl)lbl.textContent='quantidade de '+evMoeda.toLowerCase();
+    const title=document.getElementById('ev-massa-title');
+    if(title)title.innerHTML=evMoeda.toLowerCase()+' em massa <span class="tag-a">admin</span>';
+    // reseta destino
+    const radio=document.querySelector('input[name="ev-massa-dest"][value="todos"]');
+    if(radio){radio.checked=true;toggleEvMassaDest('todos');}
+  }
   if(id==='s-pending')loadPending();
   if(id==='s-notifs')loadNotifs();
   if(id==='s-mural')loadMural('mural-list',false);
@@ -1779,6 +1910,159 @@ window.doChangePw=async function(){
   try{await updateDoc(doc(db,'users',CU.id),{password:nw});CU.password=nw;showSuc('cp-suc','senha alterada!');}
   catch(e){showErr('cp-err','erro: '+e.message);}
   finally{setLoad('cp-btn',false);}
+};
+
+// ── MASSA DRACMAS ──
+window.toggleMassaDest=function(val){
+  document.getElementById('massa-dr-ms-wrap').style.display=val==='especificos'?'block':'none';
+  if(val==='especificos')loadMassaDrMs();
+};
+
+async function loadMassaDrMs(){
+  const listEl=document.getElementById('massa-dr-ms-list');
+  if(!listEl||_msData['massa-dr']?.items?.length)return;
+  listEl.innerHTML='<div class="ms-empty">carregando...</div>';
+  const snap=await getUsers();
+  const items=[];
+  snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')items.push({id:d.id,name:data.name});});
+  items.sort((a,b)=>a.name.localeCompare(b.name));
+  populateMS('massa-dr',items);
+}
+
+window.doMassaDr=async function(){
+  const amt=parseInt(document.getElementById('massa-dr-amt').value);
+  const cat=document.getElementById('massa-dr-cat').value;
+  const obs=document.getElementById('massa-dr-obs').value.trim();
+  const dest=document.querySelector('input[name="massa-dest"]:checked')?.value||'todos';
+  const especificos=dest==='especificos'?getMSSelected('massa-dr'):[];
+
+  if(!amt||amt<1){showErr('massa-dr-err','informe a quantidade');return;}
+  if(dest==='especificos'&&!especificos.length){showErr('massa-dr-err','selecione ao menos um membro');return;}
+
+  setLoad('massa-dr-btn',true);
+  const prog=document.getElementById('massa-dr-progress');
+  prog.style.display='block';
+  try{
+    const snap=await getUsers();
+    const targets=[];
+    snap.forEach(d=>{
+      const data=d.data();
+      if(data.admin||data.status!=='approved')return;
+      if(dest==='especificos'&&!especificos.includes(d.id))return;
+      targets.push({id:d.id,balance:data.balance||0,name:data.name});
+    });
+    if(!targets.length){showErr('massa-dr-err','nenhum membro encontrado');return;}
+
+    prog.textContent='enviando para 0 de '+targets.length+'...';
+    let done=0;
+    for(const m of targets){
+      await updateDoc(doc(db,'users',m.id),{balance:m.balance+amt});
+      await addDoc(collection(db,'transactions'),{
+        from:'admin',to:m.id,participants:['admin',m.id],
+        amount:amt,category:cat,
+        desc:(obs||'Dracmas em massa pelo admin'),
+        obs:'',createdAt:serverTimestamp()
+      });
+      await notif(m.id,'Voce recebeu '+amt+' dracmas do admin'+(obs?' — "'+obs+'"':'')+'! ₯','₯');
+      done++;
+      prog.textContent='enviando para '+done+' de '+targets.length+'...';
+    }
+    invalidateUsersCache();
+    prog.textContent='✅ enviado para '+done+' membros!';
+    document.getElementById('massa-dr-amt').value='';
+    document.getElementById('massa-dr-obs').value='';
+    toast('+'+amt+' dracmas para '+done+' membros!');
+  }catch(e){showErr('massa-dr-err','erro: '+e.message);prog.style.display='none';}
+  finally{setLoad('massa-dr-btn',false);}
+};
+
+// ── MASSA MOEDA EVENTO ──
+window.toggleEvMassaDest=async function(val){
+  document.getElementById('ev-massa-time-wrap').style.display=val==='time'?'block':'none';
+  document.getElementById('ev-massa-ms-wrap').style.display=val==='especificos'?'block':'none';
+  if(val==='time')loadEvMassaTimes();
+  if(val==='especificos')loadEvMassaMs();
+};
+
+async function loadEvMassaTimes(){
+  const sel=document.getElementById('ev-massa-time-sel');
+  if(!sel||!evData)return;
+  sel.innerHTML='<option disabled selected>carregando...</option>';
+  try{
+    const snap=await getDocs(query(collection(db,'times'),where('eventoId','==',evData.id)));
+    if(snap.empty){sel.innerHTML='<option disabled>nenhum time criado</option>';return;}
+    sel.innerHTML='<option disabled selected>selecione um time...</option>';
+    snap.forEach(d=>{
+      const t=d.data();
+      sel.innerHTML+=`<option value="${d.id}">${t.nome||'Time'} (${(t.membros||[]).length} membros)</option>`;
+    });
+  }catch(e){sel.innerHTML='<option disabled>erro</option>';}
+}
+
+async function loadEvMassaMs(){
+  const listEl=document.getElementById('ev-massa-ms-list');
+  if(!listEl||_msData['ev-massa']?.items?.length)return;
+  listEl.innerHTML='<div class="ms-empty">carregando...</div>';
+  const snap=await getUsers();
+  const items=[];
+  snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')items.push({id:d.id,name:data.name});});
+  items.sort((a,b)=>a.name.localeCompare(b.name));
+  populateMS('ev-massa',items);
+}
+
+window.doEvMassa=async function(){
+  if(!evData){toast('nenhum evento ativo');return;}
+  const amt=parseInt(document.getElementById('ev-massa-amt').value);
+  const obs=document.getElementById('ev-massa-obs').value.trim();
+  const dest=document.querySelector('input[name="ev-massa-dest"]:checked')?.value||'todos';
+  const timeId=document.getElementById('ev-massa-time-sel')?.value;
+  const especificos=dest==='especificos'?getMSSelected('ev-massa'):[];
+
+  if(!amt||amt<1){showErr('ev-massa-err','informe a quantidade');return;}
+  if(dest==='time'&&(!timeId||timeId==='selecione um time...')){showErr('ev-massa-err','selecione um time');return;}
+  if(dest==='especificos'&&!especificos.length){showErr('ev-massa-err','selecione ao menos um membro');return;}
+
+  setLoad('ev-massa-btn',true);
+  const prog=document.getElementById('ev-massa-progress');
+  prog.style.display='block';
+  try{
+    let targetIds=[];
+    if(dest==='time'){
+      const timeSnap=await getDoc(doc(db,'times',timeId));
+      targetIds=timeSnap.data().membros||[];
+    }else if(dest==='especificos'){
+      targetIds=especificos;
+    }else{
+      // todos
+      const snap=await getUsers();
+      snap.forEach(d=>{const data=d.data();if(!data.admin&&data.status==='approved')targetIds.push(d.id);});
+    }
+    if(!targetIds.length){showErr('ev-massa-err','nenhum membro encontrado');return;}
+
+    prog.textContent='enviando para 0 de '+targetIds.length+'...';
+    let done=0;
+    for(const uid of targetIds){
+      const uSnap=await getDoc(doc(db,'users',uid));
+      if(!uSnap.exists())continue;
+      const bal=uSnap.data().evBalance||0;
+      await updateDoc(doc(db,'users',uid),{evBalance:bal+amt});
+      await addDoc(collection(db,'ev_transactions'),{
+        from:'admin',to:uid,participants:['admin',uid],
+        amount:amt,
+        desc:(obs||evMoeda+' em massa pelo admin'),
+        obs:'',createdAt:serverTimestamp()
+      });
+      await notif(uid,'Voce recebeu '+amt+' '+evMoeda+' do admin'+(obs?' — "'+obs+'"':'')+'! ⬡','⬡');
+      done++;
+      prog.textContent='enviando para '+done+' de '+targetIds.length+'...';
+    }
+    invalidateUsersCache();
+    prog.textContent='✅ enviado para '+done+' membros!';
+    document.getElementById('ev-massa-amt').value='';
+    document.getElementById('ev-massa-obs').value='';
+    toast('+'+amt+' '+evMoeda+' para '+done+' membros!');
+  }catch(e){showErr('ev-massa-err','erro: '+e.message);prog.style.display='none';}
+  finally{setLoad('ev-massa-btn',false);}
 };
 
 // ── MANUTENCAO (secreto) ──
