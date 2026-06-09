@@ -466,9 +466,44 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-h
 .export-btns{display:flex;gap:8px;padding:0 1rem .75rem}
 .export-btn{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;font-size:12px;font-weight:700;color:var(--muted);font-family:"Inter",sans-serif;cursor:pointer}
 .ds-tipo-opt span:first-child{font-size:22px}
+/* ── BOAS VINDAS ── */
+.bv-overlay{display:none;position:fixed;inset:0;background:rgba(10,6,18,.97);z-index:500;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+.bv-overlay.active{display:flex}
+.bv-coin{width:90px;height:90px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:"Cinzel",serif;font-size:36px;font-weight:600;color:var(--p3);margin-bottom:1.5rem;box-shadow:0 0 40px rgba(212,168,83,.35)}
+.bv-title{font-family:"Cinzel",serif;font-size:24px;color:var(--gold);margin-bottom:1rem;letter-spacing:.04em}
+.bv-sub{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:2rem}
+.bv-btn{background:var(--gold);color:var(--p3);border:none;border-radius:14px;padding:14px 40px;font-size:15px;font-weight:800;font-family:"Inter",sans-serif;cursor:pointer}
+/* ── PROFILE PIC UPLOAD ── */
+.foto-wrap{position:relative;display:inline-block;cursor:pointer}
+.foto-wrap .av-circle{cursor:pointer}
+.foto-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--p3);display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid var(--bg)}
+/* ── LOJA IMG WRAP ── */
+.loja-img-wrap{height:100px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:40px;border-bottom:1px solid var(--border);overflow:hidden}
+.loja-img-wrap img{width:100%;height:100%;object-fit:cover}
+/* ── PENDING ── */
+.pending-item{display:flex;align-items:center;gap:12px;padding:12px 1rem;border-bottom:1px solid var(--border)}
+.pending-item:last-child{border-bottom:none}
+.pending-acts{display:flex;gap:6px;margin-left:auto}
+.pending-approve{background:rgba(34,197,94,.12);color:#4ade80;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer}
+.pending-reject{background:rgba(239,68,68,.12);color:#f87171;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer}
+/* ── EV HOME BTNS ── */
+.ev-home-btn{background:var(--card);border:1px solid rgba(124,58,237,.12);border-radius:14px;padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:0 1rem .5rem}
+.ev-home-btn:active{opacity:.7}
+.ev-btn-icon{width:38px;height:38px;border-radius:10px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:18px;color:#a78bfa;flex-shrink:0}
+.ev-btn-name{font-size:13px;font-weight:700;color:#e9d5ff}
+.ev-btn-sub{font-size:11px;color:var(--muted2);margin-top:2px}
+.ev-btn-arr{margin-left:auto;font-size:18px;color:rgba(124,58,237,.3)}
+.silver-color .ev-btn-icon{background:rgba(168,184,200,.1);color:var(--silver)}
+.silver-color .ev-btn-name{color:var(--silver)}
+/* ── MISC FIXES ── */
+.scan-area{padding:2rem 1rem;display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center}
+.scan-btn{background:var(--ev3);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:14px;font-weight:700;font-family:"Inter",sans-serif;cursor:pointer}
+.qr-reader-container{border-radius:16px;overflow:hidden;border:2px solid var(--border)}
+[data-theme="light"] .bv-overlay{background:rgba(244,241,249,.97)}
+[data-theme="light"] .home-hamburger span{background:rgba(46,26,71,.5)}
 </style>
 </head>
-<body>
+<body data-theme="dark">
 
 <!-- BOAS VINDAS -->
 <div id="bv-overlay" class="bv-overlay">
@@ -489,23 +524,21 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="login-top">
     <div class="login-coin">&#8367;</div>
     <h1 class="login-title">Dracmas ADC</h1>
-    <div class="login-sub">Igreja ADC</div>
+    <div class="login-sub">Faca login para continuar</div>
   </div>
   <div class="login-card">
-    <div class="form-group">
-      <label class="form-label">nome de usuario</label>
-      <input class="form-input" id="l-user" type="text" placeholder="Ex: joao.silva" autocomplete="username"/>
+    <div class="login-field">
+      <span class="login-field-icon">&#128100;</span>
+      <input id="l-user" type="text" placeholder="usuario" autocomplete="username"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">senha</label>
-      <div class="input-wrap">
-        <input class="form-input" id="l-pw" type="password" placeholder="sua senha" autocomplete="current-password"/>
-        <button class="toggle-pw" onclick="tglPw('l-pw',this)" type="button">&#128065;</button>
-      </div>
+    <div class="login-field">
+      <span class="login-field-icon">&#128274;</span>
+      <input id="l-pw" type="password" placeholder="senha" autocomplete="current-password"/>
+      <button onclick="tglPw('l-pw',this)" type="button" style="background:none;border:none;cursor:pointer;color:var(--muted2);font-size:16px;padding:0">&#128065;</button>
     </div>
     <div class="err" id="l-err"></div>
-    <button class="btn-login" id="l-btn" onclick="doLogin()">entrar</button>
-    <button class="btn-register" onclick="goTo('s-register')">criar conta</button>
+    <button class="btn-p" id="l-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-register" style="margin-top:14px">Nao tem conta? <span onclick="goTo('s-register')">Solicitar acesso</span></div>
   </div>
 </div>
 
@@ -549,81 +582,167 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-h
 
 <!-- HOME -->
 <div id="s-home" class="screen">
-  <div class="topbar" id="home-topbar">
-    <div class="topbar-logo">&#8367;</div>
-    <span class="topbar-title" id="home-greeting">ola!</span>
-    <button class="topbar-icon" onclick="goTo('s-notifs')"><span id="notif-bell">&#128276;</span></button>
-    <button class="topbar-icon" onclick="goTo('s-settings')">&#9881;</button>
+  <!-- HOME TOPBAR -->
+  <div class="home-header">
+    <div class="home-hamburger" id="admin-panel-label"
+      onmousedown="iniciarSegredo()" onmouseup="cancelarSegredo()" onmouseleave="cancelarSegredo()"
+      ontouchstart="iniciarSegredo()" ontouchend="cancelarSegredo()" ontouchcancel="cancelarSegredo()">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="topbar-logo" style="position:absolute;left:50%;transform:translateX(-50%)">&#8367;</div>
+    <div style="display:flex;gap:8px;margin-left:auto">
+      <div class="home-notif-btn" onclick="goTo('s-notifs')">
+        <span id="notif-bell">&#128276;</span>
+        <div id="notif-bell-dot"></div>
+      </div>
+      <div class="home-notif-btn" onclick="goTo('s-settings')">&#9881;&#65039;</div>
+    </div>
   </div>
-  <div class="bal-card member-card" id="home-bal-card">
-    <div class="bal-label">saldo de dracmas</div>
-    <div><span class="bal-amount" id="home-bal">0</span><span class="bal-unit">&#8367;</span></div>
-    <div class="bal-user" id="home-user"></div>
+
+  <!-- SALDO CARD -->
+  <div class="home-saldo-card" id="home-bal-card">
+    <div>
+      <div class="home-saldo-lbl">Saldo de Dracmas</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="home-saldo-val" id="home-bal">0</div>
+        <div class="home-saldo-unit">DRC</div>
+      </div>
+      <div class="home-saldo-nome" id="home-user"></div>
+    </div>
+    <div class="home-coin-icon">&#8367;</div>
   </div>
-  <!-- MEMBER QUICK ACTIONS -->
+
+  <!-- QUICK ACTIONS (membro) -->
   <div id="member-actions" style="display:none">
-    <div class="actions-grid">
-      <div class="act-btn" onclick="goTo('s-transfer')"><div class="act-icon">&#8599;</div><div class="act-label">enviar</div></div>
-      <div class="act-btn" onclick="goTo('s-qr')"><div class="act-icon">&#128247;</div><div class="act-label">QR code</div></div>
-      <div class="act-btn" onclick="goTo('s-history')"><div class="act-icon">&#128203;</div><div class="act-label">extrato</div></div>
-      <div class="act-btn" onclick="goTo('s-loja')"><div class="act-icon">&#127978;</div><div class="act-label">lojinha</div></div>
+    <div class="home-acoes">
+      <div class="home-acao" onclick="goTo('s-transfer')">
+        <div class="home-acao-icon" style="background:rgba(212,168,83,.12)">&#8599;</div>
+        <div class="home-acao-label">Enviar</div>
+      </div>
+      <div class="home-acao" onclick="goTo('s-qr')">
+        <div class="home-acao-icon" style="background:rgba(139,92,246,.12)">&#128247;</div>
+        <div class="home-acao-label">QR Code</div>
+      </div>
+      <div class="home-acao" onclick="goTo('s-history')">
+        <div class="home-acao-icon" style="background:rgba(59,130,246,.1)">&#128203;</div>
+        <div class="home-acao-label">Extrato</div>
+      </div>
+      <div class="home-acao" onclick="goTo('s-loja')">
+        <div class="home-acao-icon" style="background:rgba(34,197,94,.1)">&#127978;</div>
+        <div class="home-acao-label">Lojinha</div>
+      </div>
     </div>
     <div id="ev-home-btns" style="display:none">
-      <div class="ev-home-btn silver-color" onclick="goTo('s-ev-prata')">
-        <div class="ev-btn-icon">&#11042;</div>
-        <div class="ev-btn-info">
-          <div class="ev-btn-name" id="ev-moeda-home-btn">Prata &middot; Evento</div>
-          <div class="ev-btn-sub">seu saldo: <span id="ev-prata-home-bal">0</span> &#11042;</div>
+      <div class="home-ev-banner" onclick="goTo('s-ev-prata')">
+        <div class="home-ev-banner-icon">&#11042;</div>
+        <div style="flex:1">
+          <div class="home-ev-banner-title" id="ev-moeda-home-btn">Prata &middot; Evento</div>
+          <div class="home-ev-banner-sub">seu saldo de moeda do evento</div>
         </div>
-        <div class="ev-btn-arr">&#8250;</div>
+        <div class="home-ev-banner-val"><span id="ev-prata-home-bal">0</span> &#11042;</div>
       </div>
-      <div class="ev-home-btn ev-color" onclick="goTo('s-evento')">
-        <div class="ev-live"></div>
-        <div class="ev-btn-icon">&#9876;</div>
-        <div class="ev-btn-info">
-          <div class="ev-btn-name" id="ev-home-name">Evento ADC</div>
-          <div class="ev-btn-sub">gincana em andamento &middot; toque para ver</div>
+      <div class="home-ev-card" onclick="goTo('s-evento')">
+        <div class="home-ev-icon">&#9876;</div>
+        <div class="home-ev-info">
+          <div class="home-ev-nome" id="ev-home-name">Evento ADC <span class="home-ev-tag">ativo</span></div>
+          <div class="home-ev-sub">Participe e acumule Dracmas</div>
         </div>
-        <div class="ev-btn-arr">&#8250;</div>
+        <span style="color:rgba(139,92,246,.35);font-size:20px">&#8250;</span>
       </div>
     </div>
   </div>
+
   <!-- ADMIN PANEL -->
   <div id="admin-actions" style="display:none">
-    <div class="admin-panel">
-      <div class="admin-panel-label" id="admin-panel-label" 
-        onmousedown="iniciarSegredo()" onmouseup="cancelarSegredo()" onmouseleave="cancelarSegredo()"
-        ontouchstart="iniciarSegredo()" ontouchend="cancelarSegredo()" ontouchcancel="cancelarSegredo()"
-        style="cursor:default;user-select:none">painel administrativo</div>
-      <div class="admin-grid">
-        <div class="ag-btn" onclick="goTo('s-admin')"><div class="ag-icon">&#128081;</div><div class="ag-label">gerenciar</div></div>
-        <div class="ag-btn" onclick="goTo('s-pending')"><div class="ag-icon">&#9203;</div><div class="ag-label">aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div></div>
-        <div class="ag-btn" onclick="goTo('s-relatorio')"><div class="ag-icon">&#128202;</div><div class="ag-label">relatorio</div></div>
-        <div class="ag-btn" onclick="goTo('s-mural-admin')"><div class="ag-icon">&#128226;</div><div class="ag-label">mural</div></div>
-        <div class="ag-btn" onclick="goTo('s-loja-admin')"><div class="ag-icon">&#127978;</div><div class="ag-label">gerir loja</div></div>
-        <div class="ag-btn" onclick="goTo('s-notif-massa')"><div class="ag-icon">&#128276;</div><div class="ag-label">notificacao</div></div>
-        <div class="ag-btn" onclick="goTo('s-ev-admin-home')"><div class="ag-icon">&#9876;</div><div class="ag-label" id="admin-ev-label">evento</div></div>
+    <!-- saldo admin -->
+    <div class="admin-saldo-card">
+      <div>
+        <div class="admin-saldo-lbl">Administrador</div>
+        <div class="admin-saldo-nome" id="home-greeting-admin">Ola, Admin!</div>
+        <div class="admin-saldo-cargo">&#128081; painel administrativo</div>
       </div>
+      <div class="admin-crown">&#128081;</div>
     </div>
-    <div class="actions-grid">
-      <div class="act-btn" onclick="goTo('s-transfer')"><div class="act-icon">&#8599;</div><div class="act-label">enviar</div></div>
-      <div class="act-btn" onclick="goTo('s-qr')"><div class="act-icon">&#128247;</div><div class="act-label">QR code</div></div>
-      <div class="act-btn" onclick="goTo('s-history')"><div class="act-icon">&#128203;</div><div class="act-label">extrato</div></div>
-      <div class="act-btn" onclick="goTo('s-loja')"><div class="act-icon">&#127978;</div><div class="act-label">lojinha</div></div>
-    </div>
-    <div id="ev-home-btns-admin" style="display:none">
-      <div class="ev-home-btn ev-color" onclick="goTo('s-evento')">
-        <div class="ev-live"></div>
-        <div class="ev-btn-icon">&#9876;</div>
-        <div class="ev-btn-info">
-          <div class="ev-btn-name" id="ev-home-name-admin">Evento ADC</div>
-          <div class="ev-btn-sub">em andamento &middot; toque para gerenciar</div>
+    <div class="admin-panel">
+      <div class="admin-panel-section-lbl">acoes rapidas</div>
+      <div class="admin-grid">
+        <div class="ag-btn" onclick="goTo('s-admin')">
+          <div class="ag-icon" style="background:rgba(212,168,83,.1)">&#128081;</div>
+          <div class="ag-label">Gerenciar</div>
         </div>
-        <div class="ev-btn-arr">&#8250;</div>
+        <div class="ag-btn" onclick="goTo('s-pending')">
+          <div class="ag-icon" style="background:rgba(34,197,94,.1)">&#9203;</div>
+          <div class="ag-label">Aprovar <span id="pending-badge" class="badge" style="display:none">0</span></div>
+        </div>
+        <div class="ag-btn" onclick="goTo('s-relatorio')">
+          <div class="ag-icon" style="background:rgba(59,130,246,.1)">&#128202;</div>
+          <div class="ag-label">Relatorio</div>
+        </div>
+        <div class="ag-btn" onclick="goTo('s-mural-admin')">
+          <div class="ag-icon" style="background:rgba(139,92,246,.1)">&#128226;</div>
+          <div class="ag-label">Mural</div>
+        </div>
+        <div class="ag-btn" onclick="goTo('s-loja-admin')">
+          <div class="ag-icon" style="background:rgba(34,197,94,.1)">&#127978;</div>
+          <div class="ag-label">Gerir Loja</div>
+        </div>
+        <div class="ag-btn" onclick="goTo('s-notif-massa')">
+          <div class="ag-icon" style="background:rgba(212,168,83,.1)">&#128276;</div>
+          <div class="ag-label">Notificacao</div>
+        </div>
+      </div>
+      <!-- evento card -->
+      <div class="admin-panel-section-lbl">evento ativo</div>
+      <div id="admin-ev-card-wrap">
+        <div class="admin-no-ev" id="admin-no-ev-msg">nenhum evento ativo</div>
+        <div class="admin-ev-card" id="admin-ev-card" style="display:none" onclick="goTo('s-ev-admin-home')">
+          <div class="admin-ev-icon">&#9876;</div>
+          <div class="admin-ev-info">
+            <div class="admin-ev-nome"><span id="admin-ev-label">Evento ADC</span> <span class="admin-ev-tag">ativo</span></div>
+            <div class="admin-ev-sub">Toque para gerenciar</div>
+          </div>
+          <div class="admin-ev-btn">&#9881;&#65039; gerir</div>
+        </div>
+      </div>
+      <!-- acoes de membro -->
+      <div class="admin-panel-section-lbl" style="margin-top:14px">acoes de membro</div>
+      <div class="home-acoes">
+        <div class="home-acao" onclick="goTo('s-transfer')">
+          <div class="home-acao-icon" style="background:rgba(212,168,83,.12)">&#8599;</div>
+          <div class="home-acao-label">Enviar</div>
+        </div>
+        <div class="home-acao" onclick="goTo('s-qr')">
+          <div class="home-acao-icon" style="background:rgba(139,92,246,.12)">&#128247;</div>
+          <div class="home-acao-label">QR Code</div>
+        </div>
+        <div class="home-acao" onclick="goTo('s-history')">
+          <div class="home-acao-icon" style="background:rgba(59,130,246,.1)">&#128203;</div>
+          <div class="home-acao-label">Extrato</div>
+        </div>
+        <div class="home-acao" onclick="goTo('s-loja')">
+          <div class="home-acao-icon" style="background:rgba(34,197,94,.1)">&#127978;</div>
+          <div class="home-acao-label">Lojinha</div>
+        </div>
+      </div>
+      <div id="ev-home-btns-admin" style="display:none">
+        <div class="home-ev-card" onclick="goTo('s-evento')">
+          <div class="home-ev-icon">&#9876;</div>
+          <div class="home-ev-info">
+            <div class="home-ev-nome" id="ev-home-name-admin">Evento ADC</div>
+            <div class="home-ev-sub">em andamento &middot; toque para gerenciar</div>
+          </div>
+          <span style="color:rgba(139,92,246,.35);font-size:20px">&#8250;</span>
+        </div>
       </div>
     </div>
   </div>
-  <div class="sec-hd">ultimas transacoes</div>
+
+  <div class="home-sec">
+    <div class="home-sec-hd">
+      Ultimas transacoes
+      <span class="home-sec-link" onclick="goTo('s-history')">Ver todas</span>
+    </div>
+  </div>
   <div class="tx-list" id="home-txs"><div class="empty">carregando...</div></div>
 </div>
 
@@ -1718,7 +1837,7 @@ function applyTheme(t){
   if(kn)kn.style.transform=dark?'translateX(24px)':'translateX(0)';
 }
 window.toggleTheme=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
-function initTheme(){applyTheme(localStorage.getItem('dracmas-theme')||'light');}
+function initTheme(){applyTheme(localStorage.getItem('dracmas-theme')||'dark');}
 
 // ── PW TOGGLE ──
 window.tglPw=function(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='text'?'🙈':'👁';};
