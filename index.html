@@ -2722,10 +2722,15 @@ async function loadNotifs(){
         <div><div class="notif-text">${n.text}</div><div class="notif-date">${fmtDt(n.createdAt)}</div></div>
       </div>`;
     }).join('');
+    // marca todas como lidas
     snap.docs.forEach(d=>{if(!d.data().read)updateDoc(doc(db,'notifications',d.id),{read:true});});
-    document.getElementById('notif-bell').textContent='🔔';
-    setLastNotifSeen(); // marca que o usuário viu agora
-  }catch(e){el.innerHTML='<div class="empty">erro ao carregar</div>';}
+    // esconde badge
+    const dot=document.getElementById('notif-bell-dot');
+    const badge=document.getElementById('notif-num-badge');
+    if(dot)dot.style.display='none';
+    if(badge)badge.style.display='none';
+    setLastNotifSeen();
+  }catch(e){el.innerHTML='<div class="empty">erro: '+e.message+'</div>';}
 }
 
 async function notif(toId,text,icon='🔔'){
